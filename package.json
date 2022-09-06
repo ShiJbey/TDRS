@@ -1,0 +1,21 @@
+{
+    "name": "io.github.shijbey.trait-based-opinion-system",
+    "version": "0.0.1",
+    "description": "Social AI tool that allows characters to calculate subjective opinions of other character and the player",
+    "displayName": "Social AI - Trait-Based Opinion System",
+    "unity": "2019.4",
+    "author": {
+        "name": "Shi Johnson-Bey"
+    },
+    "keywords": [
+        "social simulation",
+        "social AI",
+        "relationships",
+        "opinions",
+        "AI",
+        "Artificial intelligence",
+        "crusader kings",
+        "opinion system"
+    ],
+    "license": "MIT"
+}

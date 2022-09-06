@@ -1,0 +1,17 @@
+{
+    "name": "shijbey.trait-based-opinion-system.Runtime.Test",
+    "rootNamespace": "",
+    "references": [
+        "shijbey.trait-based-opinion-system"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "autoReferenced": false,
+    "versionDefines": [],
+    "noEngineReferences": false
+}
