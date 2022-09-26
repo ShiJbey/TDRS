@@ -16,20 +16,21 @@ namespace TraitBasedOpinionSystem.Core
 
     public static class TraitTypeLibrary
     {
-        private static Dictionary<string, TraitType<object>> _library =
-            new Dictionary<string, TraitType<object>>();
+        private static Dictionary<string, TraitType> _library =
+            new Dictionary<string, TraitType>();
 
-        public static void AddTrait(TraitType<object> traitType)
+        public static void AddTrait(TraitType traitType)
         {
             _library.Add(traitType.GetName(), traitType);
         }
 
-        public static TraitType<object> GetTrait(string traitName)
+        public static TraitType GetTrait(string traitName)
         {
             try
             {
                 return _library[traitName];
-            } catch (KeyNotFoundException)
+            }
+            catch (KeyNotFoundException)
             {
                 throw new TraitTypeNotFoundError(traitName);
             }

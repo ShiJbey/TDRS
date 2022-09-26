@@ -5,25 +5,29 @@ namespace TraitBasedOpinionSystem.Core
 {
     public class Actor
     {
-        protected readonly Dictionary<string, Trait<object>> _traits;
+        protected readonly Dictionary<string, Trait> _traits;
         protected readonly uint _id;
 
         public Actor(uint id)
         {
             _id = id;
-            _traits = new Dictionary<string, Trait<object>>();
+            _traits = new Dictionary<string, Trait>();
         }
 
         /// <summary>
         /// The Actor's unique identifier
         /// </summary>
-        public uint ID { get { return _id; } }
+        public uint GetID()
+        {
+            return _id;
+        }
 
         /// <summary>
         /// List of all Traits attached to this actor
         /// </summary>
-        public List<Trait<object>> Traits {
-            get { return _traits.Values.ToList();  }
+        public List<Trait> GetTraits()
+        {
+            return _traits.Values.ToList();
         }
 
         /// <summary>
@@ -34,9 +38,9 @@ namespace TraitBasedOpinionSystem.Core
         /// with the name name
         /// </remarks>
         /// <param name="trait"></param>
-        public void AddTrait(Trait<object> trait)
+        public void AddTrait(Trait trait)
         {
-            _traits.Add(trait.Name, trait);
+            _traits.Add(trait.GetName(), trait);
         }
 
         /// <summary>

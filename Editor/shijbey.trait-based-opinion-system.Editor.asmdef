@@ -1,0 +1,16 @@
+{
+    "name": "shijbey.trait-based-opinion-system.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:64cd439cf849340148f0a7ee63b20bdf"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

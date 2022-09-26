@@ -39,7 +39,7 @@ namespace TraitBasedOpinionSystem.Core
         /// <param name="actor"></param>
         public void RemoveActor(Actor actor)
         {
-            _opinionGraph.RemoveNode(actor.ID);
+            _opinionGraph.RemoveNode(actor.GetID());
         }
 
 
@@ -53,17 +53,17 @@ namespace TraitBasedOpinionSystem.Core
             return _opinionGraph.GetNode(actor);
         }
 
-    
+
         public Opinion GetOpinion(Actor subject, Actor target)
         {
             // Return existing opinion
-            if (!_opinionGraph.HasEdge(subject.ID, target.ID))
+            if (!_opinionGraph.HasEdge(subject.GetID(), target.GetID()))
             {
-                _opinionGraph.AddEdge(subject.ID, target.ID, new Opinion(subject, target));
+                _opinionGraph.AddEdge(subject.GetID(), target.GetID(), new Opinion(subject, target));
             }
 
             // Create new opinion
-            return _opinionGraph.GetEdge(subject.ID, target.ID);
+            return _opinionGraph.GetEdge(subject.GetID(), target.GetID());
         }
     }
 }

@@ -8,37 +8,46 @@ namespace TraitBasedOpinionSystem.Core
 {
     /// <summary>
     /// TraitTypes manage metadata associated with Traits.
-    /// 
+    ///
     /// TraitTypes create instances of traits and allow the
     /// OpinionSystem to save memory by only having a single
-    /// copy of trait metadata like descriptions.
+    /// copy of trait metadata.
     /// </summary>
-    public class TraitType<T, TraitValue>
+    public class TraitType
     {
 
-        protected string _name;
-        protected string _description;
-        protected List<OpinionModifier> _modifiers;
+        protected readonly uint _id;
+        protected readonly string _name;
+        protected readonly string _description;
+        protected readonly List<OpinionModifier> _modifiers;
 
-        public TraitType(string name)
+        public TraitType(uint id, string name)
         {
+            _id = id;
             _name = name;
             _description = "";
             _modifiers = new List<OpinionModifier>();
         }
 
-        public TraitType(string name, IEnumerable<OpinionModifier> modifiers)
+        public TraitType(uint id, string name, IEnumerable<OpinionModifier> modifiers)
         {
+            _id = id;
             _name = name;
             _description = "";
             _modifiers = modifiers.ToList();
         }
 
-        public TraitType(string name, string description, IEnumerable<OpinionModifier> modifiers)
+        public TraitType(uint id, string name, string description, IEnumerable<OpinionModifier> modifiers)
         {
+            _id = id;
             _name = name;
             _description = description;
             _modifiers = modifiers.ToList();
+        }
+
+        public uint GetID()
+        {
+            return _id;
         }
 
         public string GetName()
@@ -51,9 +60,9 @@ namespace TraitBasedOpinionSystem.Core
             return _description;
         }
 
-        public Trait<T> Instantiate(T value)
+        public Trait Instantiate()
         {
-            return new Trait<T>(_name, value, _modifiers);
+            return new Trait(_name, _modifiers);
         }
     }
 }

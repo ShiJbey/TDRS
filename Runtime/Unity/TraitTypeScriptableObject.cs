@@ -4,15 +4,17 @@ using UnityEngine;
 using TraitBasedOpinionSystem.Core;
 using System.Linq;
 
-namespace TraitBasedOpinionSystem
+namespace TraitBasedOpinionSystem.Unity
 {
     [CreateAssetMenu(fileName = "Trait", menuName = "Opinion System/Trait")]
-    public class TraitScriptableObject : ScriptableObject
+    public class TraitTypeScriptableObject : ScriptableObject
     {
         [Serializable]
-        public struct OpinionModifierInfo {
+        public struct OpinionModifierInfo
+        {
             [SerializeField]
             string traitName;
+
             [SerializeField]
             int value;
 
@@ -28,7 +30,10 @@ namespace TraitBasedOpinionSystem
         }
 
         [SerializeField]
-        protected string displayName;
+        protected uint id;
+
+        [SerializeField]
+        protected string traitName;
 
         [SerializeField]
         protected string description;
@@ -38,7 +43,7 @@ namespace TraitBasedOpinionSystem
 
         public string GetName()
         {
-            return displayName;
+            return traitName;
         }
 
         public string GetDescription()
@@ -51,14 +56,9 @@ namespace TraitBasedOpinionSystem
             return modifiers;
         }
 
-        public TraitType<object> CreateTraitType()
+        public TraitType CreateTraitType()
         {
-            return new TraitType<object>(displayName, description, modifiers.Select(m => m.CreateOpinionModifier()).ToList());
-        }
-
-        public void Awake()
-        {
-            TraitTypeLibrary.AddTrait(CreateTraitType());
+            return new TraitType(id, traitName, description, modifiers.Select(m => m.CreateOpinionModifier()).ToList());
         }
     }
 

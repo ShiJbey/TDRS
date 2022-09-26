@@ -4,6 +4,8 @@ namespace TraitBasedOpinionSystem
 {
     public class HasTraitModifier : OpinionModifier
     {
+        protected string _traitName;
+
         public HasTraitModifier(string traitName, int value):
             base(
                 value, 
@@ -12,7 +14,14 @@ namespace TraitBasedOpinionSystem
                     return target.HasTrait(traitName);
                 }
             )
-        {}
+        {
+            _traitName = traitName;
+        }
+
+        public override string ToString()
+        {
+            return $"Opinion of {_traitName} characters {_value}";
+        }
     }
 }
 

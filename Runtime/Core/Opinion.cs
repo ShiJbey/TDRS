@@ -23,7 +23,8 @@ namespace TraitBasedOpinionSystem.Core
             _opinionModifiers = new List<OpinionModifier>();
         }
 
-        public int Value {
+        public int Value
+        {
             get
             {
                 if (_isDirty)
@@ -35,9 +36,9 @@ namespace TraitBasedOpinionSystem.Core
             }
         }
 
-        public Actor Subject { get { return _subject;  } }
+        public Actor Subject { get { return _subject; } }
 
-        public Actor Target {  get { return _target;  } }
+        public Actor Target { get { return _target; } }
 
         public void AddModifier(OpinionModifier modifier)
         {
@@ -54,9 +55,9 @@ namespace TraitBasedOpinionSystem.Core
         private int CalculateValue()
         {
             float finalValue = _baseValue;
-            foreach (var trait in _subject.Traits)
+            foreach (var trait in _subject.GetTraits())
             {
-                foreach(var modifier in trait.Modifiers)
+                foreach (var modifier in trait.GetModifiers())
                 {
                     if (modifier.Precondition != null && modifier.Precondition(_subject, _target, this))
                     {

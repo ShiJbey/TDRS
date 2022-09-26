@@ -65,7 +65,15 @@ The general workflow with this package is to:
 5. Within a separate script with your AI or story logic you reference the `OpinionAgent`
    script and call the `GetOpinionOf(...)` method to see how the agent feels about another.
 
-<!-- ## Advanced topics -->
+## Advanced topics
+
+### Why is all the data centralized within a single `OpinionSystemManager`?
+
+The data is kept centralized to speed up search through social networks. When we keep all
+the data in one place, we can store it within a single data structure. Splitting the information
+between MonoBehaviours would require the underlying system to depend on UnityAPIs for querying the
+current scene for GameObjects. Decoupling these concerns allows the same system to be ported to
+other platforms.
 
 <!-- ## Reference -->
 

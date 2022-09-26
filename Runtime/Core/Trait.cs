@@ -7,63 +7,44 @@ namespace TraitBasedOpinionSystem.Core
     /// Traits are core the this opinion system and are used to
     /// describe NPC personalities, physical appearances, or
     /// other attributes.
-    /// 
+    ///
     /// Traits need to have a unique name. Additionally, they
     /// may include a short text description and a set of
     /// opinion modifiers that are tested when calculating one
     /// NPC's opinion of another
     /// </summary>
-    public class Trait<T>
+    public class Trait
     {
+        /// <summary>
+        /// The name of the TraitType associated with this trait
+        /// </summary>
         protected readonly string _name;
-        protected T _value;
+
+        /// <summary>
+        /// Modifiers associated with this trait
+        /// </summary>
         protected readonly List<OpinionModifier> _modifiers;
-
-        /// <summary>
-        /// Unique name of the trait
-        /// </summary>
-        public string Name { get { return _name; } }
-
-        /// <summary>
-        /// Value held by this trait
-        /// </summary>
-        public T Value { 
-            get {
-                return _value;
-            }
-        }
-
-        /// <summary>
-        /// Associated OpinionModifiers that are tested on opinion calculation
-        /// </summary>
-        public List<OpinionModifier> Modifiers { get { return _modifiers; } }
 
         public Trait(string name)
         {
             _name = name;
-            _value = default(T);
-            _modifiers = new List<OpinionModifier>();
-        }
-
-        public Trait(string name, T value)
-        {
-            _name = name;
-            _value = value;
             _modifiers = new List<OpinionModifier>();
         }
 
         public Trait(string name, List<OpinionModifier> modifiers)
         {
             _name = name;
-            _value = default(T);
             _modifiers = modifiers.ToList();
         }
 
-        public Trait(string name, T value, List<OpinionModifier> modifiers)
+        public string GetName()
         {
-            _name = name;
-            _value = value;
-            _modifiers = modifiers.ToList();
+            return _name;
+        }
+
+        public List<OpinionModifier> GetModifiers()
+        {
+            return _modifiers;
         }
     }
 }
