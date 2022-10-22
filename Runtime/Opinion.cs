@@ -165,7 +165,15 @@ namespace TraitBasedOpinionSystem
 
             _value = Math.Clamp(_baseValue + boost, OPINION_MIN, OPINION_MAX);
             _rawValue = _baseValue + boost;
-            _normalizedValue = totalPositiveOpinion / (totalPositiveOpinion + totalNegativeOpinion);
+
+            if (totalPositiveOpinion + totalNegativeOpinion == 0)
+            {
+                _normalizedValue = 0.5f;
+            }
+            else
+            {
+                _normalizedValue = totalPositiveOpinion / (totalPositiveOpinion + totalNegativeOpinion);
+            }
         }
     }
 }
