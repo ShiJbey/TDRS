@@ -65,9 +65,15 @@ The general workflow with this package is to:
 5. Within a separate script with your AI or story logic you reference the `OpinionAgent`
    script and call the `GetOpinionOf(...)` method to see how the agent feels about another.
 
-<!-- ## Advanced topics -->
+## Advanced topics
 
-<!-- ## Reference -->
+* **Persisting Data Between Scenes**: Currently, there is not a best method for
+persisting character opinion data between scenes. Taking advantage of JSON and Unity's
+JSON Utility is probably the best option. This package does not have classes available
+for translating to and from JSON. Since `JsonUtility` only serializes the public
+fields on a class, developers will need to create adapter-style classes for serializing
+and deserializing information from the opinion system's core code.
+
 
 ## Samples
 
