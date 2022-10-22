@@ -7,10 +7,10 @@ namespace TraitBasedOpinionSystem
     /// another. Rules have preconditions that must be met before they may be
     /// applied.
     /// </summary>
-    public class SocialRule: ISocialRule
+    public class SocialRule : ISocialRule
     {
         /// <summary>
-        /// Preconnditions functions that must evaluate to true for the modifer
+        /// Preconditions functions that must evaluate to true for the modifier
         /// to be applied
         /// </summary>
         protected readonly List<SocialRulePrecondition> _preconditions;
@@ -56,7 +56,7 @@ namespace TraitBasedOpinionSystem
             _description = description;
         }
 
-        public string Name {  get { return _name; } }
+        public string Name { get { return _name; } }
 
         public string Description { get { return _description; } }
 

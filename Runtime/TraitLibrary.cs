@@ -52,7 +52,7 @@ namespace TraitBasedOpinionSystem
         /// <param name="description"></param>
         /// <param name="rules"></param>
         /// <returns></returns>
-        public Trait OverwiteExisting(string name, string description, ISocialRule[] rules)
+        public Trait OverwriteExisting(string name, string description, ISocialRule[] rules)
         {
             _traits[name.ToLower()] = new Trait(name, description, rules);
             return _traits[name.ToLower()];

@@ -57,7 +57,7 @@ namespace TraitBasedOpinionSystem
         }
 
         /// <summary>
-        /// Returns opinio score clamped on interval [-100, 100]
+        /// Returns opinion score clamped on interval [-100, 100]
         /// </summary>
         public int GetValue()
         {

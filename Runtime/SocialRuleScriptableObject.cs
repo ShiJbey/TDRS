@@ -22,7 +22,7 @@ namespace TraitBasedOpinionSystem
         protected string _description;
 
         /// <summary>
-        /// Preconnditions functions that must evaluate to true for the modifer
+        /// Preconditions functions that must evaluate to true for the modifier
         /// to be applied
         /// </summary>
         [SerializeField]

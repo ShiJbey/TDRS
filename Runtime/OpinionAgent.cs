@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static Codice.Client.Common.WebApi.WebApiEndpoints;
 using static UnityEditor.Progress;
 
 namespace TraitBasedOpinionSystem
@@ -18,12 +17,12 @@ namespace TraitBasedOpinionSystem
         /// </summary>
         [Header("Character Traits")]
         [SerializeField]
-        protected List<TraitScriptableObject> _traitSciptableObjects = new List<TraitScriptableObject>();
+        protected List<TraitScriptableObject> _traitScriptableObjects = new List<TraitScriptableObject>();
 
         /// <summary>
         /// Traits that this character has attached.
         ///
-        /// This may differ from the _traitSciptableObjects list if traits are
+        /// This may differ from the _traitScriptableObjects list if traits are
         /// added from code at runtime instead of via Unity's inspector
         /// </summary>
         protected Dictionary<string, Trait> _traits = new Dictionary<string, Trait>();
@@ -40,7 +39,7 @@ namespace TraitBasedOpinionSystem
         protected List<SocialRule> _localRules = new List<SocialRule>();
 
         /// <summary>
-        /// Reference to Global Social Rules thiss character follows;
+        /// Reference to Global Social Rules this character follows;
         /// </summary>
         protected GlobalSocialRules _globalRules;
 
@@ -51,7 +50,7 @@ namespace TraitBasedOpinionSystem
         {
             var opinionSystemManager = FindObjectOfType<OpinionSystemManager>();
 
-            foreach (var traitInfo in _traitSciptableObjects)
+            foreach (var traitInfo in _traitScriptableObjects)
             {
                 AddTrait(opinionSystemManager.Traits.Get(
                     traitInfo.GetName(),

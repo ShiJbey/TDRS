@@ -4,7 +4,7 @@
 
 The *Trait-based Opinion System* provides non-player characters (NPCs) with a method of
 determining their opinion of other characters based on their traits and the traits of
-the other characters. Opinions are an integer score thatrepresents how much a character
+the other characters. Opinions are an integer score that represents how much a character
 likes another character. Game designers can leverage this package for NPC  decision-
 making and social intelligence.
 
@@ -73,7 +73,6 @@ JSON Utility is probably the best option. This package does not have classes ava
 for translating to and from JSON. Since `JsonUtility` only serializes the public
 fields on a class, developers will need to create adapter-style classes for serializing
 and deserializing information from the opinion system's core code.
-
 
 ## Samples
 
