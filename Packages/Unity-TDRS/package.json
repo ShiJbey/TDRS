@@ -1,0 +1,20 @@
+{
+  "name": "edu.ucsc.eis.unity-tdrs",
+  "version": "1.0.0",
+  "displayName": "Unity-TDRS",
+  "description": "A framework for modeling social relationships between in-game characters",
+  "unity": "2019.4",
+  "author": {
+    "name": "Shi Johnson-Bey"
+  },
+  "keywords": [
+    "social simulation",
+    "social AI",
+    "relationships",
+    "opinions",
+    "AI",
+    "Artificial intelligence",
+    "crusader kings",
+    "opinion system"
+  ]
+}
