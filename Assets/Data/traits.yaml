@@ -1,0 +1,7 @@
+anti-social:
+  display_name: Anti-Social
+  description: This character is not a fan of socializing
+  effects:
+    - type: StatBuff
+      stat: socializing
+      amount: -10

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace TraitBasedOpinionSystem
+namespace TDRS
 {
     /// <summary>
     /// Component that specifies social rules that apply to all characters
@@ -34,16 +34,7 @@ namespace TraitBasedOpinionSystem
         /// </summary>
         private void LoadRules()
         {
-            var opinionSystemManager = FindObjectOfType<OpinionSystemManager>();
-
-            foreach (var ruleInfo in _socialRules)
-            {
-                AddRule(opinionSystemManager.SocialRules.Get(
-                    ruleInfo.GetName(),
-                    ruleInfo.GetDescription(),
-                    ruleInfo.GetModifier(),
-                    ruleInfo.GetPreconditions()));
-            }
+            
         }
 
         public void AddRule(SocialRule rule)

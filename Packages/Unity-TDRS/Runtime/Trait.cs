@@ -1,4 +1,8 @@
-﻿namespace TraitBasedOpinionSystem
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+namespace TDRS
 {
     /// <summary>
     /// TraitTypes manage metadata associated with Traits.
@@ -9,51 +13,96 @@
     /// </summary>
     public class Trait
     {
-        protected readonly string _name;
+        #region Attributes
+        /// <summary>
+        /// A unique ID for this Trait.
+        /// </summary>
+        protected readonly string _traitID;
+        /// <summary>
+        /// An user-friendly name to use for GUIs.
+        /// </summary>
+        protected readonly string _displayName;
+        /// <summary>
+        /// A short description of the trait.
+        /// </summary>
         protected readonly string _description;
-        protected readonly ISocialRule[] _rules;
+        /// <summary>
+        /// Effects to apply when the trait is added
+        /// </summary>
+        protected readonly List<IEffect> _effects;
+        /// <summary>
+        /// IDs of traits that this trait cannot be present with
+        /// </summary>
+        protected readonly HashSet<string> _conflictingTraits;
+        #endregion
 
-        public Trait(string name)
-        {
-            _name = name;
-            _description = "";
-            _rules = new ISocialRule[0];
-        }
+        #region Properties
+        /// <summary>
+        /// A unique ID for this Trait.
+        /// </summary>
+        public string TraitID => _traitID;
+        /// <summary>
+        /// An user-friendly name to use for GUIs.
+        /// </summary>
+        public string DisplayName => _displayName;
+        /// <summary>
+        /// A short description of the trait.
+        /// </summary>
+        public string Description => _description;
+        /// <summary>
+        /// Effects to apply when the trait is added
+        /// </summary>
+        public IEnumerable<IEffect> Effects => _effects;
 
-        public Trait(string name, ISocialRule[] rules)
-        {
-            _name = name;
-            _description = "";
-            _rules = rules;
-        }
+        public HashSet<string> ConflictingTraits => _conflictingTraits;
+        #endregion
 
-        public Trait(string name, string description)
+        #region Constructors
+        public Trait(
+            string traitID,
+            string displayName,
+            string description,
+            IEnumerable<IEffect> effects,
+            HashSet<string> conflictingTraits
+            )
         {
-            _name = name;
+            _traitID = traitID;
+            _displayName = displayName;
             _description = description;
-            _rules = new ISocialRule[0];
+            _effects = effects.ToList();
+            _conflictingTraits = conflictingTraits;
+        }
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Callback method executed when the trait is added to an object.
+        /// </summary>
+        /// <param name="target"></param>
+        public void OnAdd(GameObject target)
+        {
+            foreach (var effect in _effects)
+            {
+                effect.Apply(target);
+            }
         }
 
-        public Trait(string name, string description, ISocialRule[] rules)
+        /// <summary>
+        /// Callback method executed when the trait is removed from an object.
+        /// </summary>
+        /// <param name="target"></param>
+        public void OnRemove(GameObject target)
         {
-            _name = name;
-            _description = description;
-            _rules = rules;
+            foreach (var effect in _effects)
+            {
+                effect.Remove(target);
+            }
         }
 
-        public string Name
+        public override string ToString()
         {
-            get { return _name; }
+            return DisplayName;
         }
-
-        public string Description
-        {
-            get { return _description; }
-        }
-
-        public ISocialRule[] Rules
-        {
-            get { return _rules; }
-        }
+        #endregion
     }
 }

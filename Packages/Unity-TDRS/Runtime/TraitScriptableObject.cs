@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace TraitBasedOpinionSystem
+namespace TDRS
 {
     [CreateAssetMenu(fileName = "Trait", menuName = "Opinion System/Trait")]
     public class TraitScriptableObject : ScriptableObject
@@ -15,53 +15,42 @@ namespace TraitBasedOpinionSystem
             public int modifier;
         }
 
+        #region Attributes
         /// <summary>
-        /// Name of the trait (must be unique and is used to identify the trait)
+        /// A unique ID for this trait.
         /// </summary>
-        [SerializeField]
-        public string traitName;
-
-        /// <summary>
-        /// String description of the trait (mainly used in user interfaces)
-        /// </summary>
-        [SerializeField]
-        protected string description;
+        public string traitID = "";
 
         /// <summary>
-        /// Social rules associated with this this trait
+        /// Name of the Trait for use in GUIs.
         /// </summary>
-        [SerializeField]
-        protected List<RuleInfo> socialRules;
+        public string displayName = "";
 
+        /// <summary>
+        /// A textual description of the trait.
+        /// </summary>
+        public string description = "";
+        #endregion
 
-        public string GetName()
-        {
-            return traitName;
-        }
-
-        public string GetDescription()
-        {
-            return description;
-        }
-
-        public TraitSocialRule[] GetRules()
-        {
-            var rules = new List<TraitSocialRule>();
-            foreach(var ruleInfo in socialRules)
-            {
-                rules.Add(
-                    new TraitSocialRule(
-                        ruleInfo.modifier,
-                        ruleInfo.preconditionTraits.Select<string, SocialRulePrecondition>(
-                            (trait) => {
-                                return (OpinionAgent subject, OpinionAgent target, Opinion opinion) =>
-                                {
-                                    return target.HasTrait(trait);
-                                };
-                            }).ToArray()));
-            }
-            return rules.ToArray();
-        }
+        // public TraitSocialRule[] GetRules()
+        // {
+        //     var rules = new List<TraitSocialRule>();
+        //     foreach (var ruleInfo in socialRules)
+        //     {
+        //         rules.Add(
+        //             new TraitSocialRule(
+        //                 ruleInfo.modifier,
+        //                 ruleInfo.preconditionTraits.Select<string, SocialRulePrecondition>(
+        //                     (trait) =>
+        //                     {
+        //                         return (OpinionAgent subject, OpinionAgent target, Opinion opinion) =>
+        //                         {
+        //                             return target.HasTrait(trait);
+        //                         };
+        //                     }).ToArray()));
+        //     }
+        //     return rules.ToArray();
+        // }
     }
 
 }

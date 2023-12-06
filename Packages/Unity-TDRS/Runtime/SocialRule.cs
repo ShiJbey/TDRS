@@ -1,74 +1,82 @@
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Plastic.Newtonsoft.Json.Bson;
+using UnityEngine;
 
-namespace TraitBasedOpinionSystem
+namespace TDRS
 {
     /// <summary>
     /// Rules that are applied when a character is calculating their opinion of
     /// another. Rules have preconditions that must be met before they may be
     /// applied.
     /// </summary>
-    public class SocialRule : ISocialRule
+    public class SocialRule
     {
+        #region Attributes
         /// <summary>
-        /// Preconditions functions that must evaluate to true for the modifier
-        /// to be applied
+        /// Preconditions that need to pass for the social rule to be applied
         /// </summary>
-        protected readonly List<SocialRulePrecondition> _preconditions;
+        protected readonly List<IPrecondition> _preconditions;
+        
+        /// <summary>
+        /// Effects applied by the social rule if its preconditions pass
+        /// </summary>
+        protected readonly List<IEffect> _effects;
 
         /// <summary>
-        /// Modifier value applied to the opinion
+        /// is True if this rull is applied to outgoing relationships
         /// </summary>
-        protected readonly int _modifier;
+        protected readonly bool _isOutgoing = true;
 
         /// <summary>
-        /// Unique name to identify this rule
+        /// The object responsible to creating and adding this rule to a collection
         /// </summary>
-        protected readonly string _name;
+        protected readonly object? _source = null;
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// Preconditions that need to pass for the social rule to be applied
+        /// </summary>
+        public IEnumerable<IPrecondition> Preconditions => _preconditions;
 
         /// <summary>
-        /// Text description that can be shown to players
+        /// Effects applied by the social rule if its preconditions pass
         /// </summary>
-        protected readonly string _description;
+        public IEnumerable<IEffect> Effects => _effects;
 
+        /// <summary>
+        /// is True if this rull is applied to outgoing relationships
+        /// </summary>
+        public bool IsOutgoing => _isOutgoing;
+
+        /// <summary>
+        /// The object responsible to creating and adding this rule to a collection
+        /// </summary>
+        public object? Source => _source;
+        #endregion
+
+        #region Constructors
         public SocialRule(
-            string name,
-            List<SocialRulePrecondition> preconditions,
-            int modifier
+            IEnumerable<IPrecondition> preconditions,
+            IEnumerable<IEffect> effects,
+            bool outgoing = true,
+            object? source = null
             )
         {
-            _name = name;
-            _preconditions = preconditions;
-            _modifier = modifier;
-            _description = "";
+            _preconditions = preconditions.ToList();
+            _effects = effects.ToList();
+            _isOutgoing = outgoing;
+            _source = source;
         }
+        #endregion
 
-
-        public SocialRule(
-            string name,
-            string description,
-            List<SocialRulePrecondition> preconditions,
-            int modifier
-            )
+        #region Methods
+        public bool CheckPreconditions(GameObject relationship)
         {
-            _name = name;
-            _preconditions = preconditions;
-            _modifier = modifier;
-            _description = description;
-        }
-
-        public string Name { get { return _name; } }
-
-        public string Description { get { return _description; } }
-
-        public List<SocialRulePrecondition> Preconditions { get { return _preconditions; } }
-
-        public int GetModifier() { return _modifier; }
-
-        public bool CheckPreconditions(OpinionAgent subject, OpinionAgent target, Opinion opinion)
-        {
-            foreach (var p in _preconditions)
+            foreach (var precondition in _preconditions)
             {
-                if (p(subject, target, opinion) == false)
+                if (precondition.CheckPrecondition(relationship) == false)
                 {
                     return false;
                 }
@@ -76,5 +84,22 @@ namespace TraitBasedOpinionSystem
 
             return true;
         }
+
+        public void OnAdd(GameObject relationship)
+        {
+            foreach (var effect in _effects)
+            {
+                effect.Apply(relationship);
+            }
+        }
+
+        public void OnRemove(GameObject relationship)
+        {
+            foreach (var effect in _effects)
+            {
+                effect.Remove(relationship);
+            }
+        }
+        #endregion
     }
 }

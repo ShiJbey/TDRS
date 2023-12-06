@@ -1,58 +1,49 @@
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace TraitBasedOpinionSystem
+namespace TDRS
 {
     [CreateAssetMenu(fileName = "Social Rule", menuName = "Opinion System/Social Rule")]
     public class SocialRuleScriptableObject : ScriptableObject
     {
-
         /// <summary>
-        /// Unique name to identify this rule
+        /// A name for to be displayed in GUIs
         /// </summary>
-        [SerializeField]
-        protected string _name;
+        public string displayName = "";
 
         /// <summary>
         /// Text description that can be shown to players
         /// </summary>
         [SerializeField]
-        protected string _description;
+        protected string description = "";
 
         /// <summary>
         /// Preconditions functions that must evaluate to true for the modifier
         /// to be applied
         /// </summary>
         [SerializeField]
-        protected List<string> _preconditions;
+        protected List<IPrecondition> preconditions = new List<IPrecondition>();
 
         /// <summary>
         /// Modifier value applied to the opinion
         /// </summary>
         [SerializeField]
-        protected int _modifier;
+        protected int _modifier = 0;
 
         public string GetName()
         {
-            return _name;
+            return displayName;
         }
 
         public string GetDescription()
         {
-            return _name;
+            return description;
         }
 
-        public SocialRulePrecondition[] GetPreconditions()
+        public IEnumerable<IPrecondition> GetPreconditions()
         {
-            return _preconditions.Select<string, SocialRulePrecondition>((trait) =>
-            {
-                return (OpinionAgent subject, OpinionAgent target, Opinion opinion) =>
-                {
-                    return target.HasTrait(trait);
-                };
-            }).ToArray();
+            return new IPrecondition[0];
         }
 
         public int GetModifier()

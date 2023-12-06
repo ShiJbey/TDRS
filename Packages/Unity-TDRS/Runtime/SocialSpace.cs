@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 
 
-namespace TraitBasedOpinionSystem
+namespace TDRS
 {
     public class SocialSpace : MonoBehaviour
     {
         /// <summary>
         /// Reference to trigger collider component
         /// </summary>
-        protected Collider _collider;
+        protected Collider? _collider;
 
         /// <summary>
         /// SocialRules specified using scriptable objects
@@ -35,16 +35,16 @@ namespace TraitBasedOpinionSystem
         /// </summary>
         private void LoadRules()
         {
-            var opinionSystemManager = FindObjectOfType<OpinionSystemManager>();
+            //var opinionSystemManager = FindObjectOfType<OpinionSystemManager>();
 
-            foreach (var ruleInfo in _socialRules)
-            {
-                AddRule(opinionSystemManager.SocialRules.Get(
-                    ruleInfo.GetName(),
-                    ruleInfo.GetDescription(),
-                    ruleInfo.GetModifier(),
-                    ruleInfo.GetPreconditions()));
-            }
+            //foreach (var ruleInfo in _socialRules)
+            //{
+            //    AddRule(opinionSystemManager.SocialRules.Get(
+            //        ruleInfo.GetName(),
+            //        ruleInfo.GetDescription(),
+            //        ruleInfo.GetModifier(),
+            //        ruleInfo.GetPreconditions()));
+            //}
         }
 
         public void AddRule(SocialRule rule)
@@ -61,24 +61,24 @@ namespace TraitBasedOpinionSystem
 
         private void OnTriggerEnter(Collider other)
         {
-            var agent = other.gameObject.GetComponent<OpinionAgent>();
+            var agent = other.gameObject.GetComponent<SocialCharacter>();
             if (agent != null)
             {
-                foreach(var rule in _ruleInstances)
+                foreach (var rule in _ruleInstances)
                 {
-                    agent.AddLocalRule(rule);
+                    agent.AddSocialRule(rule);
                 }
             }
         }
 
         private void OnTriggerExit(Collider other)
         {
-            var agent = other.gameObject.GetComponent<OpinionAgent>();
+            var agent = other.gameObject.GetComponent<SocialCharacter>();
             if (agent != null)
             {
                 foreach (var rule in _ruleInstances)
                 {
-                    agent.RemoveLocalRule(rule);
+                    agent.RemoveSocialRule(rule);
                 }
             }
         }
