@@ -1,18 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class SocialEvent : MonoBehaviour
+namespace TDRS
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	public class SocialEvent
+	{
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	}
 }

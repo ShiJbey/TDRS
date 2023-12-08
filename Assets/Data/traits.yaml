@@ -5,3 +5,28 @@ anti-social:
     - type: StatBuff
       stat: socializing
       amount: -10
+
+authoritarian:
+  display_name: Authoritarian
+  description: >-
+    This character is likely to throw their social weight around when in
+    a position of power
+  effects:
+    - type: AddSocialRule
+      is_outgoing: false
+      effects:
+        - type: StatBuff
+          stat: reputation
+          amount: -10
+
+advisor_of:
+  display_name: Advisor-Of
+  description: >-
+    The owner of this relationship is the advisor of the target.
+  effects:
+    - type: AddSocialRule
+      is_outgoing: false
+      effects:
+        - type: StatBuff
+          stat: influence
+          amount: +10

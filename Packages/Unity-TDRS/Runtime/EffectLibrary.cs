@@ -1,55 +1,68 @@
 using System.Collections.Generic;
+using YamlDotNet.RepresentationModel;
 
 namespace TDRS
 {
-    /// <summary>
-    /// A repository of alll the possible effect types available in the game.
-    /// </summary>
-    public class EffectLibrary
-    {
-        #region Attributes
-        /// <summary>
-        /// Precondition IDs mapped to factories that construct that effect.
-        /// </summary>
-        protected Dictionary<string, IEffectFactory> _factories;
-        #endregion
+	/// <summary>
+	/// A repository of effect effect types
+	/// </summary>
+	public class EffectLibrary
+	{
+		#region Attributes
 
-        #region Constructor
-        public EffectLibrary()
-        {
-            _factories = new Dictionary<string, IEffectFactory>();
-        }
-        #endregion
+		/// <summary>
+		/// Precondition IDs mapped to factories that construct that effect.
+		/// </summary>
+		protected Dictionary<string, IEffectFactory> _factories = new Dictionary<string, IEffectFactory>();
 
-        #region Methods
-        /// <summary>
-        /// Add a new factory to the library.
-        /// </summary>
-        /// <param name="effectID">
-        /// The effect ID the factory will be used for.
-        /// </param>
-        /// <param name="factory">
-        /// The factory instance.
-        /// </param>
-        public void AddFactory(string effectID, IEffectFactory factory)
-        {
-            _factories[effectID] = factory;
-        }
+		/// <summary>
+		/// Factories to import into the library
+		/// </summary>
+		public List<EffectFactorySO> effectFactories = new List<EffectFactorySO>();
 
-        /// <summary>
-        /// Create a new effect instance.
-        /// </summary>
-        /// <param name="effectID"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public IEffect CreateFromData(string effectID, params object?[] args)
-        {
-            var factory = _factories[effectID];
+		#endregion
 
-            var effect = factory.Instantiate(args);
+		#region Methods
 
-            return effect;
-        }
-        #endregion
-    }
+		/// <summary>
+		/// Add a new factory to the library.
+		/// </summary>
+		/// <param name="effectID">
+		/// The effect ID the factory will be used for.
+		/// </param>
+		/// <param name="factory">
+		/// The factory instance.
+		/// </param>
+		public void AddFactory(string effectID, IEffectFactory factory)
+		{
+			_factories[effectID] = factory;
+		}
+
+		/// <summary>
+		/// Create a new effect instance.
+		/// </summary>
+		/// <param name="effectID"></param>
+		/// <param name="effectNode"></param>
+		/// <returns></returns>
+		public IEffect CreateEffect(TDRSManager manager, string effectID, YamlNode effectNode)
+		{
+			var factory = _factories[effectID];
+
+			var effect = factory.Instantiate(manager, effectNode);
+
+			return effect;
+		}
+
+		/// <summary>
+		/// Get the effect factory mapped to a given ID.
+		/// </summary>
+		/// <param name="effectID"></param>
+		/// <returns></returns>
+		public IEffectFactory GetEffectFactory(string effectID)
+		{
+			return _factories[effectID];
+		}
+
+		#endregion
+	}
 }

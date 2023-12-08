@@ -224,28 +224,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 568713666}
-  - component: {fileID: 568713665}
+  - component: {fileID: 568713667}
   m_Layer: 0
-  m_Name: RelationshipSystemManager
+  m_Name: TDRSManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &568713665
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568713664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1656a23abfce1fa41b93d9461c016395, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  traitFiles:
-  - {fileID: 4900000, guid: 905ca4f98d10e89449e9f617372a2de9, type: 3}
 --- !u!4 &568713666
 Transform:
   m_ObjectHideFlags: 0
@@ -261,6 +247,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &568713667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568713664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3643f8d86d34b46a98f5794ed7f28d85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entityStats: []
+  _relationshipStats:
+  - statName: Friendship
+    baseValue: 0
+    maxValue: 50
+    minValue: -50
+    isDiscrete: 1
+  - statName: Romance
+    baseValue: 0
+    maxValue: 50
+    minValue: -50
+    isDiscrete: 1
+  _traitDefinitions:
+  - {fileID: 4900000, guid: 905ca4f98d10e89449e9f617372a2de9, type: 3}
+  _preconditionFactories:
+  - {fileID: 11400000, guid: 6423fdbe5ef544deda6fcde0a384ed03, type: 2}
+  - {fileID: 11400000, guid: 79e6047460bfc485fb677ac5332e5479, type: 2}
+  _effectFactories:
+  - {fileID: 11400000, guid: 1c0344e49f4114a64b79ac6e80110837, type: 2}
+  - {fileID: 11400000, guid: 9941d4474f6b2481f90381c3edcfd70c, type: 2}
 --- !u!1 &816287688
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,11 +320,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 816287688}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7f67aca4d07c6c49a6e3b50f41a1483, type: 3}
+  m_Script: {fileID: 11500000, guid: 1165db2bee8ed4e828113077a4c2cd1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _entityID: character_a
-  traitsAtStart: []
+  entityID: character_a
+  traitsAtStart:
+  - anti-social
 --- !u!1 &904270039
 GameObject:
   m_ObjectHideFlags: 0
@@ -316,7 +335,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 904270040}
-  - component: {fileID: 904270041}
   m_Layer: 0
   m_Name: Character_B
   m_TagString: Untagged
@@ -339,20 +357,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &904270041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 904270039}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7f67aca4d07c6c49a6e3b50f41a1483, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _entityID: character_b
-  traitsAtStart: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

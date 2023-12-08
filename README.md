@@ -70,3 +70,5 @@ Unity-TDRS does not offer a particular solution for persisting social data betwe
 - [ ] Outline workflow steps for defining relationship prefabs
 - [ ] Add tests for trait addition and removal on characters and relationships
 - [ ] Add default implementations for basic effects
+- [ ] Implement social events
+- [ ] Add a way to visualize state (custom Inspector)
