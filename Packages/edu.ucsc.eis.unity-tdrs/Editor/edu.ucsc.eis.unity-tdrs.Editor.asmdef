@@ -1,0 +1,16 @@
+{
+    "name": "edu.ucsc.eis.unity-tdrs.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:16a970661161b4a4791f3528a28c031a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

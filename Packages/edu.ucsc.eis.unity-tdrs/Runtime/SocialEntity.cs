@@ -37,6 +37,7 @@ namespace TDRS
 		/// All social rules affecting this entity
 		/// </summary>
 		public SocialRules SocialRules { get; }
+
 		#endregion
 
 		#region Constructors

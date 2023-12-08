@@ -14,7 +14,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.2d.aseprite": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -95,7 +95,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.8.7",
+      "version": "1.8.8",
       "depth": 3,
       "source": "registry",
       "dependencies": {
@@ -139,7 +139,7 @@
         "com.unity.2d.spriteshape": "9.0.2",
         "com.unity.2d.tilemap": "1.0.0",
         "com.unity.2d.tilemap.extras": "3.1.1",
-        "com.unity.2d.aseprite": "1.0.0"
+        "com.unity.2d.aseprite": "1.0.1"
       }
     },
     "com.unity.ide.rider": {
@@ -216,7 +216,7 @@
       }
     },
     "com.unity.visualscripting": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -226,7 +226,7 @@
       "url": "https://packages.unity.com"
     },
     "edu.ucsc.eis.unity-tdrs": {
-      "version": "file:Unity-TDRS",
+      "version": "file:edu.ucsc.eis.unity-tdrs",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
