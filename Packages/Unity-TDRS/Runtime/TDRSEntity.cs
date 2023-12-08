@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TDRS
 {
-	public class TDRSCharacter : MonoBehaviour
+	public class TDRSEntity : MonoBehaviour
 	{
 		public string entityID = "";
 		public List<string> traitsAtStart = new List<string>();
