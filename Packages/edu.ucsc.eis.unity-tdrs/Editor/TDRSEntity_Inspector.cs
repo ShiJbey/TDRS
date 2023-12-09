@@ -25,6 +25,9 @@ namespace TDRS.Editor
 				visualTree.CloneTree(customInspector);
 			}
 
+			VisualElement inspectorFoldout = customInspector.Q("Default_Inspector");
+			InspectorElement.FillDefaultInspector(inspectorFoldout, serializedObject, this);
+
 			return customInspector;
 		}
 	}

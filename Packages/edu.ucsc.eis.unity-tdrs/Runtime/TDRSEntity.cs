@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace TDRS
 {
@@ -9,6 +10,11 @@ namespace TDRS
 		public string entityID = "";
 		public List<string> traitsAtStart = new List<string>();
 		protected TDRSNode _node;
+
+		public TraitAddedEvent OnTraitAdded;
+		public TraitRemovedEvent OnTraitRemoved;
+		// public StatChangeEvent OnStatChange;
+		// public NewRelationshipEvent OnNewRelationship;
 
 		// Start is called before the first frame update
 		void Start()
@@ -34,4 +40,15 @@ namespace TDRS
 		}
 	}
 
+	[System.Serializable]
+	public class TraitAddedEvent : UnityEvent<Trait> { }
+
+	[System.Serializable]
+	public class TraitRemovedEvent : UnityEvent<Trait> { }
+
+	// [System.Serializable]
+	// public class StatChangeEvent : UnityEvent<string, float> { }
+
+	// [System.Serializable]
+	// public class NewRelationshipEvent : UnityEvent<TDRSRelationship> { }
 }

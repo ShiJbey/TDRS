@@ -46,12 +46,26 @@ namespace TDRS
 
 		public override void OnTraitAdded(Trait trait)
 		{
-			return;
+			if (GameObject != null)
+			{
+				var tdrsEntity = GameObject.GetComponent<TDRSEntity>();
+				if (tdrsEntity != null)
+				{
+					tdrsEntity.OnTraitAdded.Invoke(trait);
+				}
+			}
 		}
 
 		public override void OnTraitRemoved(Trait trait)
 		{
-			return;
+			if (GameObject != null)
+			{
+				var tdrsEntity = GameObject.GetComponent<TDRSEntity>();
+				if (tdrsEntity != null)
+				{
+					tdrsEntity.OnTraitRemoved.Invoke(trait);
+				}
+			}
 		}
 
 		public override void OnSocialRuleAdded(SocialRule rule)

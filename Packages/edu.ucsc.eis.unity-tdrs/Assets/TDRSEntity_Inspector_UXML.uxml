@@ -1,4 +1,3 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
-    <ui:TextField picking-mode="Ignore" label="EntityID" binding-path="entityID" focusable="true" />
-    <uie:PropertyField label="Trats at Start" binding-path="traitsAtStart" />
+    <ui:Foldout text="Default Inspector" name="Default_Inspector" />
 </ui:UXML>
