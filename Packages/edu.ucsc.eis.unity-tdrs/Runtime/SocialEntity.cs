@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 using TDRS.StatSystem;
 
 namespace TDRS
@@ -17,11 +16,6 @@ namespace TDRS
 		/// A reference to the manager that owns this entity
 		/// </summary>
 		public TDRSManager Manager { get; }
-
-		/// <summary>
-		/// A GameObject associated with this entity
-		/// </summary>
-		public GameObject GameObject { get; set; }
 
 		/// <summary>
 		/// The collection of traits associated with this entity
@@ -49,21 +43,6 @@ namespace TDRS
 		{
 			Manager = manager;
 			EntityID = entityID;
-			GameObject = null;
-			Traits = new Traits();
-			Stats = new Dictionary<string, Stat>();
-			SocialRules = new SocialRules();
-		}
-
-		public SocialEntity(
-			TDRSManager manager,
-			string entityID,
-			GameObject gameObject
-		)
-		{
-			Manager = manager;
-			EntityID = entityID;
-			GameObject = gameObject;
 			Traits = new Traits();
 			Stats = new Dictionary<string, Stat>();
 			SocialRules = new SocialRules();

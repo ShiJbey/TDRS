@@ -60,6 +60,29 @@ namespace TDRS
 		/// <summary>
 		/// Remove a trait
 		/// </summary>
+		/// <param name="traitID"></param>
+		/// <returns></returns>
+		public bool RemoveTrait(string traitID)
+		{
+			if (!_traits.ContainsKey(traitID))
+			{
+				return false;
+			}
+
+			_traits.Remove(traitID);
+
+			_conflictingTraits.Clear();
+			foreach (var (_, remainingTrait) in _traits)
+			{
+				_conflictingTraits.UnionWith(remainingTrait.ConflictingTraits);
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Remove a trait
+		/// </summary>
 		/// <param name="trait"></param>
 		/// <returns></returns>
 		public bool RemoveTrait(Trait trait)
@@ -90,7 +113,6 @@ namespace TDRS
 			return _traits.ContainsKey(traitID);
 		}
 
-
 		/// <summary>
 		/// Check if a trait is already present
 		/// </summary>
@@ -109,6 +131,11 @@ namespace TDRS
 		public bool HasConflictingTrait(Trait trait)
 		{
 			return _conflictingTraits.Contains(trait.TraitID);
+		}
+
+		public IEnumerable<Trait> GetAllTraits()
+		{
+			return _traits.Values;
 		}
 
 		#endregion

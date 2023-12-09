@@ -8,6 +8,11 @@ namespace TDRS
 		#region Properties
 
 		/// <summary>
+		/// A GameObject associated with this entity
+		/// </summary>
+		public GameObject GameObject { get; set; }
+
+		/// <summary>
 		/// Relationships directed toward this entity
 		/// </summary>
 		public Dictionary<TDRSNode, TDRSRelationship> IncomingRelationships { get; }
@@ -26,6 +31,7 @@ namespace TDRS
 			string entityID
 		) : base(manager, entityID)
 		{
+			GameObject = null;
 			IncomingRelationships = new Dictionary<TDRSNode, TDRSRelationship>();
 			OutgoingRelationships = new Dictionary<TDRSNode, TDRSRelationship>();
 		}
@@ -34,8 +40,9 @@ namespace TDRS
 			TDRSManager manager,
 			string entityID,
 			GameObject gameObject
-		) : base(manager, entityID, gameObject)
+		) : base(manager, entityID)
 		{
+			GameObject = gameObject;
 			IncomingRelationships = new Dictionary<TDRSNode, TDRSRelationship>();
 			OutgoingRelationships = new Dictionary<TDRSNode, TDRSRelationship>();
 		}

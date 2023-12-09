@@ -12,12 +12,12 @@ namespace TDRS
 		/// <summary>
 		/// The entity that owns the relationship
 		/// </summary>
-		public SocialEntity Owner { get; }
+		public TDRSNode Owner { get; }
 
 		/// <summary>
 		/// The entity the relationship is directed toward
 		/// </summary>
-		public SocialEntity Target { get; }
+		public TDRSNode Target { get; }
 
 		#endregion
 
@@ -26,21 +26,9 @@ namespace TDRS
 		public TDRSRelationship(
 			TDRSManager manager,
 			string entityID,
-			SocialEntity owner,
-			SocialEntity target
+			TDRSNode owner,
+			TDRSNode target
 		) : base(manager, entityID)
-		{
-			Owner = owner;
-			Target = target;
-		}
-
-		public TDRSRelationship(
-			TDRSManager manager,
-			string entityID,
-			SocialEntity owner,
-			SocialEntity target,
-			GameObject gameObject
-		) : base(manager, entityID, gameObject)
 		{
 			Owner = owner;
 			Target = target;
@@ -52,22 +40,22 @@ namespace TDRS
 
 		public override void OnTraitAdded(Trait trait)
 		{
-			throw new System.NotImplementedException();
+			return;
 		}
 
 		public override void OnTraitRemoved(Trait trait)
 		{
-			throw new System.NotImplementedException();
+			return;
 		}
 
 		public override void OnSocialRuleAdded(SocialRule rule)
 		{
-			throw new System.NotImplementedException();
+			return;
 		}
 
 		public override void OnSocialRuleRemoved(SocialRule rule)
 		{
-			throw new System.NotImplementedException();
+			return;
 		}
 
 		#endregion
