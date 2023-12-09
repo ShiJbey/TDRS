@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using YamlDotNet.RepresentationModel;
 
 namespace TDRS
 {
 	/// <summary>
-	/// A repository of effect effect types
+	/// A repository of effect factories
 	/// </summary>
 	public class EffectLibrary
 	{
@@ -36,21 +35,6 @@ namespace TDRS
 		public void AddFactory(string effectID, IEffectFactory factory)
 		{
 			_factories[effectID] = factory;
-		}
-
-		/// <summary>
-		/// Create a new effect instance.
-		/// </summary>
-		/// <param name="effectID"></param>
-		/// <param name="effectNode"></param>
-		/// <returns></returns>
-		public IEffect CreateEffect(TDRSManager manager, string effectID, YamlNode effectNode)
-		{
-			var factory = _factories[effectID];
-
-			var effect = factory.Instantiate(manager, effectNode);
-
-			return effect;
 		}
 
 		/// <summary>

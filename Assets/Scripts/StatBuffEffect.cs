@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace TDRS.Sample
 {
 	public class StatBuffEffect : IEffect
@@ -17,12 +15,28 @@ namespace TDRS.Sample
 
 		public void Apply(SocialEntity target)
 		{
-			return;
+			if (!target.Stats.ContainsKey(_statName))
+			{
+				throw new System.Exception($"Cannot find {_statName} stat for {target.EntityID}");
+			}
+
+			target.Stats[_statName].AddModifier(
+				new StatSystem.StatModifier(
+					_amount,
+					StatSystem.StatModifierType.FLAT,
+					this
+				)
+			);
 		}
 
 		public void Remove(SocialEntity target)
 		{
-			return;
+			if (!target.Stats.ContainsKey(_statName))
+			{
+				throw new System.Exception($"Cannot find {_statName} stat for {target.EntityID}");
+			}
+
+			target.Stats[_statName].RemoveModifiersFromSource(this);
 		}
 	}
 }

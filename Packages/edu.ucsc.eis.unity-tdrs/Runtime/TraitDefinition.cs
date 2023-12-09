@@ -3,12 +3,34 @@ using YamlDotNet.RepresentationModel;
 
 namespace TDRS
 {
+	/// <summary>
+	/// An intermediate representation of trait information as it is loaded from YAML
+	/// </summary>
 	public class TraitDefinition
 	{
+		/// <summary>
+		/// The unique ID of the trait
+		/// </summary>
 		public string TraitID { get; private set; }
+
+		/// <summary>
+		/// The name of the trait as displayed in GUIs
+		/// </summary>
 		public string DisplayName { get; private set; }
+
+		/// <summary>
+		/// A short textual description of the trait
+		/// </summary>
 		public string Description { get; private set; }
+
+		/// <summary>
+		/// Configuration data for effects associated for this trait
+		/// </summary>
 		public YamlNode EffectData { get; private set; }
+
+		/// <summary>
+		/// IDs of traits that this trait cannot be added with
+		/// </summary>
 		public HashSet<string> ConflictingTraits { get; private set; }
 
 		public TraitDefinition(

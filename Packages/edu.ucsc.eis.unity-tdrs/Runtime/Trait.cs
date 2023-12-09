@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace TDRS
 {
@@ -14,50 +13,65 @@ namespace TDRS
 	public class Trait
 	{
 		#region Attributes
+
 		/// <summary>
 		/// A unique ID for this Trait.
 		/// </summary>
 		protected readonly string _traitID;
+
 		/// <summary>
 		/// An user-friendly name to use for GUIs.
 		/// </summary>
 		protected readonly string _displayName;
+
 		/// <summary>
 		/// A short description of the trait.
 		/// </summary>
 		protected readonly string _description;
+
 		/// <summary>
 		/// Effects to apply when the trait is added
 		/// </summary>
 		protected readonly List<IEffect> _effects;
+
 		/// <summary>
 		/// IDs of traits that this trait cannot be present with
 		/// </summary>
 		protected readonly HashSet<string> _conflictingTraits;
+
 		#endregion
 
 		#region Properties
+
 		/// <summary>
 		/// A unique ID for this Trait.
 		/// </summary>
 		public string TraitID => _traitID;
+
 		/// <summary>
 		/// An user-friendly name to use for GUIs.
 		/// </summary>
 		public string DisplayName => _displayName;
+
 		/// <summary>
 		/// A short description of the trait.
 		/// </summary>
 		public string Description => _description;
+
 		/// <summary>
 		/// Effects to apply when the trait is added
 		/// </summary>
 		public IEnumerable<IEffect> Effects => _effects;
 
+		/// <summary>
+		/// IDs of traits that this trait cannot be added with
+		/// </summary>
 		public HashSet<string> ConflictingTraits => _conflictingTraits;
+
 		#endregion
 
 		#region Constructors
+
 		public Trait(
 			string traitID,
 			string displayName,
@@ -72,9 +86,11 @@ namespace TDRS
 			_effects = effects.ToList();
 			_conflictingTraits = conflictingTraits;
 		}
+
 		#endregion
 
 		#region Methods
+
 		/// <summary>
 		/// Callback method executed when the trait is added to an object.
 		/// </summary>
@@ -103,6 +119,7 @@ namespace TDRS
 		{
 			return DisplayName;
 		}
+
 		#endregion
 	}
 }

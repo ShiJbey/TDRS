@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace TDRS
 {
+	/// <summary>
+	/// A vertex/node within the social graph. This might represent a character, faction, concept,
+	/// or any entity that characters might have a relationship toward.
+	/// </summary>
 	public class TDRSNode : SocialEntity
 	{
 		#region Properties

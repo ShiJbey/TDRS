@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Codice.Client.BaseCommands.Update.Transformers;
+using System.IO;
 using UnityEngine;
-using UnityEngine.Tilemaps;
+using YamlDotNet.RepresentationModel;
+using TDRS.Helpers;
 
 
 namespace TDRS
@@ -67,6 +68,12 @@ namespace TDRS
 		[SerializeField]
 		protected List<EffectFactorySO> _effectFactories = new List<EffectFactorySO>();
 
+		/// <summary>
+		/// A reference to a YAML initialization file for the social graph.
+		/// </summary>
+		[SerializeField]
+		protected TextAsset _initializationFile;
+
 		#endregion
 
 		#region Properties
@@ -98,6 +105,7 @@ namespace TDRS
 			LoadPreconditionFactories();
 			LoadEffectFactories();
 			LoadTraits();
+			LoadInitializationFile();
 		}
 		#endregion
 
@@ -127,6 +135,106 @@ namespace TDRS
 
 			TraitLibrary.InstantiateTraits(this);
 		}
+
+		private void LoadInitializationFile()
+		{
+			if (_initializationFile == null) return;
+
+			Debug.Log("Loading initialization file.");
+
+			var input = new StringReader(_initializationFile.text);
+
+			var yaml = new YamlStream();
+			yaml.Load(input);
+
+			// The root of initialization file is a mapping of TDRSNode IDs
+			// to settings for initializing that Nodes traits, stats, and
+			// outgoing relationships
+			var rootMapping = (YamlMappingNode)yaml.Documents[0].RootNode;
+
+			foreach (var (key, nodeSettings) in rootMapping.Children)
+			{
+				// Get the node ID
+				var nodeID = key.GetValue();
+				var node = GetNode(nodeID);
+
+				// Configure initial base stats
+				YamlNode statsNode = nodeSettings.TryGetChild("base_stats");
+				if (statsNode != null)
+				{
+					foreach (var pair in statsNode.GetChildren())
+					{
+						var stat = pair.Key.GetValue();
+						var baseValue = float.Parse(pair.Value.GetValue());
+
+						if (!node.Stats.ContainsKey(stat))
+						{
+							throw new Exception($"No {stat} stat found for node. Are you missing a stat in the inspector?");
+						}
+
+						node.Stats[stat].BaseValue = baseValue;
+					}
+				}
+
+				// Configure initial traits
+				var traitsNode = nodeSettings.TryGetChild("traits");
+				if (traitsNode != null)
+				{
+					var traits = ((YamlSequenceNode)traitsNode).Select(x => x.GetValue()).ToList();
+					foreach (var traitID in traits)
+					{
+						AddTraitToNode(nodeID, traitID);
+					}
+				}
+
+				// Configure initial relationships
+				var relationshipsNode = nodeSettings.TryGetChild("relationships");
+				if (relationshipsNode != null)
+				{
+					foreach (var pair in relationshipsNode.GetChildren())
+					{
+						var targetID = pair.Key.GetValue();
+						var relationshipSettings = (YamlMappingNode)pair.Value;
+
+						// Configure initial relationship base stats
+						var relationship = GetRelationship(nodeID, targetID);
+
+						YamlNode relationshipStatsNode = relationshipSettings.TryGetChild("base_stats");
+						if (relationshipStatsNode != null)
+						{
+							foreach (var relStatPair in relationshipStatsNode.GetChildren())
+							{
+								var stat = relStatPair.Key.GetValue();
+								var baseValue = float.Parse(relStatPair.Value.GetValue());
+
+								if (!relationship.Stats.ContainsKey(stat))
+								{
+									throw new Exception($"No {stat} stat found for relationship. Are you missing a stat in the inspector?");
+								}
+
+								relationship.Stats[stat].BaseValue = baseValue;
+							}
+						}
+
+						// Configure initial relationship traits
+						var relTraitsNode = relationshipSettings.TryGetChild("traits");
+						if (relTraitsNode != null)
+						{
+							var relationshipTraits = ((YamlSequenceNode)relTraitsNode)
+							.Select(x => x.GetValue()).ToList();
+							foreach (var traitID in relationshipTraits)
+							{
+								AddTraitToRelationship(nodeID, targetID, traitID);
+							}
+						}
+					}
+				}
+			}
+
+
+
+		}
+
 		#endregion
 
 		#region Methods
@@ -226,6 +334,7 @@ namespace TDRS
 			var node = GetNode(entityID);
 			var trait = TraitLibrary.GetTrait(traitID);
 			node.Traits.AddTrait(trait);
+			trait.OnAdd(node);
 			node.OnTraitAdded(trait);
 		}
 
@@ -240,6 +349,7 @@ namespace TDRS
 			var trait = TraitLibrary.GetTrait(traitID);
 			node.OnTraitRemoved(trait);
 			node.Traits.RemoveTrait(trait);
+			trait.OnRemove(node);
 		}
 
 		/// <summary>
@@ -296,6 +406,7 @@ namespace TDRS
 			var relationship = GetRelationship(ownerID, targetID);
 			var trait = TraitLibrary.GetTrait(traitID);
 			relationship.Traits.AddTrait(trait);
+			trait.OnAdd(relationship);
 			relationship.OnTraitAdded(trait);
 		}
 
@@ -312,6 +423,7 @@ namespace TDRS
 			var trait = TraitLibrary.GetTrait(traitID);
 			relationship.OnTraitRemoved(trait);
 			relationship.Traits.RemoveTrait(trait);
+			trait.OnRemove(relationship);
 		}
 		#endregion
 	}

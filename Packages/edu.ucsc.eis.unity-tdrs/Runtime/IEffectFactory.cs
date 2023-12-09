@@ -2,6 +2,9 @@ using YamlDotNet.RepresentationModel;
 
 namespace TDRS
 {
+	/// <summary>
+	/// An object that creates instances of effects.
+	/// </summary>
 	public interface IEffectFactory
 	{
 		/// <summary>

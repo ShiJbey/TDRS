@@ -70,5 +70,5 @@ Unity-TDRS does not offer a particular solution for persisting social data betwe
 - [ ] Write unit tests for loading trait information from YAML.
 - [ ] Write unit tests for TDRSManager public interface methods.
 - [x] Add default implementations for basic effects
-- [ ] Implement a custom inspector for `TDRSEntity` components to display stat, trait, and relationship data.
+- [x] Implement a custom inspector for `TDRSEntity` components to display stat, trait, and relationship data.
 - [ ] Implement social event system.

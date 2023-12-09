@@ -1,10 +1,9 @@
-using System.Collections.Generic;
-using UnityEngine;
-using TDRS.StatSystem;
-
-
 namespace TDRS
 {
+	/// <summary>
+	/// An edge that connects two nodes within the social graph. This represents a social
+	/// relationship between two entities.
+	/// </summary>
 	public class TDRSRelationship : SocialEntity
 	{
 		#region Properties

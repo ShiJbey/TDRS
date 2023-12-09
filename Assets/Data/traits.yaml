@@ -3,7 +3,7 @@ anti-social:
   description: This character is not a fan of socializing
   effects:
     - type: StatBuff
-      stat: socializing
+      stat: Sociability
       amount: -10
 
 authoritarian:
@@ -16,17 +16,29 @@ authoritarian:
       is_outgoing: false
       effects:
         - type: StatBuff
-          stat: reputation
+          stat: Friendship
           amount: -10
+
+happy_go_lucky:
+  display_name: HappyGoLucky
+  description: >-
+    This character is an overly optimistic attitude toward life.
+  effects:
+    - type: StatBuff
+      stat: Sociability
+      amount: 10
 
 advisor_of:
   display_name: Advisor-Of
   description: >-
     The owner of this relationship is the advisor of the target.
   effects:
-    - type: AddSocialRule
-      is_outgoing: false
-      effects:
-        - type: StatBuff
-          stat: influence
-          amount: +10
+    - type: StatBuff
+      stat: Influence
+      amount: 10
+
+lovers:
+  display_name: Lovers
+  description: >-
+    These characters are romantically involved, but this does not assume
+    as serious relationship.

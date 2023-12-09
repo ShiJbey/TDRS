@@ -2,6 +2,9 @@ using YamlDotNet.RepresentationModel;
 
 namespace TDRS
 {
+	/// <summary>
+	/// A factory object that creates precondition instances.
+	/// </summary>
 	public interface IPreconditionFactory
 	{
 		/// <summary>

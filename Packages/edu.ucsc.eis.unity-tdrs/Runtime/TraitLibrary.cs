@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using YamlDotNet.RepresentationModel;
@@ -16,6 +14,7 @@ namespace TDRS
 	public class TraitLibrary
 	{
 		#region Attributes
+
 		/// <summary>
 		/// Repository of trait IDs mapped to Trait instances
 		/// </summary>
@@ -25,24 +24,30 @@ namespace TDRS
 		/// Repository of definition data for traits
 		/// </summary>
 		protected Dictionary<string, TraitDefinition> _traitDefinitions;
+
 		#endregion
 
 		#region Properties
+
 		/// <summary>
 		/// Get Enumerable with all the traits in the library
 		/// </summary>
 		public IEnumerable<Trait> Traits => _traits.Values.ToList();
+
 		#endregion
 
 		#region Constructor
+
 		public TraitLibrary()
 		{
 			_traits = new Dictionary<string, Trait>();
 			_traitDefinitions = new Dictionary<string, TraitDefinition>();
 		}
+
 		#endregion
 
 		#region Methods
+
 		/// <summary>
 		/// Add a trait to the library
 		///
@@ -99,11 +104,8 @@ namespace TDRS
 
 				foreach (var entry in sequence)
 				{
-					string? conflictingTraitID = ((YamlScalarNode)entry).Value;
-					if (conflictingTraitID != null)
-					{
-						conflictingTraits.Add(conflictingTraitID);
-					}
+					string conflictingTraitID = entry.GetValue();
+					conflictingTraits.Add(conflictingTraitID);
 				}
 			}
 

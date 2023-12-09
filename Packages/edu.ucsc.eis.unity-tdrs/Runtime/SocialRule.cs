@@ -13,6 +13,7 @@ namespace TDRS
 	public class SocialRule
 	{
 		#region Attributes
+
 		/// <summary>
 		/// Preconditions that need to pass for the social rule to be applied
 		/// </summary>
@@ -32,9 +33,11 @@ namespace TDRS
 		/// The object responsible to creating and adding this rule to a collection
 		/// </summary>
 		protected readonly object? _source = null;
+
 		#endregion
 
 		#region Properties
+
 		/// <summary>
 		/// Preconditions that need to pass for the social rule to be applied
 		/// </summary>
@@ -54,9 +57,11 @@ namespace TDRS
 		/// The object responsible to creating and adding this rule to a collection
 		/// </summary>
 		public object? Source => _source;
+
 		#endregion
 
 		#region Constructors
+
 		public SocialRule(
 			IEnumerable<IPrecondition> preconditions,
 			IEnumerable<IEffect> effects,
@@ -69,9 +74,11 @@ namespace TDRS
 			_isOutgoing = outgoing;
 			_source = source;
 		}
+
 		#endregion
 
 		#region Methods
+
 		/// <summary>
 		/// Check that a given relationship passes the preconditions of the social rule
 		/// </summary>
@@ -113,6 +120,7 @@ namespace TDRS
 				effect.Remove(relationship);
 			}
 		}
+
 		#endregion
 	}
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using YamlDotNet.RepresentationModel;
 
 namespace TDRS
 {
@@ -35,21 +34,6 @@ namespace TDRS
 		}
 
 		/// <summary>
-		/// Create a new precondition instance.
-		/// </summary>
-		/// <param name="preconditionID"></param>
-		/// <param name="preconditionNode"></param>
-		/// <returns></returns>
-		public IPrecondition CreatePrecondition(TDRSManager manager, string preconditionID, YamlNode preconditionNode)
-		{
-			var factory = _factories[preconditionID];
-
-			var precondition = factory.Instantiate(manager, preconditionNode);
-
-			return precondition;
-		}
-
-		/// <summary>
 		/// Get the precondition factory mapped to a given ID.
 		/// </summary>
 		/// <param name="preconditionID"></param>
@@ -58,6 +42,7 @@ namespace TDRS
 		{
 			return _factories[preconditionID];
 		}
+
 		#endregion
 	}
 }

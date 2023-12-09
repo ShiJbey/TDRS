@@ -51,13 +51,31 @@ namespace TDRS
 		#endregion
 
 		#region Methods
+
+		/// <summary>
+		/// Callback method executed when a trait is added to the entity.
+		/// </summary>
+		/// <param name="trait"></param>
 		public abstract void OnTraitAdded(Trait trait);
 
+		/// <summary>
+		/// Callback method executed when a trait is removed from the entity.
+		/// </summary>
+		/// <param name="trait"></param>
 		public abstract void OnTraitRemoved(Trait trait);
 
+		/// <summary>
+		/// Callback method executed when a social rule is added to the entity.
+		/// </summary>
+		/// <param name="rule"></param>
 		public abstract void OnSocialRuleAdded(SocialRule rule);
 
+		/// <summary>
+		/// Callback method executed when a social rule is removed from the entity.
+		/// </summary>
+		/// <param name="rule"></param>
 		public abstract void OnSocialRuleRemoved(SocialRule rule);
+
 		#endregion
 	}
 }

@@ -259,7 +259,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3643f8d86d34b46a98f5794ed7f28d85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _entityStats: []
+  _entityStats:
+  - statName: Sociability
+    baseValue: 0
+    maxValue: 50
+    minValue: -50
+    isDiscrete: 1
   _relationshipStats:
   - statName: Friendship
     baseValue: 0
@@ -267,6 +272,11 @@ MonoBehaviour:
     minValue: -50
     isDiscrete: 1
   - statName: Romance
+    baseValue: 0
+    maxValue: 50
+    minValue: -50
+    isDiscrete: 1
+  - statName: Influence
     baseValue: 0
     maxValue: 50
     minValue: -50
@@ -279,6 +289,7 @@ MonoBehaviour:
   _effectFactories:
   - {fileID: 11400000, guid: 1c0344e49f4114a64b79ac6e80110837, type: 2}
   - {fileID: 11400000, guid: 9941d4474f6b2481f90381c3edcfd70c, type: 2}
+  _initializationFile: {fileID: 4900000, guid: 015611af4215b4c81b89843982382771, type: 3}
 --- !u!1 &816287688
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,8 +335,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityID: character_a
-  traitsAtStart:
-  - anti-social
+  traits: []
+  stats: []
+  relationships: []
+  OnTraitAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTraitRemoved:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &904270039
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,6 +353,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 904270040}
+  - component: {fileID: 904270041}
   m_Layer: 0
   m_Name: Character_B
   m_TagString: Untagged
@@ -357,6 +376,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &904270041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904270039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1165db2bee8ed4e828113077a4c2cd1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  entityID: character_b
+  traits: []
+  stats: []
+  relationships: []
+  OnTraitAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTraitRemoved:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

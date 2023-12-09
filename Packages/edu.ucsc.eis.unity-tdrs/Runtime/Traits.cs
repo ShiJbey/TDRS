@@ -133,6 +133,10 @@ namespace TDRS
 			return _conflictingTraits.Contains(trait.TraitID);
 		}
 
+		/// <summary>
+		/// Get all the trait instances
+		/// </summary>
+		/// <returns></returns>
 		public IEnumerable<Trait> GetAllTraits()
 		{
 			return _traits.Values;

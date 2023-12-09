@@ -17,7 +17,9 @@ namespace TDRS
 		#endregion
 
 		#region Properties
+
 		public IEnumerable<SocialRule> Rules => _rules;
+
 		#endregion
 
 		#region Constructors

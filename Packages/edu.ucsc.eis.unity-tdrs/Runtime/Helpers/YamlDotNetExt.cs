@@ -1,5 +1,6 @@
 #nullable enable
 
+using YamlDotNet.Helpers;
 using YamlDotNet.RepresentationModel;
 
 namespace TDRS.Helpers
@@ -29,6 +30,45 @@ namespace TDRS.Helpers
 			}
 
 			throw new System.Exception("Cannot call GetChild() on non-mapping node.");
+		}
+
+		/// <summary>
+		/// Gets a child node from a mapping using its string name
+		/// </summary>
+		/// <param name="mapping"></param>
+		/// <param name="childID"></param>
+		/// <returns></returns>
+		public static YamlNode TryGetChild(this YamlNode node, string childID)
+		{
+			if (node.NodeType == YamlNodeType.Mapping)
+			{
+				var mapping = (YamlMappingNode)node;
+
+				YamlNode childNode;
+				mapping.Children.TryGetValue(new YamlScalarNode(childID), out childNode);
+
+				return childNode;
+			}
+
+			throw new System.Exception("Cannot call GetChild() on non-mapping node.");
+		}
+
+		/// <summary>
+		/// Gets a child node from a mapping using its string name
+		/// </summary>
+		/// <param name="mapping"></param>
+		/// <param name="childID"></param>
+		/// <returns></returns>
+		public static IOrderedDictionary<YamlNode, YamlNode> GetChildren(this YamlNode node)
+		{
+			if (node.NodeType == YamlNodeType.Mapping)
+			{
+				var mapping = (YamlMappingNode)node;
+
+				return mapping.Children;
+			}
+
+			throw new System.Exception("Cannot call GetChildren() on non-mapping node.");
 		}
 
 		/// <summary>
