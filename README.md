@@ -66,7 +66,8 @@ Unity-TDRS does not offer a particular solution for persisting social data betwe
 
 ## To-Do List
 
-- [ ] Write unit tests adding and removing traits.
+- [ ] Write unit tests for adding and removing traits.
+- [ ] Write unit tests for adding and removing social rules.
 - [ ] Write unit tests for loading trait information from YAML.
 - [ ] Write unit tests for TDRSManager public interface methods.
 - [x] Add default implementations for basic effects

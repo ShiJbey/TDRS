@@ -36,7 +36,7 @@ namespace TDRS
 		/// </summary>
 		[Space(12)]
 		[SerializeField]
-		private List<SerializedStatData> stats;
+		private SerializedStatData stats;
 
 		/// <summary>
 		/// Serialized list of relationship data from the TDRSNode
@@ -89,31 +89,39 @@ namespace TDRS
 		public void OnBeforeSerialize()
 		{
 			traits.Clear();
-			stats.Clear();
+
 			relationships.Clear();
 
 			if (_node == null) return;
 
 			traits = _node.Traits.GetAllTraits().Select(t => t.TraitID).ToList();
 
-			stats = _node.Stats.Select(pair => new SerializedStatData()
+			stats = new SerializedStatData()
 			{
-				statName = pair.Key,
-				baseValue = pair.Value.BaseValue,
-				value = pair.Value.Value
-			}).ToList();
+				stats = _node.Stats.GetStats().Select(pair => new SerializedStat()
+				{
+					statName = pair.Key,
+					baseValue = pair.Value.BaseValue,
+					value = pair.Value.Value
+				}).ToList(),
+				modifiers = _node.Stats.Modifiers.Select(m => m.Description).ToList(),
+			};
 
 			relationships = _node.OutgoingRelationships.Values.Select(
 				rel => new SerializedTDRSRelationship()
 				{
 					target = rel.Target.EntityID,
 					traits = rel.Traits.GetAllTraits().Select(t => t.TraitID).ToList(),
-					stats = rel.Stats.Select(pair => new SerializedStatData()
+					stats = new SerializedStatData()
 					{
-						statName = pair.Key,
-						baseValue = pair.Value.BaseValue,
-						value = pair.Value.Value
-					}).ToList(),
+						stats = rel.Stats.GetStats().Select(pair => new SerializedStat()
+						{
+							statName = pair.Key,
+							baseValue = pair.Value.BaseValue,
+							value = pair.Value.Value
+						}).ToList(),
+						modifiers = rel.Stats.Modifiers.Select(m => m.Description).ToList()
+					}
 				}
 			).ToList();
 		}
@@ -191,11 +199,21 @@ namespace TDRS
 	/// Serialized information about stat values
 	/// </summary>
 	[System.Serializable]
-	public class SerializedStatData
+	public class SerializedStat
 	{
 		public string statName;
 		public float baseValue;
 		public float value;
+	}
+
+	/// <summary>
+	/// Serialized information about stat values
+	/// </summary>
+	[System.Serializable]
+	public class SerializedStatData
+	{
+		public List<SerializedStat> stats;
+		public List<string> modifiers;
 	}
 
 	/// <summary>
@@ -206,7 +224,7 @@ namespace TDRS
 	{
 		public string target;
 		public List<string> traits;
-		public List<SerializedStatData> stats;
+		public SerializedStatData stats;
 	}
 
 	#endregion

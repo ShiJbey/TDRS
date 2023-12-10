@@ -34,29 +34,5 @@ namespace TDRS
 		}
 
 		#endregion
-
-		#region Methods
-
-		public override void OnTraitAdded(Trait trait)
-		{
-			return;
-		}
-
-		public override void OnTraitRemoved(Trait trait)
-		{
-			return;
-		}
-
-		public override void OnSocialRuleAdded(SocialRule rule)
-		{
-			return;
-		}
-
-		public override void OnSocialRuleRemoved(SocialRule rule)
-		{
-			return;
-		}
-
-		#endregion
 	}
 }

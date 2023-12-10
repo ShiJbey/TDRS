@@ -167,12 +167,7 @@ namespace TDRS
 						var stat = pair.Key.GetValue();
 						var baseValue = float.Parse(pair.Value.GetValue());
 
-						if (!node.Stats.ContainsKey(stat))
-						{
-							throw new Exception($"No {stat} stat found for node. Are you missing a stat in the inspector?");
-						}
-
-						node.Stats[stat].BaseValue = baseValue;
+						node.Stats.GetStat(stat).BaseValue = baseValue;
 					}
 				}
 
@@ -207,12 +202,7 @@ namespace TDRS
 								var stat = relStatPair.Key.GetValue();
 								var baseValue = float.Parse(relStatPair.Value.GetValue());
 
-								if (!relationship.Stats.ContainsKey(stat))
-								{
-									throw new Exception($"No {stat} stat found for relationship. Are you missing a stat in the inspector?");
-								}
-
-								relationship.Stats[stat].BaseValue = baseValue;
+								relationship.Stats.GetStat(stat).BaseValue = baseValue;
 							}
 						}
 
@@ -255,9 +245,9 @@ namespace TDRS
 
 			foreach (var entry in _entityStats)
 			{
-				node.Stats[entry.statName] = new StatSystem.Stat(
+				node.Stats.AddStat(entry.statName, new StatSystem.Stat(
 					entry.baseValue, entry.minValue, entry.maxValue, entry.isDiscrete
-				);
+				));
 			}
 
 			_nodes[entityID] = node;
@@ -296,9 +286,9 @@ namespace TDRS
 			// Configure stats
 			foreach (var entry in _relationshipStats)
 			{
-				relationship.Stats[entry.statName] = new StatSystem.Stat(
+				relationship.Stats.AddStat(entry.statName, new StatSystem.Stat(
 					entry.baseValue, entry.minValue, entry.maxValue, entry.isDiscrete
-				);
+				));
 			}
 
 			// Apply outgoing social rules from the owner
@@ -335,7 +325,6 @@ namespace TDRS
 			var trait = TraitLibrary.GetTrait(traitID);
 			node.Traits.AddTrait(trait);
 			trait.OnAdd(node);
-			node.OnTraitAdded(trait);
 		}
 
 		/// <summary>
@@ -347,7 +336,6 @@ namespace TDRS
 		{
 			var node = GetNode(entityID);
 			var trait = TraitLibrary.GetTrait(traitID);
-			node.OnTraitRemoved(trait);
 			node.Traits.RemoveTrait(trait);
 			trait.OnRemove(node);
 		}
@@ -361,7 +349,6 @@ namespace TDRS
 		{
 			var node = GetNode(entityID);
 			node.SocialRules.AddSocialRule(socialRule);
-			node.OnSocialRuleAdded(socialRule);
 		}
 
 		/// <summary>
@@ -372,7 +359,6 @@ namespace TDRS
 		public void RemoveSocialRuleFromNode(string entityID, SocialRule socialRule)
 		{
 			var node = GetNode(entityID);
-			node.OnSocialRuleRemoved(socialRule);
 			node.SocialRules.RemoveSocialRule(socialRule);
 		}
 
@@ -407,7 +393,6 @@ namespace TDRS
 			var trait = TraitLibrary.GetTrait(traitID);
 			relationship.Traits.AddTrait(trait);
 			trait.OnAdd(relationship);
-			relationship.OnTraitAdded(trait);
 		}
 
 
@@ -421,7 +406,6 @@ namespace TDRS
 		{
 			var relationship = GetRelationship(ownerID, targetID);
 			var trait = TraitLibrary.GetTrait(traitID);
-			relationship.OnTraitRemoved(trait);
 			relationship.Traits.RemoveTrait(trait);
 			trait.OnRemove(relationship);
 		}

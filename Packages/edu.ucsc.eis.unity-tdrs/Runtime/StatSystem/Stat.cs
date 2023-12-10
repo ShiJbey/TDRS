@@ -4,23 +4,53 @@ using System.Collections.Generic;
 namespace TDRS.StatSystem
 {
 	/// <summary>
-	/// Tracks a single stat about a
+	/// Tracks a single stat about an entity
 	/// </summary>
 	public class Stat
 	{
 		#region Attribute
+
+		/// <summary>
+		/// The value of the stat without modifiers
+		/// </summary>
 		protected float _baseValue;
+
+		/// <summary>
+		///  The last calculated value of the stat including modifiers
+		/// </summary>
 		protected float _value;
+
+		/// <summary>
+		/// Modifiers currently attached to this stat
+		/// </summary>
 		protected List<StatModifier> _modifiers;
+
+		/// <summary>
+		/// The minimum value of the stat
+		/// </summary>
 		protected float _minValue;
+
+		/// <summary>
+		/// The maximum value of the stat
+		/// </summary>
 		protected float _maxValue;
+
+		/// <summary>
+		/// Should the calculated value be truncated to an integer
+		/// </summary>
 		protected bool _isDiscrete;
+
+		/// <summary>
+		/// Have there been any changes that require the value to be recalculated
+		/// </summary>
 		protected bool _isDirty;
+
 		#endregion
 
 		#region Properties
+
 		/// <summary>
-		/// Get the base value of the stat
+		/// Get the base value of the stat without modifiers
 		/// </summary>
 		public float BaseValue
 		{
@@ -36,7 +66,7 @@ namespace TDRS.StatSystem
 		}
 
 		/// <summary>
-		/// Get the current value of the stat
+		/// Get the current value of the stat including modifiers
 		/// </summary>
 		public float Value
 		{
@@ -75,9 +105,11 @@ namespace TDRS.StatSystem
 				return (Value - MinValue) / (MaxValue - MinValue);
 			}
 		}
+
 		#endregion
 
 		#region Constructors
+
 		public Stat(
 			float baseValue,
 			float minValue = -999999f,
@@ -93,9 +125,11 @@ namespace TDRS.StatSystem
 			_minValue = minValue;
 			_maxValue = maxValue;
 		}
+
 		#endregion
 
 		#region Methods
+
 		/// <summary>
 		/// Add the given modifier to the stat
 		/// </summary>
@@ -208,6 +242,7 @@ namespace TDRS.StatSystem
 			_value = finalValue;
 			_isDirty = false;
 		}
+
 		#endregion
 	}
 }

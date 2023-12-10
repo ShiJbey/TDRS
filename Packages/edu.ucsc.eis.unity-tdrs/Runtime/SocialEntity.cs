@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using TDRS.StatSystem;
-
 namespace TDRS
 {
 	public abstract class SocialEntity
@@ -20,17 +17,17 @@ namespace TDRS
 		/// <summary>
 		/// The collection of traits associated with this entity
 		/// </summary>
-		public Traits Traits { get; }
+		public Traits Traits { get; protected set; }
 
 		/// <summary>
-		/// Mapping of stat names to instances
+		/// A collection of stats associated with this entity
 		/// </summary>
-		public Dictionary<string, Stat> Stats { get; }
+		public Stats Stats { get; protected set; }
 
 		/// <summary>
 		/// All social rules affecting this entity
 		/// </summary>
-		public SocialRules SocialRules { get; }
+		public SocialRules SocialRules { get; protected set; }
 
 		#endregion
 
@@ -44,37 +41,9 @@ namespace TDRS
 			Manager = manager;
 			EntityID = entityID;
 			Traits = new Traits();
-			Stats = new Dictionary<string, Stat>();
+			Stats = new Stats();
 			SocialRules = new SocialRules();
 		}
-
-		#endregion
-
-		#region Methods
-
-		/// <summary>
-		/// Callback method executed when a trait is added to the entity.
-		/// </summary>
-		/// <param name="trait"></param>
-		public abstract void OnTraitAdded(Trait trait);
-
-		/// <summary>
-		/// Callback method executed when a trait is removed from the entity.
-		/// </summary>
-		/// <param name="trait"></param>
-		public abstract void OnTraitRemoved(Trait trait);
-
-		/// <summary>
-		/// Callback method executed when a social rule is added to the entity.
-		/// </summary>
-		/// <param name="rule"></param>
-		public abstract void OnSocialRuleAdded(SocialRule rule);
-
-		/// <summary>
-		/// Callback method executed when a social rule is removed from the entity.
-		/// </summary>
-		/// <param name="rule"></param>
-		public abstract void OnSocialRuleRemoved(SocialRule rule);
 
 		#endregion
 	}

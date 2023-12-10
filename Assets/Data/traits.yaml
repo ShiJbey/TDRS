@@ -5,6 +5,7 @@ anti-social:
     - type: StatBuff
       stat: Sociability
       amount: -10
+      reason: Anti-Social Trait
 
 authoritarian:
   display_name: Authoritarian
@@ -18,6 +19,7 @@ authoritarian:
         - type: StatBuff
           stat: Friendship
           amount: -10
+          reason: Other character has the Authoritarian trait
 
 happy_go_lucky:
   display_name: HappyGoLucky
@@ -27,6 +29,7 @@ happy_go_lucky:
     - type: StatBuff
       stat: Sociability
       amount: 10
+      reason: HappyGoLucky trait
 
 advisor_of:
   display_name: Advisor-Of
@@ -36,6 +39,7 @@ advisor_of:
     - type: StatBuff
       stat: Influence
       amount: 10
+      reason: Advisor-Of trait
 
 lovers:
   display_name: Lovers

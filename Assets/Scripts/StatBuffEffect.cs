@@ -2,26 +2,36 @@ namespace TDRS.Sample
 {
 	public class StatBuffEffect : IEffect
 	{
+		/// <summary>
+		/// The name of the stat to modify
+		/// </summary>
 		protected string _statName;
+
+		/// <summary>
+		/// The amount to modify the stat by
+		/// </summary>
 		protected float _amount;
 
-		public StatBuffEffect(string statName, float amount)
+		/// <summary>
+		/// The reason for this effect
+		/// </summary>
+		protected string _reason;
+
+		public StatBuffEffect(string statName, float amount, string reason)
 		{
 			_statName = statName;
 			_amount = amount;
+			_reason = reason;
 		}
 
-		public string Description => $"Add {_amount} modifier to {_statName}";
+		public string Description => $"{_statName} ({_amount}): {_reason}";
 
 		public void Apply(SocialEntity target)
 		{
-			if (!target.Stats.ContainsKey(_statName))
-			{
-				throw new System.Exception($"Cannot find {_statName} stat for {target.EntityID}");
-			}
-
-			target.Stats[_statName].AddModifier(
+			target.Stats.AddModifier(
 				new StatSystem.StatModifier(
+					_statName,
+					Description,
 					_amount,
 					StatSystem.StatModifierType.FLAT,
 					this
@@ -31,12 +41,7 @@ namespace TDRS.Sample
 
 		public void Remove(SocialEntity target)
 		{
-			if (!target.Stats.ContainsKey(_statName))
-			{
-				throw new System.Exception($"Cannot find {_statName} stat for {target.EntityID}");
-			}
-
-			target.Stats[_statName].RemoveModifiersFromSource(this);
+			target.Stats.RemoveModifiersFromSource(this);
 		}
 	}
 }

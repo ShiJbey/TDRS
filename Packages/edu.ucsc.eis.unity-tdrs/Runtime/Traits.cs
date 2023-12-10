@@ -38,7 +38,7 @@ namespace TDRS
 		/// </remarks>
 		/// <param name="trait"></param>
 		/// <returns></returns>
-		public bool AddTrait(Trait trait)
+		public virtual bool AddTrait(Trait trait)
 		{
 			if (_traits.ContainsKey(trait.TraitID))
 			{
@@ -85,22 +85,9 @@ namespace TDRS
 		/// </summary>
 		/// <param name="trait"></param>
 		/// <returns></returns>
-		public bool RemoveTrait(Trait trait)
+		public virtual bool RemoveTrait(Trait trait)
 		{
-			if (!_traits.ContainsKey(trait.TraitID))
-			{
-				return false;
-			}
-
-			_traits.Remove(trait.TraitID);
-
-			_conflictingTraits.Clear();
-			foreach (var (_, remainingTrait) in _traits)
-			{
-				_conflictingTraits.UnionWith(remainingTrait.ConflictingTraits);
-			}
-
-			return true;
+			return RemoveTrait(trait.TraitID);
 		}
 
 		/// <summary>

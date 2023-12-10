@@ -1,5 +1,3 @@
-#nullable enable
-
 using UnityEngine;
 using YamlDotNet.RepresentationModel;
 using TDRS.Helpers;
@@ -13,13 +11,16 @@ namespace TDRS.Sample
 		{
 			var mapping = (YamlMappingNode)preconditionNode;
 
-			var statName = ((YamlScalarNode)mapping.GetChild("stat")).GetValue();
+			string statName = ((YamlScalarNode)mapping.GetChild("stat")).GetValue();
 
-			var amount = float.Parse(
+			float amount = float.Parse(
 				((YamlScalarNode)mapping.GetChild("amount")).GetValue()
 			);
 
-			return new StatBuffEffect(statName, amount);
+			var reasonNode = mapping.TryGetChild("reason");
+			string reason = reasonNode != null ? reasonNode.GetValue() : "";
+
+			return new StatBuffEffect(statName, amount, reason);
 		}
 	}
 }

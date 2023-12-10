@@ -37,12 +37,12 @@ namespace TDRS
 		/// Add a rule to the entities collection of active rules.
 		/// </summary>
 		/// <param name="rule"></param>
-		public void AddSocialRule(SocialRule rule)
+		public virtual void AddSocialRule(SocialRule rule)
 		{
 			_rules.Add(rule);
 		}
 
-		public void RemoveSocialRule(SocialRule rule)
+		public virtual void RemoveSocialRule(SocialRule rule)
 		{
 			if (!HasSocialRule(rule))
 			{
