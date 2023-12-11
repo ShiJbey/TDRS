@@ -336,7 +336,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityID: character_a
   traits: []
-  stats: []
+  stats:
+    stats: []
+    modifiers: []
   relationships: []
   OnTraitAdded:
     m_PersistentCalls:
@@ -390,7 +392,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityID: character_b
   traits: []
-  stats: []
+  stats:
+    stats: []
+    modifiers: []
   relationships: []
   OnTraitAdded:
     m_PersistentCalls:

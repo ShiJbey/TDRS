@@ -76,21 +76,33 @@ namespace TDRS
 
 		#region Unity Methods
 
+		void Awake()
+		{
+			traits = new List<string>();
+			stats = new SerializedStatData();
+			relationships = new List<SerializedTDRSRelationship>();
+		}
+
 		void Start()
 		{
-			// Get a reference to this GameObject's node within the social graph
-			// and assign this GameObject to be the node's GameObject
-			_node = TDRSManager.Instance.GetNode(entityID);
-			_node.GameObject = gameObject;
+			if (entityID != "")
+			{
+				// Get a reference to this GameObject's node within the social graph
+				// and assign this GameObject to be the node's GameObject
+				_node = TDRSManager.Instance.GetNode(entityID);
+				_node.GameObject = gameObject;
 
-			Debug.Log($"{entityID} has retrieved their TDRS Node.");
+				Debug.Log($"{entityID} has retrieved their TDRS Node.");
+			}
 		}
 
 		public void OnBeforeSerialize()
 		{
-			traits.Clear();
+			if (traits != null) traits.Clear();
+			if (stats != null) stats.stats.Clear();
+			if (stats != null) stats.modifiers.Clear();
+			if (relationships != null) relationships.Clear();
 
-			relationships.Clear();
 
 			if (_node == null) return;
 
@@ -201,9 +213,9 @@ namespace TDRS
 	[System.Serializable]
 	public class SerializedStat
 	{
-		public string statName;
-		public float baseValue;
-		public float value;
+		public string statName = "";
+		public float baseValue = 0f;
+		public float value = 0f;
 	}
 
 	/// <summary>
@@ -212,8 +224,8 @@ namespace TDRS
 	[System.Serializable]
 	public class SerializedStatData
 	{
-		public List<SerializedStat> stats;
-		public List<string> modifiers;
+		public List<SerializedStat> stats = new List<SerializedStat>();
+		public List<string> modifiers = new List<string>();
 	}
 
 	/// <summary>
@@ -222,9 +234,9 @@ namespace TDRS
 	[System.Serializable]
 	public class SerializedTDRSRelationship
 	{
-		public string target;
-		public List<string> traits;
-		public SerializedStatData stats;
+		public string target = "";
+		public List<string> traits = new List<string>();
+		public SerializedStatData stats = new SerializedStatData();
 	}
 
 	#endregion
