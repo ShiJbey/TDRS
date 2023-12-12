@@ -73,3 +73,7 @@ Unity-TDRS does not offer a particular solution for persisting social data betwe
 - [x] Add default implementations for basic effects
 - [x] Implement a custom inspector for `TDRSEntity` components to display stat, trait, and relationship data.
 - [ ] Implement social event system.
+
+## Building a package distribution
+
+This project uses a Python script to facilitate creating package distributions. It can be found at `Scripts/build_distro.py`. Running this script will create a new `.tgz` archive in the `dist/` directory.
