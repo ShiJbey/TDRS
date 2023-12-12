@@ -22,36 +22,31 @@ namespace TDRS
 		/// <summary>
 		/// A reference to the corresponding node within the TDRS Manager
 		/// </summary>
-		protected TDRSNode _node;
+		protected TDRSNode _node = null;
 
 		/// <summary>
 		/// Serialized list of trait IDs from the the TDRSNode
 		/// </summary>
-		[Space(16)]
 		[SerializeField]
-		private List<string> traits;
+		private List<string> traits = new List<string>();
 
 		/// <summary>
 		/// Serialized list of stat data from the TDRSNode
 		/// </summary>
-		[Space(12)]
 		[SerializeField]
-		private SerializedStatData stats;
+		private SerializedStatData stats = new SerializedStatData();
 
 		/// <summary>
 		/// Serialized list of relationship data from the TDRSNode
 		/// </summary>
-		[Space(12)]
 		[SerializeField]
-		private List<SerializedTDRSRelationship> relationships;
+		private List<SerializedTDRSRelationship> relationships = new List<SerializedTDRSRelationship>();
 
 		/// <summary>
 		/// (Experimental) Event triggered when a trait is added to the node associated with
 		/// this MonoBehaviour
 		/// </summary>
-		[Space(16)]
 		[Header("Event Listeners")]
-		[Space(12)]
 		public TraitAddedEvent OnTraitAdded;
 
 		/// <summary>
@@ -76,13 +71,6 @@ namespace TDRS
 
 		#region Unity Methods
 
-		void Awake()
-		{
-			traits = new List<string>();
-			stats = new SerializedStatData();
-			relationships = new List<SerializedTDRSRelationship>();
-		}
-
 		void Start()
 		{
 			if (entityID != "")
@@ -98,11 +86,10 @@ namespace TDRS
 
 		public void OnBeforeSerialize()
 		{
-			if (traits != null) traits.Clear();
-			if (stats != null) stats.stats.Clear();
-			if (stats != null) stats.modifiers.Clear();
-			if (relationships != null) relationships.Clear();
-
+			traits.Clear();
+			stats.stats.Clear();
+			stats.modifiers.Clear();
+			relationships.Clear();
 
 			if (_node == null) return;
 
@@ -140,8 +127,6 @@ namespace TDRS
 
 		public void OnAfterDeserialize()
 		{
-			// if (_node == null) return;
-
 			// // Turn serialized trait data into runtime data
 			// var serializedTraitSet = new HashSet<string>(traits);
 

@@ -26,25 +26,14 @@ This repository contains a Unity project with Unity-TDRS added as an embedded pa
 
 The following are instructions for installing `Unity-TDRS` into your Unity project. This project uses semantic versioning. So, major version numbers will have breaking changes. Minor version changes will mostly contain new features, but there is always a chance of a breaking change. Please check the [CHANGE LOG](./CHANGELOG.md) or release notes to see what changed between releases.
 
-### Installing from tarball (Recommended)
-
 You should download the latest release from the [Releases](https://github.com/ShiJbey/Unity-TDRS/releases) page, as the GitHub version might be unstable. Also, you can access previous releases if needed.
 
 1. Find your desired release.
-2. Download the `unity-tdrs_<VERSION>.tar.gz` from under the `Assets` dropdown (\<VERSION\> should be the release version you intend to download).
+2. Download the `unity-tdrs_<VERSION>.tgz` from under the `Assets` dropdown (\<VERSION\> should be the release version you intend to download).
 3. Open your project in Unity
 4. Navigate to `Window > Package Manager` in the top menu.
 5. Click the `+` icon in the top left and select `Add package from tarball...`.
 6. Find and select the downloaded tarball
-
-### Installing using GitHub link
-
-This method installs the current version of the package as it is on the `main` repository branch. Please note that installing using a GitHub link is  **NOT** guaranteed to download the most recent/stable release. Use this method if no releases are available or you want to try experimental and unfinished features. However, if you would like to download a stable release, please follow the preceding `Installing from tarball` instructions.
-
-1. Open your project in Unity
-2. Navigate to `Window > Package Manager` in the top menu.
-3. Click the `+` icon in the top left and select `Add package from git URL...`.
-4. Paste the following URL `https://github.com/ShiJbey/Unity-TDRS.git`
 
 ## Dependencies
 
