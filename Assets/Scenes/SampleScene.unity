@@ -225,6 +225,7 @@ GameObject:
   m_Component:
   - component: {fileID: 568713666}
   - component: {fileID: 568713667}
+  - component: {fileID: 568713668}
   m_Layer: 0
   m_Name: TDRSManager
   m_TagString: Untagged
@@ -278,13 +279,34 @@ MonoBehaviour:
     isDiscrete: 1
   _traitDefinitions:
   - {fileID: 4900000, guid: 905ca4f98d10e89449e9f617372a2de9, type: 3}
-  _preconditionFactories:
-  - {fileID: 11400000, guid: 6423fdbe5ef544deda6fcde0a384ed03, type: 2}
-  - {fileID: 11400000, guid: 79e6047460bfc485fb677ac5332e5479, type: 2}
-  _effectFactories:
-  - {fileID: 11400000, guid: 1c0344e49f4114a64b79ac6e80110837, type: 2}
-  - {fileID: 11400000, guid: 9941d4474f6b2481f90381c3edcfd70c, type: 2}
   _initializationFile: {fileID: 4900000, guid: 015611af4215b4c81b89843982382771, type: 3}
+  OnLoadFactories:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 568713668}
+        m_TargetAssemblyTypeName: TDRS.DefaultTDRSFactories, edu.ucsc.eis.unity-tdrs
+        m_MethodName: LoadFactories
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &568713668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568713664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 554e66d51f7bb43a6ac58dfc698ab310, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &756568540
 GameObject:
   m_ObjectHideFlags: 0

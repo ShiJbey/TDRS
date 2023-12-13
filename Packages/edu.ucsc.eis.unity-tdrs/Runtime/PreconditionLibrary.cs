@@ -14,11 +14,6 @@ namespace TDRS
 		/// </summary>
 		protected Dictionary<string, IPreconditionFactory> _factories = new Dictionary<string, IPreconditionFactory>();
 
-		/// <summary>
-		/// Precondition factories to import ito the library
-		/// </summary>
-		public List<PreconditionFactorySO> preconditionFactories = new List<PreconditionFactorySO>();
-
 		#endregion
 
 		#region Methods

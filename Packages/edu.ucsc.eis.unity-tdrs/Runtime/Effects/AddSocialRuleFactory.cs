@@ -1,14 +1,12 @@
-using UnityEngine;
 using YamlDotNet.RepresentationModel;
 using TDRS.Helpers;
 using System.Collections.Generic;
 
-namespace TDRS.Sample
+namespace TDRS
 {
-	[CreateAssetMenu(menuName = "TDRS/Effects/AddSocialRule")]
-	public class AddSocialRuleFactory : EffectFactorySO
+	public class AddSocialRuleFactory : IEffectFactory
 	{
-		public override IEffect Instantiate(TDRSManager manager, YamlNode effectNode)
+		public IEffect Instantiate(TDRSManager manager, YamlNode effectNode)
 		{
 			bool isOutgoing = true;
 

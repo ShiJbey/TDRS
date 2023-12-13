@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Events;
 using YamlDotNet.RepresentationModel;
 using TDRS.Helpers;
 
@@ -57,22 +58,12 @@ namespace TDRS
 		protected List<TextAsset> _traitDefinitions = new List<TextAsset>();
 
 		/// <summary>
-		/// A list of precondition factories to load during wake
-		/// </summary>
-		[SerializeField]
-		protected List<PreconditionFactorySO> _preconditionFactories = new List<PreconditionFactorySO>();
-
-		/// <summary>
-		/// A list of effect factories to load during wake
-		/// </summary>
-		[SerializeField]
-		protected List<EffectFactorySO> _effectFactories = new List<EffectFactorySO>();
-
-		/// <summary>
 		/// A reference to a YAML initialization file for the social graph.
 		/// </summary>
 		[SerializeField]
 		protected TextAsset _initializationFile;
+
+		public LoadFactoriesEvent OnLoadFactories;
 
 		#endregion
 
@@ -101,29 +92,20 @@ namespace TDRS
 			PreconditionLibrary = new PreconditionLibrary();
 			EffectLibrary = new EffectLibrary();
 			TraitLibrary = new TraitLibrary();
+		}
 
-			LoadPreconditionFactories();
-			LoadEffectFactories();
+		void Start()
+		{
+			LoadFactories();
 			LoadTraits();
 			LoadInitializationFile();
 		}
 		#endregion
 
 		#region Content Loading Methods
-		private void LoadPreconditionFactories()
+		private void LoadFactories()
 		{
-			foreach (var factory in _preconditionFactories)
-			{
-				PreconditionLibrary.AddFactory(factory.preconditionType, factory);
-			}
-		}
-
-		private void LoadEffectFactories()
-		{
-			foreach (var factory in _effectFactories)
-			{
-				EffectLibrary.AddFactory(factory.effectType, factory);
-			}
+			OnLoadFactories.Invoke(this);
 		}
 
 		private void LoadTraits()
@@ -411,4 +393,14 @@ namespace TDRS
 		}
 		#endregion
 	}
+
+	#region Custom Event Classes
+
+	[Serializable]
+	/// <summary>
+	/// Event dispatched when the TDRSmanager is loading factory instances during start.
+	/// </summary>
+	public class LoadFactoriesEvent : UnityEvent<TDRSManager> { }
+
+	#endregion
 }

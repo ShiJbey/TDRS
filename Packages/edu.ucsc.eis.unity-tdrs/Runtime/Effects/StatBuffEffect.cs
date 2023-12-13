@@ -1,4 +1,4 @@
-namespace TDRS.Sample
+namespace TDRS
 {
 	public class StatBuffEffect : IEffect
 	{

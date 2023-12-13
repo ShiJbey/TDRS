@@ -1,15 +1,10 @@
-#nullable enable
-
-using System;
-using UnityEngine;
-
-namespace TDRS.Sample
+namespace TDRS
 {
-	public class OwnerHasTrait : IPrecondition
+	public class TargetHasTrait : IPrecondition
 	{
 		protected string _traitID;
 
-		public OwnerHasTrait(string traitID)
+		public TargetHasTrait(string traitID)
 		{
 			_traitID = traitID;
 		}
@@ -24,7 +19,7 @@ namespace TDRS.Sample
 
 		public bool CheckPrecondition(SocialEntity target)
 		{
-			return ((TDRSRelationship)target).Owner.Traits.HasTrait(_traitID);
+			return ((TDRSRelationship)target).Target.Traits.HasTrait(_traitID);
 		}
 	}
 }

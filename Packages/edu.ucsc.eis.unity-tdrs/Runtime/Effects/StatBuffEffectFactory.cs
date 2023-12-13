@@ -1,13 +1,11 @@
-using UnityEngine;
 using YamlDotNet.RepresentationModel;
 using TDRS.Helpers;
 
-namespace TDRS.Sample
+namespace TDRS
 {
-	[CreateAssetMenu(menuName = "TDRS/Effects/StatBuff")]
-	public class StatBuffEffectFactory : EffectFactorySO
+	public class StatBuffEffectFactory : IEffectFactory
 	{
-		public override IEffect Instantiate(TDRSManager manager, YamlNode preconditionNode)
+		public IEffect Instantiate(TDRSManager manager, YamlNode preconditionNode)
 		{
 			var mapping = (YamlMappingNode)preconditionNode;
 

@@ -14,11 +14,6 @@ namespace TDRS
 		/// </summary>
 		protected Dictionary<string, IEffectFactory> _factories = new Dictionary<string, IEffectFactory>();
 
-		/// <summary>
-		/// Factories to import into the library
-		/// </summary>
-		public List<EffectFactorySO> effectFactories = new List<EffectFactorySO>();
-
 		#endregion
 
 		#region Methods
