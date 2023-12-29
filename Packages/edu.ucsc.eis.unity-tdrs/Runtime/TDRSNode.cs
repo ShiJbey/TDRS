@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace TDRS
 {
@@ -11,10 +10,7 @@ namespace TDRS
 	{
 		#region Properties
 
-		/// <summary>
-		/// A GameObject associated with this entity
-		/// </summary>
-		public GameObject GameObject { get; set; }
+		public string NodeType { get; }
 
 		/// <summary>
 		/// Relationships directed toward this entity
@@ -31,26 +27,69 @@ namespace TDRS
 		#region Constructors
 
 		public TDRSNode(
-			TDRSManager manager,
+			SocialEngine engine,
+			string nodeType,
 			string entityID
-		) : base(manager, entityID)
+		) : base(engine, entityID)
 		{
-			GameObject = null;
+			NodeType = nodeType;
+			Traits = new Traits();
+			SocialRules = new SocialRules();
 			IncomingRelationships = new Dictionary<TDRSNode, TDRSRelationship>();
 			OutgoingRelationships = new Dictionary<TDRSNode, TDRSRelationship>();
 		}
 
-		public TDRSNode(
-			TDRSManager manager,
-			string entityID,
-			GameObject gameObject
-		) : base(manager, entityID)
+		#endregion
+
+		#region Methods
+
+		public override void AddSocialRule(SocialRule rule)
 		{
-			GameObject = gameObject;
-			Traits = new TDRSNodeTraits(this);
-			SocialRules = new TDRSNodeSocialRules(this);
-			IncomingRelationships = new Dictionary<TDRSNode, TDRSRelationship>();
-			OutgoingRelationships = new Dictionary<TDRSNode, TDRSRelationship>();
+			base.AddSocialRule(rule);
+
+			Dictionary<TDRSNode, TDRSRelationship> relationships;
+
+			if (rule.IsOutgoing)
+			{
+				relationships = OutgoingRelationships;
+			}
+			else
+			{
+				relationships = IncomingRelationships;
+			}
+
+			foreach (var (_, relationship) in relationships)
+			{
+				if (rule.CheckPreconditions(relationship))
+				{
+					relationship.SocialRules.AddSocialRule(rule);
+					rule.OnAdd(relationship);
+				}
+			}
+		}
+
+		public override void RemoveSocialRule(SocialRule rule)
+		{
+			base.RemoveSocialRule(rule);
+
+			Dictionary<TDRSNode, TDRSRelationship> relationships;
+			if (rule.IsOutgoing)
+			{
+				relationships = OutgoingRelationships;
+			}
+			else
+			{
+				relationships = IncomingRelationships;
+			}
+
+			foreach (var (_, relationship) in relationships)
+			{
+				if (relationship.SocialRules.HasSocialRule(rule))
+				{
+					rule.OnRemove(relationship);
+					relationship.SocialRules.RemoveSocialRule(rule);
+				}
+			}
 		}
 
 		#endregion

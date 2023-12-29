@@ -10,12 +10,12 @@ namespace TDRS
 	/// </summary>
 	public class DefaultTDRSFactories : MonoBehaviour
 	{
-		public void LoadFactories(TDRSManager manager)
+		public void LoadFactories(SocialEngine engine)
 		{
-			manager.EffectLibrary.AddFactory("StatBuff", new StatBuffEffectFactory());
-			manager.EffectLibrary.AddFactory("AddSocialRule", new AddSocialRuleFactory());
-			manager.PreconditionLibrary.AddFactory("TargetHasTrait", new TargetHasTraitFactory());
-			manager.PreconditionLibrary.AddFactory("OwnerHasTrait", new OwnerHasTraitFactory());
+			engine.EffectLibrary.AddFactory("StatBuff", new StatBuffEffectFactory());
+			engine.EffectLibrary.AddFactory("AddSocialRule", new AddSocialRuleFactory());
+			engine.PreconditionLibrary.AddFactory("TargetHasTrait", new TargetHasTraitFactory());
+			engine.PreconditionLibrary.AddFactory("OwnerHasTrait", new OwnerHasTraitFactory());
 		}
 	}
 }

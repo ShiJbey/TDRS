@@ -23,16 +23,18 @@ namespace TDRS
 		#region Constructors
 
 		public TDRSRelationship(
-			TDRSManager manager,
+			SocialEngine engine,
 			string entityID,
 			TDRSNode owner,
 			TDRSNode target
-		) : base(manager, entityID)
+		) : base(engine, entityID)
 		{
 			Owner = owner;
 			Target = target;
 		}
 
 		#endregion
+
+
 	}
 }

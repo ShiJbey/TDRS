@@ -21,3 +21,5 @@ character_b:
       base_stats:
         Romance: 23
         Friendship: -15
+
+character_c: {}

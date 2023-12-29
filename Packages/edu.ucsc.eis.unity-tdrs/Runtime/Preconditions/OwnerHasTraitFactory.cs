@@ -5,7 +5,7 @@ namespace TDRS
 {
 	public class OwnerHasTraitFactory : IPreconditionFactory
 	{
-		public IPrecondition Instantiate(TDRSManager manager, YamlNode preconditionNode)
+		public IPrecondition Instantiate(SocialEngine engine, YamlNode preconditionNode)
 		{
 			var mapping = (YamlMappingNode)preconditionNode;
 

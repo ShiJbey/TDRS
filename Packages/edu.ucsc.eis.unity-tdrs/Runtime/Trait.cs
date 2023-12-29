@@ -15,21 +15,6 @@ namespace TDRS
 		#region Attributes
 
 		/// <summary>
-		/// A unique ID for this Trait.
-		/// </summary>
-		protected readonly string _traitID;
-
-		/// <summary>
-		/// An user-friendly name to use for GUIs.
-		/// </summary>
-		protected readonly string _displayName;
-
-		/// <summary>
-		/// A short description of the trait.
-		/// </summary>
-		protected readonly string _description;
-
-		/// <summary>
 		/// Effects to apply when the trait is added
 		/// </summary>
 		protected readonly List<IEffect> _effects;
@@ -46,17 +31,17 @@ namespace TDRS
 		/// <summary>
 		/// A unique ID for this Trait.
 		/// </summary>
-		public string TraitID => _traitID;
+		public string TraitID { get; }
 
 		/// <summary>
 		/// An user-friendly name to use for GUIs.
 		/// </summary>
-		public string DisplayName => _displayName;
+		public string DisplayName { get; }
 
 		/// <summary>
 		/// A short description of the trait.
 		/// </summary>
-		public string Description => _description;
+		public string Description { get; }
 
 		/// <summary>
 		/// Effects to apply when the trait is added
@@ -80,9 +65,9 @@ namespace TDRS
 			HashSet<string> conflictingTraits
 			)
 		{
-			_traitID = traitID;
-			_displayName = displayName;
-			_description = description;
+			TraitID = traitID;
+			DisplayName = displayName;
+			Description = description;
 			_effects = effects.ToList();
 			_conflictingTraits = conflictingTraits;
 		}

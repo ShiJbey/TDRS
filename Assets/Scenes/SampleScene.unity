@@ -260,23 +260,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3643f8d86d34b46a98f5794ed7f28d85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _entityStats:
-  - statName: Sociability
-    baseValue: 0
-    maxValue: 50
-    minValue: -50
-    isDiscrete: 1
-  _relationshipStats:
-  - statName: Friendship
-    baseValue: 0
-    maxValue: 50
-    minValue: -50
-    isDiscrete: 1
-  - statName: Romance
-    baseValue: 0
-    maxValue: 50
-    minValue: -50
-    isDiscrete: 1
   _traitDefinitions:
   - {fileID: 4900000, guid: 905ca4f98d10e89449e9f617372a2de9, type: 3}
   _initializationFile: {fileID: 4900000, guid: 015611af4215b4c81b89843982382771, type: 3}
@@ -295,6 +278,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _nodeSchemas:
+  - {fileID: 11400000, guid: 4b659726368064e1d8b084fec7644a76, type: 2}
+  _relationshipSchemas:
+  - {fileID: 11400000, guid: 44459e73f8cf6433097c43e22661b5f6, type: 2}
 --- !u!114 &568713668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,11 +324,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityID: character_c
-  traits: []
-  stats:
-    stats: []
-    modifiers: []
-  relationships: []
   OnTraitAdded:
     m_PersistentCalls:
       m_Calls: []
@@ -408,11 +390,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityID: character_a
-  traits: []
-  stats:
-    stats: []
-    modifiers: []
-  relationships: []
   OnTraitAdded:
     m_PersistentCalls:
       m_Calls: []
@@ -464,11 +441,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityID: character_b
-  traits: []
-  stats:
-    stats: []
-    modifiers: []
-  relationships: []
   OnTraitAdded:
     m_PersistentCalls:
       m_Calls: []

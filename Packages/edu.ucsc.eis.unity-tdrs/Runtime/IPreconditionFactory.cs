@@ -10,9 +10,9 @@ namespace TDRS
 		/// <summary>
 		/// Construct a new instance of a Precondition.
 		/// </summary>
-		/// <param name="manager"></param>
+		/// <param name="engine"></param>
 		/// <param name="args"></param>
 		/// <returns></returns>
-		public IPrecondition Instantiate(TDRSManager manager, YamlNode preconditionNode);
+		public IPrecondition Instantiate(SocialEngine engine, YamlNode preconditionNode);
 	}
 }

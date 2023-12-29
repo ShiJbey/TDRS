@@ -11,27 +11,27 @@ namespace TDRS
 		/// <summary>
 		/// The unique ID of the trait
 		/// </summary>
-		public string TraitID { get; private set; }
+		public string TraitID { get; }
 
 		/// <summary>
 		/// The name of the trait as displayed in GUIs
 		/// </summary>
-		public string DisplayName { get; private set; }
+		public string DisplayName { get; }
 
 		/// <summary>
 		/// A short textual description of the trait
 		/// </summary>
-		public string Description { get; private set; }
+		public string Description { get; }
 
 		/// <summary>
 		/// Configuration data for effects associated for this trait
 		/// </summary>
-		public YamlNode EffectData { get; private set; }
+		public YamlNode EffectData { get; }
 
 		/// <summary>
 		/// IDs of traits that this trait cannot be added with
 		/// </summary>
-		public HashSet<string> ConflictingTraits { get; private set; }
+		public HashSet<string> ConflictingTraits { get; }
 
 		public TraitDefinition(
 			string traitID,

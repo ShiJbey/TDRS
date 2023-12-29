@@ -21,6 +21,12 @@ namespace TDRS
 
 		#endregion
 
+		#region Public Properties
+
+		public IEnumerable<Trait> AllTraits => _traits.Values;
+
+		#endregion
+
 		#region Constructors
 
 		public Traits()
@@ -38,7 +44,7 @@ namespace TDRS
 		/// </remarks>
 		/// <param name="trait"></param>
 		/// <returns></returns>
-		public virtual bool AddTrait(Trait trait)
+		public bool AddTrait(Trait trait)
 		{
 			if (_traits.ContainsKey(trait.TraitID))
 			{
@@ -85,7 +91,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="trait"></param>
 		/// <returns></returns>
-		public virtual bool RemoveTrait(Trait trait)
+		public bool RemoveTrait(Trait trait)
 		{
 			return RemoveTrait(trait.TraitID);
 		}
@@ -118,15 +124,6 @@ namespace TDRS
 		public bool HasConflictingTrait(Trait trait)
 		{
 			return _conflictingTraits.Contains(trait.TraitID);
-		}
-
-		/// <summary>
-		/// Get all the trait instances
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<Trait> GetAllTraits()
-		{
-			return _traits.Values;
 		}
 
 		#endregion

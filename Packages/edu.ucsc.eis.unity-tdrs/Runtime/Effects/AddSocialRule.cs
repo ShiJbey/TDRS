@@ -52,12 +52,12 @@ namespace TDRS
 
 		public void Apply(SocialEntity target)
 		{
-			target.Manager.AddSocialRuleToNode(target.EntityID, _socialRule);
+			// target.Engine.AddSocialRuleToNode(target.EntityID, _socialRule);
 		}
 
 		public void Remove(SocialEntity target)
 		{
-			target.Manager.RemoveAllSocialRulesFromSource(target.EntityID, this);
+			// target.Manager.RemoveAllSocialRulesFromSource(target.EntityID, this);
 		}
 	}
 }
