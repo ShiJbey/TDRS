@@ -1,0 +1,3 @@
+[submodule "Packages/edu.ucsc.eis.unity-tdrs/Documentation~"]
+	path = Packages/edu.ucsc.eis.unity-tdrs/Documentation~
+	url = https://github.com/ShiJbey/Unity-TDRS.wiki.git
