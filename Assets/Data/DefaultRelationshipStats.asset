@@ -13,12 +13,17 @@ MonoBehaviour:
   m_Name: DefaultRelationshipStats
   m_EditorClassIdentifier: 
   stats:
-  - statName: friendship
+  - statName: Friendship
     baseValue: 0
     maxValue: 50
     minValue: -50
     isDiscrete: 1
-  - statName: romance
+  - statName: Romance
+    baseValue: 0
+    maxValue: 50
+    minValue: -50
+    isDiscrete: 1
+  - statName: Influence
     baseValue: 0
     maxValue: 50
     minValue: -50

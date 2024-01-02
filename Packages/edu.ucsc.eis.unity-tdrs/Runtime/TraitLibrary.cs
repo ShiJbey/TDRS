@@ -2,7 +2,6 @@
 using System.Linq;
 using System.IO;
 using YamlDotNet.RepresentationModel;
-using UnityEngine;
 
 using TDRS.Helpers;
 
@@ -177,8 +176,6 @@ namespace TDRS
 						traitDef.ConflictingTraits
 					)
 				);
-
-				Debug.Log($"Instantiated '{traitID}' trait.");
 			}
 		}
 

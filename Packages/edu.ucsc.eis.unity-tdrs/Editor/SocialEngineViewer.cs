@@ -9,7 +9,7 @@ namespace TDRS
 	public class SocialEngineViewer : EditorWindow
 	{
 		private ScrollView scrollView;
-		private TDRSManager manager;
+		private SocialEngine manager;
 
 		[MenuItem("Window/TDRS/Social Engine Viewer")]
 		public static void ShowWindow()
@@ -27,11 +27,11 @@ namespace TDRS
 
 			root.Add(scrollView);
 
-			manager = FindObjectOfType<TDRSManager>();
+			manager = FindObjectOfType<SocialEngine>();
 
 			if (manager == null) throw new Exception("Cannot find TDRSManager in scene");
 
-			foreach (var node in manager.SocialEngine.Nodes)
+			foreach (var node in manager.Nodes)
 			{
 				scrollView.Add(new Label(node.UID));
 			}
@@ -41,7 +41,7 @@ namespace TDRS
 		{
 			scrollView.Clear();
 
-			foreach (var node in manager.SocialEngine.Nodes)
+			foreach (var node in manager.Nodes)
 			{
 				scrollView.Add(new Label(node.UID));
 			}

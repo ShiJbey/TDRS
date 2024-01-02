@@ -19,7 +19,7 @@ namespace TDRS
 
 		public bool CheckPrecondition(SocialEntity target)
 		{
-			return ((TDRSRelationship)target).Owner.Traits.HasTrait(_traitID);
+			return ((SocialRelationship)target).Owner.Traits.HasTrait(_traitID);
 		}
 	}
 }

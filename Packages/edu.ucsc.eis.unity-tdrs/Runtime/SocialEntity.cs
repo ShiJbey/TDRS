@@ -1,20 +1,35 @@
-using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
 
 namespace TDRS
 {
-	public abstract class SocialEntity
+	public abstract class SocialEntity : MonoBehaviour
 	{
 		#region Properties
 
 		/// <summary>
-		/// Get the unique ID of the entity
+		/// The schema of what stats to add to the entity on initialization.
 		/// </summary>
-		public string UID { get; }
+		[field: SerializeField]
+		public StatSchemaScriptableObj StatSchema { get; protected set; }
+
+		/// <summary>
+		/// Initial values for this entity's stats.
+		/// </summary>
+		[field: SerializeField]
+		public List<StatInitializer> BaseStats { get; protected set; }
+
+		/// <summary>
+		/// IDs of traits to add when initializing the entity.
+		/// </summary>
+		[field: SerializeField]
+		public List<string> traitsAtStart { get; protected set; }
 
 		/// <summary>
 		/// A reference to the manager that owns this entity
 		/// </summary>
-		public SocialEngine Engine { get; }
+		public SocialEngine Engine { get; protected set; }
 
 		/// <summary>
 		/// The collection of traits associated with this entity
@@ -33,18 +48,42 @@ namespace TDRS
 
 		#endregion
 
+		#region Events
+
+		/// <summary>
+		/// Event invoked when a trait is added to the entity
+		/// </summary>
+		public TraitAddedEvent OnTraitAdded;
+
+		/// <summary>
+		/// Event invoked when a trait is removed from the entity
+		/// </summary>
+		public TraitRemovedEvent OnTraitRemoved;
+
+		/// <summary>
+		/// Event invoked when a stat value changes on the entity
+		/// </summary>
+		public StatChangeEvent OnStatChange;
+
+		#endregion
+
 		#region Constructors
 
-		public SocialEntity(
-			SocialEngine engine,
-			string entityID
-		)
+		protected virtual void Awake()
 		{
-			Engine = engine;
-			UID = entityID;
 			Traits = new TraitCollection();
 			Stats = new StatCollection();
 			SocialRules = new SocialRules();
+		}
+
+		protected virtual void Start()
+		{
+			Engine = FindObjectOfType<SocialEngine>();
+
+			if (Engine == null)
+			{
+				Debug.LogError("Cannot find GameObject with TDRSManager component in scene.");
+			}
 		}
 
 		#endregion
@@ -73,40 +112,27 @@ namespace TDRS
 			trait.OnRemove(this);
 		}
 
-		/// <summary>
-		/// Remove a social rule from a node
-		/// </summary>
-		/// <param name="socialRule"></param>
-		public virtual void AddSocialRule(SocialRule socialRule)
-		{
-			SocialRules.AddSocialRule(socialRule);
-		}
+		#endregion
+
+		#region Custom Event Classes
 
 		/// <summary>
-		/// Remove a social rule from a node
+		/// Event dispatched when a trait is added to a social entity
 		/// </summary>
-		/// <param name="socialRule"></param>
-		public virtual void RemoveSocialRule(SocialRule socialRule)
-		{
-			SocialRules.RemoveSocialRule(socialRule);
-		}
+		[System.Serializable]
+		public class TraitAddedEvent : UnityEvent<string> { }
 
 		/// <summary>
-		/// Remove all social rules on a node from a given source
+		/// Event dispatched when a trait is removed from a social entity
 		/// </summary>
-		/// <param name="socialRule"></param>
-		public void RemoveAllSocialRulesFromSource(object source)
-		{
-			var socialRules = SocialRules.Rules.ToList();
-			for (int i = socialRules.Count(); i >= 0; i--)
-			{
-				var rule = socialRules[i];
-				if (rule.Source == source)
-				{
-					RemoveSocialRule(rule);
-				}
-			}
-		}
+		[System.Serializable]
+		public class TraitRemovedEvent : UnityEvent<string> { }
+
+		/// <summary>
+		/// Event dispatched when a social entity has a stat that is changed
+		/// </summary>
+		[System.Serializable]
+		public class StatChangeEvent : UnityEvent<string, float> { }
 
 		#endregion
 	}

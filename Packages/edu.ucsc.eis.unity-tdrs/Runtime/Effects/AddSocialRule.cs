@@ -37,13 +37,13 @@ namespace TDRS
 				{
 					output.Append("if ");
 					output.Append(
-						String.Join(" and ", _preconditions.Select(p => p.Description))
+						string.Join(" and ", _preconditions.Select(p => p.Description))
 					);
 					output.Append(", then ");
 				}
 
 				output.Append(
-					String.Join(" and ", _effects.Select(e => e.Description))
+					string.Join(" and ", _effects.Select(e => e.Description))
 				);
 
 				return output.ToString();
@@ -52,12 +52,12 @@ namespace TDRS
 
 		public void Apply(SocialEntity target)
 		{
-			// target.Engine.AddSocialRuleToNode(target.EntityID, _socialRule);
+			target.SocialRules.AddSocialRule(_socialRule);
 		}
 
 		public void Remove(SocialEntity target)
 		{
-			// target.Manager.RemoveAllSocialRulesFromSource(target.EntityID, this);
+			target.SocialRules.RemoveAllSocialRulesFromSource(this);
 		}
 	}
 }

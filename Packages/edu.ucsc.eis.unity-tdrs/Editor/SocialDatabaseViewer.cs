@@ -11,7 +11,7 @@ namespace Calypso
 	public class SocialDatabaseViewer : EditorWindow
 	{
 		private ScrollView scrollView;
-		private TDRSManager tdrsManager;
+		private SocialEngine socialEngine;
 
 
 		[MenuItem("Window/TDRS/Database Viewer")]
@@ -29,9 +29,9 @@ namespace Calypso
 
 			root.Add(scrollView);
 
-			tdrsManager = FindObjectOfType<TDRSManager>();
+			socialEngine = FindObjectOfType<SocialEngine>();
 
-			if (tdrsManager is null)
+			if (socialEngine == null)
 			{
 				Debug.LogError(
 					"Database Viewer cannot find GameObject with TDRSManager component.");
@@ -42,7 +42,7 @@ namespace Calypso
 		{
 			scrollView.Clear();
 
-			var nodeStack = new Stack<INode>(tdrsManager.SocialEngine.DB.Root.Children);
+			var nodeStack = new Stack<INode>(socialEngine.DB.Root.Children);
 
 			while (nodeStack.Count > 0)
 			{
