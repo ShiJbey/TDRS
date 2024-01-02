@@ -41,6 +41,11 @@ namespace TDRS
 		{
 			scrollView.Clear();
 
+			foreach (var node in manager.SocialEngine.Nodes)
+			{
+				scrollView.Add(new Label(node.UID));
+			}
+
 			// var columns = new Columns();
 			// columns.Add(new Column() { makeHeader = () => new Label("UID") });
 			// columns.Add(new Column() { makeHeader = () => new Label("Traits") });

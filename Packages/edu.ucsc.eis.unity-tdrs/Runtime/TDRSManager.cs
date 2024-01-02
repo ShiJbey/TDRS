@@ -1,11 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
-using YamlDotNet.RepresentationModel;
-using TDRS.Helpers;
 
 
 namespace TDRS
@@ -23,6 +19,7 @@ namespace TDRS
 	/// This is a singleton class. Only one TDRSManager should be present in a scene.
 	/// </para>
 	/// </summary>
+	[DefaultExecutionOrder(-5)]
 	public class TDRSManager : MonoBehaviour
 	{
 		#region Attributes
@@ -33,19 +30,9 @@ namespace TDRS
 		[SerializeField]
 		protected List<TextAsset> _traitDefinitions = new List<TextAsset>();
 
-		/// <summary>
-		/// A reference to a YAML initialization file for the social graph.
-		/// </summary>
-		[SerializeField]
-		protected TextAsset _initializationFile;
+		protected Queue<Relationship> relationshipQueue;
 
 		public LoadFactoriesEvent OnLoadFactories;
-
-		[SerializeField]
-		private List<NodeSchemaScriptableObj> _nodeSchemas;
-
-		[SerializeField]
-		private List<RelationshipSchemaScriptableObj> _relationshipSchemas;
 
 		#endregion
 
@@ -67,32 +54,18 @@ namespace TDRS
 			else
 			{
 				Instance = this;
+				relationshipQueue = new Queue<Relationship>();
 			}
 		}
 
 		void Start()
 		{
-			LoadSchemas();
 			LoadFactories();
 			LoadTraits();
-			LoadInitializationFile();
 		}
 		#endregion
 
 		#region Content Loading Methods
-
-		private void LoadSchemas()
-		{
-			foreach (NodeSchemaScriptableObj schema in _nodeSchemas)
-			{
-				SocialEngine.AddNodeSchema(schema.GetSchema());
-			}
-
-			foreach (RelationshipSchemaScriptableObj schema in _relationshipSchemas)
-			{
-				SocialEngine.AddRelationshipSchema(schema.GetSchema());
-			}
-		}
 
 		private void LoadFactories()
 		{
@@ -109,97 +82,116 @@ namespace TDRS
 			SocialEngine.TraitLibrary.InstantiateTraits(SocialEngine);
 		}
 
-		private void LoadInitializationFile()
+		#endregion
+
+		/// <summary>
+		/// Register a new entity with the manager.
+		/// </summary>
+		/// <param name="entity"></param>
+		public TDRSNode RegisterEntity(TDRSEntity entity)
 		{
-			if (_initializationFile == null) return;
+			var node = new TDRSNode(SocialEngine, entity.entityID, entity.gameObject);
+			SocialEngine.AddNode(node);
 
-			Debug.Log("Loading initialization file.");
-
-			var input = new StringReader(_initializationFile.text);
-
-			var yaml = new YamlStream();
-			yaml.Load(input);
-
-			// The root of initialization file is a mapping of TDRSNode IDs
-			// to settings for initializing that Nodes traits, stats, and
-			// outgoing relationships
-			var rootMapping = yaml.Documents[0].RootNode;
-
-			foreach (var (key, nodeSettings) in rootMapping.GetChildren())
+			foreach (var entry in entity.StatSchema.stats)
 			{
-				// Get the node ID
-				var nodeID = key.GetValue();
-				var node = SocialEngine.CreateNode("character", nodeID);
-
-				// Configure initial base stats
-				YamlNode statsNode = nodeSettings.TryGetChild("base_stats");
-				if (statsNode != null)
-				{
-					foreach (var pair in statsNode.GetChildren())
-					{
-						var stat = pair.Key.GetValue();
-						var baseValue = float.Parse(pair.Value.GetValue());
-
-						node.Stats.GetStat(stat).BaseValue = baseValue;
-					}
-				}
-
-				// Configure initial traits
-				// var traitsNode = nodeSettings.TryGetChild("traits");
-				// if (traitsNode != null)
-				// {
-				// 	var traits = ((YamlSequenceNode)traitsNode).Select(x => x.GetValue()).ToList();
-				// 	foreach (var traitID in traits)
-				// 	{
-				// 		// AddTraitToNode(nodeID, traitID);
-				// 	}
-				// }
-
-				// Configure initial relationships
-				// var relationshipsNode = nodeSettings.TryGetChild("relationships");
-				// if (relationshipsNode != null)
-				// {
-				// 	foreach (var pair in relationshipsNode.GetChildren())
-				// 	{
-				// 		var targetID = pair.Key.GetValue();
-				// 		var relationshipSettings = (YamlMappingNode)pair.Value;
-
-				// 		// Configure initial relationship base stats
-				// 		var relationship = SocialEngine.GetRelationship(nodeID, targetID);
-
-				// 		YamlNode relationshipStatsNode = relationshipSettings.TryGetChild("base_stats");
-				// 		if (relationshipStatsNode != null)
-				// 		{
-				// 			foreach (var relStatPair in relationshipStatsNode.GetChildren())
-				// 			{
-				// 				var stat = relStatPair.Key.GetValue();
-				// 				var baseValue = float.Parse(relStatPair.Value.GetValue());
-
-				// 				relationship.Stats.GetStat(stat).BaseValue = baseValue;
-				// 			}
-				// 		}
-
-				// 		// Configure initial relationship traits
-				// 		var relTraitsNode = relationshipSettings.TryGetChild("traits");
-				// 		if (relTraitsNode != null)
-				// 		{
-				// 			var relationshipTraits = ((YamlSequenceNode)relTraitsNode)
-				// 			.Select(x => x.GetValue()).ToList();
-				// 			foreach (var traitID in relationshipTraits)
-				// 			{
-				// 				// AddTraitToRelationship(nodeID, targetID, traitID);
-				// 			}
-				// 		}
-				// 	}
-				// }
+				node.Stats.AddStat(
+					entry.statName,
+					new StatSystem.Stat(
+						entry.baseValue, entry.minValue, entry.maxValue, entry.isDiscrete
+					)
+				);
 			}
 
+			// Configure initial traits
+			foreach (var traitID in entity.traitsAtStart)
+			{
+				node.AddTrait(traitID);
+			}
 
+			// Configure initial stats
+			foreach (var entry in entity.baseStats)
+			{
+				node.Stats.GetStat(entry.name).BaseValue = entry.baseValue;
+			}
 
+			return node;
 		}
 
-		#endregion
+		/// <summary>
+		/// Register a new relationship with the manager.
+		/// </summary>
+		/// <param name="relationship"></param>
+		/// <returns></returns>
+		public TDRSRelationship RegisterRelationship(Relationship relationship)
+		{
+			if (!SocialEngine.HasNode(relationship.Owner.entityID))
+			{
+				relationshipQueue.Enqueue(relationship);
+				return null;
+			}
+
+			if (!SocialEngine.HasNode(relationship.Target.entityID))
+			{
+				relationshipQueue.Enqueue(relationship);
+				return null;
+			}
+
+			var owner = SocialEngine.GetNode(relationship.Owner.entityID);
+			var target = SocialEngine.GetNode(relationship.Target.entityID);
+
+			var rel = new TDRSRelationship(
+				SocialEngine,
+				$"{relationship.Owner.entityID}=>{relationship.Target.entityID}",
+				owner,
+				target,
+				relationship.gameObject
+			);
+
+			foreach (var entry in relationship.statSchema.stats)
+			{
+				rel.Stats.AddStat(
+					entry.statName,
+					new StatSystem.Stat(
+						entry.baseValue, entry.minValue, entry.maxValue, entry.isDiscrete
+					)
+				);
+			}
+
+			// Configure initial traits
+			foreach (var traitID in relationship.traitsAtStart)
+			{
+				rel.AddTrait(traitID);
+			}
+
+			// Configure initial stats
+			foreach (var entry in relationship.baseStats)
+			{
+				rel.Stats.GetStat(entry.name).BaseValue = entry.baseValue;
+			}
+
+			SocialEngine.AddRelationship(rel);
+
+			return rel;
+		}
+
+		private void Update()
+		{
+			ProcessRelationshipQueue();
+		}
+
+		private void ProcessRelationshipQueue()
+		{
+			List<Relationship> relationships = new List<Relationship>(relationshipQueue);
+			relationshipQueue.Clear();
+
+			foreach (var relationship in relationships)
+			{
+				RegisterRelationship(relationship);
+			}
+		}
 	}
+
 
 	#region Custom Event Classes
 

@@ -9,13 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff73e6fd2f1414c2ea131d5b712103bc, type: 3}
-  m_Name: CharacterSchema
+  m_Script: {fileID: 11500000, guid: 3d194bac1067f48d1b57523c8558c611, type: 3}
+  m_Name: DefaultRelationshipStats
   m_EditorClassIdentifier: 
-  nodeType: character
   stats:
-  - statName: sociability
+  - statName: friendship
     baseValue: 0
     maxValue: 50
-    minValue: 0
+    minValue: -50
+    isDiscrete: 1
+  - statName: romance
+    baseValue: 0
+    maxValue: 50
+    minValue: -50
     isDiscrete: 1

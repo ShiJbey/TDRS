@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RePraxis;
 
 namespace TDRS
 {
@@ -10,8 +11,8 @@ namespace TDRS
 		#region Protected Fields
 
 		protected Dictionary<string, TDRSNode> _nodes;
-		protected Dictionary<string, NodeSchema> _nodeSchema;
-		protected Dictionary<(string, string), RelationshipSchema> _relationshipSchema;
+
+		protected Dictionary<(string, string), TDRSRelationship> _relationships;
 
 		#endregion
 
@@ -21,6 +22,7 @@ namespace TDRS
 		public EffectLibrary EffectLibrary { get; }
 		public PreconditionLibrary PreconditionLibrary { get; }
 		public IEnumerable<TDRSNode> Nodes => _nodes.Values;
+		public RePraxisDatabase DB { get; }
 
 		#endregion
 
@@ -28,12 +30,12 @@ namespace TDRS
 
 		public SocialEngine()
 		{
-			_nodes = new Dictionary<string, TDRSNode>();
-			_nodeSchema = new Dictionary<string, NodeSchema>();
-			_relationshipSchema = new Dictionary<(string, string), RelationshipSchema>();
 			TraitLibrary = new TraitLibrary();
 			EffectLibrary = new EffectLibrary();
 			PreconditionLibrary = new PreconditionLibrary();
+			DB = new RePraxisDatabase();
+			_nodes = new Dictionary<string, TDRSNode>();
+			_relationships = new Dictionary<(string, string), TDRSRelationship>();
 		}
 
 		#endregion
@@ -41,110 +43,44 @@ namespace TDRS
 		#region Methods
 
 		/// <summary>
-		/// Add a new node schema.
-		/// </summary>
-		/// <param name="schema"></param>
-		public void AddNodeSchema(NodeSchema schema)
-		{
-			_nodeSchema[schema.nodeType] = schema;
-		}
-
-		/// <summary>
-		/// Add a new relationship schema.
-		/// </summary>
-		/// <param name="schema"></param>
-		public void AddRelationshipSchema(RelationshipSchema schema)
-		{
-			_relationshipSchema[(schema.ownerType, schema.targetType)] = schema;
-		}
-
-		/// <summary>
 		/// Retrieves the social entity with the given ID or creates one
 		/// if one is not found.
 		/// </summary>
-		/// <param name="nodeType"></param>
 		/// <param name="nodeId"></param>
-		/// <returns></returns>
-		public TDRSNode CreateNode(string nodeType, string nodeId)
+		public void AddNode(TDRSNode node)
 		{
-			if (_nodes.ContainsKey(nodeId)) return _nodes[nodeId];
 
-			if (!_nodeSchema.ContainsKey(nodeType))
+			if (_nodes.ContainsKey(node.UID))
 			{
-				var ex = new KeyNotFoundException($"No schema found for node type: {nodeType}");
-				ex.Data["nodeType"] = nodeType;
-				throw ex;
+				throw new System.Exception($"Entity already exists with ID: {node.UID}");
 			}
 
-			var schema = _nodeSchema[nodeType];
-			var node = new TDRSNode(this, nodeType, nodeId);
+			_nodes[node.UID] = node;
 
-			foreach (var entry in schema.stats)
-			{
-				node.Stats.AddStat(entry.statName, new StatSystem.Stat(
-					entry.baseValue, entry.minValue, entry.maxValue, entry.isDiscrete
-				));
-			}
-
-			_nodes[nodeId] = node;
-
-			return node;
+			DB.Insert($"{node.UID}");
 		}
 
 		/// <summary>
-		/// Creates gets the relationship from the owner to target and creates a
-		/// new relationship if one does not exist.
-		///
-		/// <para>
-		/// This adds the necessary stats active social rules when creating new relationships
-		/// </para>
+		/// Add a new relationship
 		/// </summary>
-		/// <param name="ownerId"></param>
-		/// <param name="targetId"></param>
-		/// <returns></returns>
-		public TDRSRelationship CreateRelationship(string ownerId, string targetId)
+		/// <param name="relationship">
+		public void AddRelationship(TDRSRelationship relationship)
 		{
-			if (!_nodes.ContainsKey(ownerId))
+			if (_relationships.ContainsKey((relationship.Owner.UID, relationship.Target.UID)))
 			{
-				throw new KeyNotFoundException($"Cannot find node with ID: {ownerId}.");
+				throw new System.Exception(
+					"A relationship already exists between "
+					+ $"{relationship.Owner} and {relationship.Target}.");
 			}
 
-			if (!_nodes.ContainsKey(targetId))
-			{
-				throw new KeyNotFoundException($"Cannot find node with ID: {targetId}.");
-			}
+			_relationships[(relationship.Owner.UID, relationship.Target.UID)] = relationship;
 
-			var owner = GetNode(ownerId);
-			var target = GetNode(targetId);
-
-			if (owner.OutgoingRelationships.ContainsKey(target))
-			{
-				return owner.OutgoingRelationships[target];
-			}
-
-			if (!_relationshipSchema.ContainsKey((owner.NodeType, target.NodeType)))
-			{
-				throw new KeyNotFoundException(
-					"Cannot find relationship schema for connecting a "
-					+ $"{owner.NodeType} to a {target.NodeType}.");
-			}
-
-			var schema = _relationshipSchema[(owner.NodeType, target.NodeType)];
-
-			var relationship = new TDRSRelationship(
-				this, $"{ownerId}->{targetId}", owner, target
-			);
+			var owner = relationship.Owner;
+			var target = relationship.Target;
 
 			owner.OutgoingRelationships[target] = relationship;
 			target.IncomingRelationships[owner] = relationship;
 
-			// Configure stats
-			foreach (var entry in schema.stats)
-			{
-				relationship.Stats.AddStat(entry.statName, new StatSystem.Stat(
-					entry.baseValue, entry.minValue, entry.maxValue, entry.isDiscrete
-				));
-			}
 
 			// Apply outgoing social rules from the owner
 			foreach (var rule in owner.SocialRules.Rules)
@@ -166,7 +102,7 @@ namespace TDRS
 				}
 			}
 
-			return relationship;
+			DB.Insert($"{owner.UID}.relationships.{target.UID}");
 		}
 
 		/// <summary>

@@ -9,14 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c830b0dc4506423c963da0c87f02335, type: 3}
-  m_Name: CharacterToCharacterSchema
+  m_Script: {fileID: 11500000, guid: 3d194bac1067f48d1b57523c8558c611, type: 3}
+  m_Name: DefaultCharacterStats
   m_EditorClassIdentifier: 
-  ownerType: character
-  targetType: character
   stats:
-  - statName: reputation
+  - statName: Confidence
     baseValue: 0
     maxValue: 50
-    minValue: 0
+    minValue: -50
+    isDiscrete: 1
+  - statName: Sociability
+    baseValue: 0
+    maxValue: 50
+    minValue: -50
     isDiscrete: 1

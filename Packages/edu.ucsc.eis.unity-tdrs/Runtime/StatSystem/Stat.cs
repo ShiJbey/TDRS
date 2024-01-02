@@ -62,6 +62,7 @@ namespace TDRS.StatSystem
 			{
 				_baseValue = value;
 				_isDirty = true;
+				if (OnValueChanged != null) OnValueChanged.Invoke(this, Value);
 			}
 		}
 
@@ -105,6 +106,12 @@ namespace TDRS.StatSystem
 				return (Value - MinValue) / (MaxValue - MinValue);
 			}
 		}
+
+		#endregion
+
+		#region Events
+
+		public event EventHandler<float> OnValueChanged;
 
 		#endregion
 
@@ -152,6 +159,7 @@ namespace TDRS.StatSystem
 				return 1;
 			});
 			_isDirty = true;
+			if (OnValueChanged != null) OnValueChanged.Invoke(this, Value);
 		}
 
 		/// <summary>
@@ -166,6 +174,7 @@ namespace TDRS.StatSystem
 			if (success)
 			{
 				_isDirty = true;
+				if (OnValueChanged != null) OnValueChanged.Invoke(this, Value);
 			}
 
 			return success;
@@ -189,6 +198,11 @@ namespace TDRS.StatSystem
 					removed_any_modifier = true;
 					_isDirty = true;
 				}
+			}
+
+			if (removed_any_modifier && OnValueChanged != null)
+			{
+				OnValueChanged.Invoke(this, Value);
 			}
 
 			return removed_any_modifier;

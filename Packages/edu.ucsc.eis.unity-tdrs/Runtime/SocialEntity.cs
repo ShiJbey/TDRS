@@ -19,12 +19,12 @@ namespace TDRS
 		/// <summary>
 		/// The collection of traits associated with this entity
 		/// </summary>
-		public Traits Traits { get; protected set; }
+		public TraitCollection Traits { get; protected set; }
 
 		/// <summary>
 		/// A collection of stats associated with this entity
 		/// </summary>
-		public Stats Stats { get; protected set; }
+		public StatCollection Stats { get; protected set; }
 
 		/// <summary>
 		/// All social rules affecting this entity
@@ -42,8 +42,8 @@ namespace TDRS
 		{
 			Engine = engine;
 			UID = entityID;
-			Traits = new Traits();
-			Stats = new Stats();
+			Traits = new TraitCollection();
+			Stats = new StatCollection();
 			SocialRules = new SocialRules();
 		}
 

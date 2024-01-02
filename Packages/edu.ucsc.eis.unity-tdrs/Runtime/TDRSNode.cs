@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace TDRS
 {
@@ -10,7 +11,7 @@ namespace TDRS
 	{
 		#region Properties
 
-		public string NodeType { get; }
+		public GameObject GameObject { get; }
 
 		/// <summary>
 		/// Relationships directed toward this entity
@@ -28,15 +29,31 @@ namespace TDRS
 
 		public TDRSNode(
 			SocialEngine engine,
-			string nodeType,
-			string entityID
+			string entityID,
+			GameObject gameObject
 		) : base(engine, entityID)
 		{
-			NodeType = nodeType;
-			Traits = new Traits();
-			SocialRules = new SocialRules();
+			GameObject = gameObject;
 			IncomingRelationships = new Dictionary<TDRSNode, TDRSRelationship>();
 			OutgoingRelationships = new Dictionary<TDRSNode, TDRSRelationship>();
+
+			Traits.OnTraitAdded += (traits, traitID) =>
+			{
+				Engine.DB.Insert($"{UID}.trait.{traitID}");
+			};
+
+			Traits.OnTraitRemoved += (traits, traitID) =>
+			{
+				Engine.DB.Delete($"{UID}.trait.{traitID}");
+			};
+
+			Stats.OnValueChanged += (stats, pair) =>
+			{
+				string statName = pair.Item1;
+				float value = pair.Item2;
+
+				Engine.DB.Insert($"{UID}.stat.{statName}!{value}");
+			};
 		}
 
 		#endregion

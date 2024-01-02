@@ -1,16 +1,10 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace TDRS
 {
-	/// <summary>
-	/// A user-facing Unity component for associating a GameObject with as node within
-	/// the TDRS Manager's social graph.
-	/// </summary>
-	[DefaultExecutionOrder(1)]
-	public class TDRSEntity : MonoBehaviour
+	public class Relationship : MonoBehaviour
 	{
 		[Serializable]
 		public struct StatInitializer
@@ -19,13 +13,11 @@ namespace TDRS
 			public float baseValue;
 		}
 
-		#region Attributes
-
-		/// <summary>
-		/// The ID of the entity within the TDRS Manager
-		/// </summary>
 		[SerializeField]
-		public string entityID = "";
+		public TDRSEntity owner;
+
+		[SerializeField]
+		public TDRSEntity target;
 
 		[SerializeField]
 		public StatSchemaScriptableObj statSchema;
@@ -36,19 +28,15 @@ namespace TDRS
 		[SerializeField]
 		public StatInitializer[] baseStats;
 
-		#endregion
+		public TDRSEntity Owner => owner;
 
-		public StatSchemaScriptableObj StatSchema => statSchema;
-
-		public IEnumerable<StatInitializer> BaseStats => baseStats;
+		public TDRSEntity Target => target;
 
 		public TraitAddedEvent OnTraitAdded;
 
 		public TraitRemovedEvent OnTraitRemoved;
 
 		public StatChangeEvent OnStatChange;
-
-		#region Unity Methods
 
 		void Awake()
 		{
@@ -63,27 +51,25 @@ namespace TDRS
 		void Start()
 		{
 			TDRSManager manager = FindObjectOfType<TDRSManager>();
-			var node = manager.RegisterEntity(this);
+			var relationship = manager.RegisterRelationship(this);
 
-			node.Traits.OnTraitAdded += (traits, traitID) =>
+			relationship.Traits.OnTraitAdded += (traits, traitID) =>
 			{
 				if (OnTraitAdded != null) OnTraitAdded.Invoke(traitID);
 			};
 
-			node.Traits.OnTraitRemoved += (traits, traitID) =>
+			relationship.Traits.OnTraitRemoved += (traits, traitID) =>
 			{
 				if (OnTraitRemoved != null) OnTraitRemoved.Invoke(traitID);
 			};
 
-			node.Stats.OnValueChanged += (stats, nameAndValue) =>
+			relationship.Stats.OnValueChanged += (stats, nameAndValue) =>
 			{
 				string statName = nameAndValue.Item1;
 				float value = nameAndValue.Item2;
 				if (OnStatChange != null) OnStatChange.Invoke(statName, value);
 			};
 		}
-
-		#endregion
 
 		#region Custom Event Classes
 
@@ -107,4 +93,5 @@ namespace TDRS
 
 		#endregion
 	}
+
 }

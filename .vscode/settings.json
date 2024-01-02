@@ -49,7 +49,9 @@
         "Obj/": true,
         "ProjectSettings/": true,
         "temp/": true,
-        "Temp/": true
+        "Temp/": true,
+        "UserSettings/": true,
+        "Logs/": true
     },
     "cSpell.words": ["TDRS"],
     "dotnet.defaultSolution": "Unity-TDRS.sln"

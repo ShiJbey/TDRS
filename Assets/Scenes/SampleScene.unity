@@ -123,6 +123,56 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &518976125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 518976126}
+  - component: {fileID: 518976127}
+  m_Layer: 0
+  m_Name: Relationship
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &518976126
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518976125}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 816287689}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &518976127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518976125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7f135ecf2f643018e127458354937d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: {fileID: 816287690}
+  target: {fileID: 904270041}
+  statSchema: {fileID: 11400000, guid: 027098b6150c24bb5b11161846cb21ff, type: 2}
+  traitsAtStart:
+  - lovers
+  baseStats: []
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -242,7 +292,7 @@ Transform:
   m_GameObject: {fileID: 568713664}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.42879805, y: 0.60880876, z: -0.014116665}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -262,7 +312,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _traitDefinitions:
   - {fileID: 4900000, guid: 905ca4f98d10e89449e9f617372a2de9, type: 3}
-  _initializationFile: {fileID: 4900000, guid: 015611af4215b4c81b89843982382771, type: 3}
   OnLoadFactories:
     m_PersistentCalls:
       m_Calls:
@@ -278,10 +327,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  _nodeSchemas:
-  - {fileID: 11400000, guid: 4b659726368064e1d8b084fec7644a76, type: 2}
-  _relationshipSchemas:
-  - {fileID: 11400000, guid: 44459e73f8cf6433097c43e22661b5f6, type: 2}
 --- !u!114 &568713668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,12 +369,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityID: character_c
-  OnTraitAdded:
-    m_PersistentCalls:
-      m_Calls: []
-  OnTraitRemoved:
-    m_PersistentCalls:
-      m_Calls: []
+  statSchema: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
+  traitsAtStart:
+  - anti-social
+  baseStats:
+  - name: Confidence
+    baseValue: 10
 --- !u!4 &756568542
 Transform:
   m_ObjectHideFlags: 0
@@ -339,7 +384,7 @@ Transform:
   m_GameObject: {fileID: 756568540}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.4507237, y: 0.47193992, z: -0.012704535}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -371,10 +416,11 @@ Transform:
   m_GameObject: {fileID: 816287688}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.42879805, y: 0.60880876, z: -0.014116665}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 518976126}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &816287690
@@ -390,12 +436,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityID: character_a
-  OnTraitAdded:
-    m_PersistentCalls:
-      m_Calls: []
-  OnTraitRemoved:
-    m_PersistentCalls:
-      m_Calls: []
+  statSchema: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
+  traitsAtStart: []
+  baseStats: []
 --- !u!1 &904270039
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,7 +465,7 @@ Transform:
   m_GameObject: {fileID: 904270039}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.42879805, y: 0.60880876, z: -0.014116665}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -441,12 +484,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityID: character_b
-  OnTraitAdded:
-    m_PersistentCalls:
-      m_Calls: []
-  OnTraitRemoved:
-    m_PersistentCalls:
-      m_Calls: []
+  statSchema: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
+  traitsAtStart: []
+  baseStats: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
