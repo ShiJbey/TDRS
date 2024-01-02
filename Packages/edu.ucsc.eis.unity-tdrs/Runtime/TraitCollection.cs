@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace TDRS
@@ -5,7 +6,7 @@ namespace TDRS
 	/// <summary>
 	/// Manages the traits attached to a social entity or relationship.
 	/// </summary>
-	public class Traits
+	public class TraitCollection
 	{
 		#region Attributes
 
@@ -21,9 +22,32 @@ namespace TDRS
 
 		#endregion
 
+		#region Events
+
+		/// <summary>
+		/// Event published when a trait is added to the collection.
+		/// </summary>
+		public event EventHandler<string> OnTraitAdded;
+
+		/// <summary>
+		/// Event published when a trait is removed from the collection.
+		/// </summary>
+		public event EventHandler<string> OnTraitRemoved;
+
+		#endregion
+
+		#region Public Properties
+
+		/// <summary>
+		/// All traits within the collection.
+		/// </summary>
+		public IEnumerable<Trait> Traits => _traits.Values;
+
+		#endregion
+
 		#region Constructors
 
-		public Traits()
+		public TraitCollection()
 		{
 			_traits = new Dictionary<string, Trait>();
 			_conflictingTraits = new HashSet<string>();
@@ -38,7 +62,7 @@ namespace TDRS
 		/// </remarks>
 		/// <param name="trait"></param>
 		/// <returns></returns>
-		public virtual bool AddTrait(Trait trait)
+		public bool AddTrait(Trait trait)
 		{
 			if (_traits.ContainsKey(trait.TraitID))
 			{
@@ -53,6 +77,8 @@ namespace TDRS
 			_traits[trait.TraitID] = trait;
 
 			_conflictingTraits.UnionWith(trait.ConflictingTraits);
+
+			if (OnTraitAdded != null) OnTraitAdded.Invoke(this, trait.TraitID);
 
 			return true;
 		}
@@ -77,6 +103,8 @@ namespace TDRS
 				_conflictingTraits.UnionWith(remainingTrait.ConflictingTraits);
 			}
 
+			OnTraitRemoved(this, traitID);
+
 			return true;
 		}
 
@@ -85,7 +113,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="trait"></param>
 		/// <returns></returns>
-		public virtual bool RemoveTrait(Trait trait)
+		public bool RemoveTrait(Trait trait)
 		{
 			return RemoveTrait(trait.TraitID);
 		}
@@ -118,15 +146,6 @@ namespace TDRS
 		public bool HasConflictingTrait(Trait trait)
 		{
 			return _conflictingTraits.Contains(trait.TraitID);
-		}
-
-		/// <summary>
-		/// Get all the trait instances
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<Trait> GetAllTraits()
-		{
-			return _traits.Values;
 		}
 
 		#endregion

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace TDRS
@@ -22,6 +23,13 @@ namespace TDRS
 
 		#endregion
 
+		#region Events
+
+		public event EventHandler<SocialRule> OnRuleAdded;
+		public event EventHandler<SocialRule> OnRuleRemoved;
+
+		#endregion
+
 		#region Constructors
 
 		public SocialRules()
@@ -40,6 +48,7 @@ namespace TDRS
 		public virtual void AddSocialRule(SocialRule rule)
 		{
 			_rules.Add(rule);
+			if (OnRuleAdded != null) OnRuleAdded.Invoke(this, rule);
 		}
 
 		public virtual void RemoveSocialRule(SocialRule rule)
@@ -50,6 +59,7 @@ namespace TDRS
 			}
 
 			_rules.Remove(rule);
+			if (OnRuleRemoved != null) OnRuleRemoved.Invoke(this, rule);
 		}
 
 		/// <summary>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TDRS.StatSystem;
 
@@ -6,7 +7,7 @@ namespace TDRS
 	/// <summary>
 	/// Manages stats associated with a Entity
 	/// </summary>
-	public class Stats
+	public class StatCollection
 	{
 		#region Attributes
 
@@ -19,15 +20,26 @@ namespace TDRS
 
 		#endregion
 
+		#region Events
+
+		public event EventHandler<(string, float)> OnValueChanged;
+
+		#endregion
+
 		#region Properties
 
 		public IEnumerable<StatModifier> Modifiers => _modifiers;
+
+		/// <summary>
+		/// Get all the stat instances.
+		/// </summary>
+		public IEnumerable<KeyValuePair<string, Stat>> Stats => _stats;
 
 		#endregion
 
 		#region Constructors
 
-		public Stats()
+		public StatCollection()
 		{
 			_stats = new Dictionary<string, Stat>();
 			_modifiers = new List<StatModifier>();
@@ -45,6 +57,13 @@ namespace TDRS
 		public void AddStat(string statName, Stat stat)
 		{
 			_stats[statName] = stat;
+
+			stat.OnValueChanged += (stat, value) =>
+			{
+				if (OnValueChanged != null) OnValueChanged.Invoke(this, (statName, value));
+			};
+
+			if (OnValueChanged != null) OnValueChanged.Invoke(this, (statName, stat.Value));
 		}
 
 		/// <summary>
@@ -52,7 +71,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="statName"></param>
 		/// <returns></returns>
-		/// <exception cref="System.Exception"></exception>
+		/// <exception cref="KeyNotFoundException"></exception>
 		public Stat GetStat(string statName)
 		{
 			if (_stats.ContainsKey(statName))
@@ -60,17 +79,8 @@ namespace TDRS
 				return _stats[statName];
 			}
 
-			throw new System.Exception(
+			throw new KeyNotFoundException(
 				$"Cannot find {statName} stat. Are you missing a stat in the inspector?");
-		}
-
-		/// <summary>
-		/// Get all the stat instances.
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<KeyValuePair<string, Stat>> GetStats()
-		{
-			return _stats;
 		}
 
 		/// <summary>
@@ -89,7 +99,8 @@ namespace TDRS
 		/// <param name="modifier"></param>
 		public void AddModifier(StatModifier modifier)
 		{
-			GetStat(modifier.Stat).AddModifier(modifier);
+			Stat stat = GetStat(modifier.Stat);
+			stat.AddModifier(modifier);
 			_modifiers.Add(modifier);
 		}
 
@@ -104,7 +115,8 @@ namespace TDRS
 
 			if (success)
 			{
-				success = GetStat(modifier.Stat).RemoveModifier(modifier);
+				Stat stat = GetStat(modifier.Stat);
+				success = stat.RemoveModifier(modifier);
 			}
 
 			return success;

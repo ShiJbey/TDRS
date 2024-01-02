@@ -123,6 +123,65 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &518976125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 518976126}
+  - component: {fileID: 518976127}
+  m_Layer: 0
+  m_Name: Relationship
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &518976126
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518976125}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 816287689}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &518976127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518976125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7f135ecf2f643018e127458354937d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <StatSchema>k__BackingField: {fileID: 11400000, guid: 027098b6150c24bb5b11161846cb21ff, type: 2}
+  <BaseStats>k__BackingField: []
+  <traitsAtStart>k__BackingField:
+  - lovers
+  OnTraitAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTraitRemoved:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStatChange:
+    m_PersistentCalls:
+      m_Calls: []
+  <Owner>k__BackingField: {fileID: 816287690}
+  <Target>k__BackingField: {fileID: 904270041}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -242,7 +301,7 @@ Transform:
   m_GameObject: {fileID: 568713664}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.42879805, y: 0.60880876, z: -0.014116665}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -260,26 +319,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3643f8d86d34b46a98f5794ed7f28d85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _entityStats:
-  - statName: Sociability
-    baseValue: 0
-    maxValue: 50
-    minValue: -50
-    isDiscrete: 1
-  _relationshipStats:
-  - statName: Friendship
-    baseValue: 0
-    maxValue: 50
-    minValue: -50
-    isDiscrete: 1
-  - statName: Romance
-    baseValue: 0
-    maxValue: 50
-    minValue: -50
-    isDiscrete: 1
   _traitDefinitions:
   - {fileID: 4900000, guid: 905ca4f98d10e89449e9f617372a2de9, type: 3}
-  _initializationFile: {fileID: 4900000, guid: 015611af4215b4c81b89843982382771, type: 3}
   OnLoadFactories:
     m_PersistentCalls:
       m_Calls:
@@ -336,18 +377,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1165db2bee8ed4e828113077a4c2cd1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityID: character_c
-  traits: []
-  stats:
-    stats: []
-    modifiers: []
-  relationships: []
+  <StatSchema>k__BackingField: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
+  <BaseStats>k__BackingField: []
+  <traitsAtStart>k__BackingField:
+  - happy_go_lucky
   OnTraitAdded:
     m_PersistentCalls:
       m_Calls: []
   OnTraitRemoved:
     m_PersistentCalls:
       m_Calls: []
+  OnStatChange:
+    m_PersistentCalls:
+      m_Calls: []
+  <UID>k__BackingField: character_c
 --- !u!4 &756568542
 Transform:
   m_ObjectHideFlags: 0
@@ -357,7 +400,7 @@ Transform:
   m_GameObject: {fileID: 756568540}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.4507237, y: 0.47193992, z: -0.012704535}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -389,10 +432,11 @@ Transform:
   m_GameObject: {fileID: 816287688}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.42879805, y: 0.60880876, z: -0.014116665}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 518976126}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &816287690
@@ -407,18 +451,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1165db2bee8ed4e828113077a4c2cd1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityID: character_a
-  traits: []
-  stats:
-    stats: []
-    modifiers: []
-  relationships: []
+  <StatSchema>k__BackingField: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
+  <BaseStats>k__BackingField: []
+  <traitsAtStart>k__BackingField: []
   OnTraitAdded:
     m_PersistentCalls:
       m_Calls: []
   OnTraitRemoved:
     m_PersistentCalls:
       m_Calls: []
+  OnStatChange:
+    m_PersistentCalls:
+      m_Calls: []
+  <UID>k__BackingField: character_a
 --- !u!1 &904270039
 GameObject:
   m_ObjectHideFlags: 0
@@ -445,7 +490,7 @@ Transform:
   m_GameObject: {fileID: 904270039}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.42879805, y: 0.60880876, z: -0.014116665}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -463,18 +508,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1165db2bee8ed4e828113077a4c2cd1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityID: character_b
-  traits: []
-  stats:
-    stats: []
-    modifiers: []
-  relationships: []
+  <StatSchema>k__BackingField: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
+  <BaseStats>k__BackingField: []
+  <traitsAtStart>k__BackingField:
+  - authoritarian
   OnTraitAdded:
     m_PersistentCalls:
       m_Calls: []
   OnTraitRemoved:
     m_PersistentCalls:
       m_Calls: []
+  OnStatChange:
+    m_PersistentCalls:
+      m_Calls: []
+  <UID>k__BackingField: character_b
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

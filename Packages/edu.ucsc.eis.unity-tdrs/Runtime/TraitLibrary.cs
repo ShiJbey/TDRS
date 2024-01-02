@@ -2,7 +2,6 @@
 using System.Linq;
 using System.IO;
 using YamlDotNet.RepresentationModel;
-using UnityEngine;
 
 using TDRS.Helpers;
 
@@ -75,7 +74,6 @@ namespace TDRS
 		/// <summary>
 		/// Add a trait definition
 		/// </summary>
-		/// <param name="manager"></param>
 		/// <param name="traitID"></param>
 		/// <param name="traitNode"></param>
 		/// <returns></returns>
@@ -142,9 +140,9 @@ namespace TDRS
 		/// <summary>
 		/// Instantiate all the traits within the traits definition dictionary
 		/// </summary>
-		/// <param name="manager"></param>
+		/// <param name="engine"></param>
 		/// <returns></returns>
-		public void InstantiateTraits(TDRSManager manager)
+		public void InstantiateTraits(SocialEngine engine)
 		{
 			foreach (var (traitID, traitDef) in _traitDefinitions)
 			{
@@ -163,8 +161,8 @@ namespace TDRS
 					foreach (var entry in sequence)
 					{
 						var effectType = entry.GetChild("type").GetValue();
-						var factory = manager.EffectLibrary.GetEffectFactory(effectType);
-						var effect = factory.Instantiate(manager, entry);
+						var factory = engine.EffectLibrary.GetEffectFactory(effectType);
+						var effect = factory.Instantiate(engine, entry);
 						effects.Add(effect);
 					}
 				}
@@ -178,8 +176,6 @@ namespace TDRS
 						traitDef.ConflictingTraits
 					)
 				);
-
-				Debug.Log($"Instantiated '{traitID}' trait.");
 			}
 		}
 

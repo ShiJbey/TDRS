@@ -101,7 +101,7 @@ namespace TDRS
 		/// Callback method executed when the social rule is applied to a relationship.
 		/// </summary>
 		/// <param name="relationship"></param>
-		public void OnAdd(TDRSRelationship relationship)
+		public void OnAdd(SocialRelationship relationship)
 		{
 			foreach (var effect in _effects)
 			{
@@ -113,7 +113,7 @@ namespace TDRS
 		/// Callback method executed when the social rule is removed from a relationship.
 		/// </summary>
 		/// <param name="relationship"></param>
-		public void OnRemove(TDRSRelationship relationship)
+		public void OnRemove(SocialRelationship relationship)
 		{
 			foreach (var effect in _effects)
 			{

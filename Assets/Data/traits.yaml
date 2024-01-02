@@ -46,3 +46,8 @@ lovers:
   description: >-
     These characters are romantically involved, but this does not assume
     as serious relationship.
+  effects:
+    - type: StatBuff
+      stat: Romance
+      amount: 10
+      reason: Lovers trait

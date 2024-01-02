@@ -6,7 +6,7 @@ namespace TDRS
 {
 	public class AddSocialRuleFactory : IEffectFactory
 	{
-		public IEffect Instantiate(TDRSManager manager, YamlNode effectNode)
+		public IEffect Instantiate(SocialEngine engine, YamlNode effectNode)
 		{
 			bool isOutgoing = true;
 
@@ -25,8 +25,8 @@ namespace TDRS
 				foreach (var entry in sequence)
 				{
 					string preconditionType = entry.GetChild("type").GetValue();
-					var factory = manager.PreconditionLibrary.GetPreconditionFactory(preconditionType);
-					IPrecondition precondition = factory.Instantiate(manager, entry);
+					var factory = engine.PreconditionLibrary.GetPreconditionFactory(preconditionType);
+					IPrecondition precondition = factory.Instantiate(engine, entry);
 					preconditions.Add(precondition);
 				}
 			}
@@ -40,8 +40,8 @@ namespace TDRS
 				foreach (var entry in sequence)
 				{
 					var effectType = entry.GetChild("type").GetValue();
-					var factory = manager.EffectLibrary.GetEffectFactory(effectType);
-					var effect = factory.Instantiate(manager, entry);
+					var factory = engine.EffectLibrary.GetEffectFactory(effectType);
+					var effect = factory.Instantiate(engine, entry);
 					effects.Add(effect);
 				}
 			}

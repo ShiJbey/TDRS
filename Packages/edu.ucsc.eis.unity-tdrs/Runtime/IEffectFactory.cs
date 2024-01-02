@@ -10,9 +10,9 @@ namespace TDRS
 		/// <summary>
 		/// Construct a new instance of an Effect.
 		/// </summary>
-		/// <param name="manager"></param>
+		/// <param name="engine"></param>
 		/// <param name="effectNode"></param>
 		/// <returns></returns>
-		public IEffect Instantiate(TDRSManager manager, YamlNode effectNode);
+		public IEffect Instantiate(SocialEngine engine, YamlNode effectNode);
 	}
 }

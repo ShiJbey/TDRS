@@ -5,7 +5,7 @@ namespace TDRS
 {
 	public class StatBuffEffectFactory : IEffectFactory
 	{
-		public IEffect Instantiate(TDRSManager manager, YamlNode preconditionNode)
+		public IEffect Instantiate(SocialEngine engine, YamlNode preconditionNode)
 		{
 			var mapping = (YamlMappingNode)preconditionNode;
 
