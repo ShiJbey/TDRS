@@ -8,19 +8,27 @@ namespace TDRS
 	/// </summary>
 	public class SocialRelationship : SocialEntity
 	{
+		#region Fields
+
+		[SerializeField]
+		private SocialAgent m_owner;
+
+		[SerializeField]
+		private SocialAgent m_target;
+
+		#endregion
+
 		#region Properties
 
 		/// <summary>
 		/// Reference to the owner of the relationship
 		/// </summary>
-		[field: SerializeField]
-		public SocialAgent Owner { get; set; }
+		public SocialAgent Owner => m_owner;
 
 		/// <summary>
 		/// Reference to the target of the relationship
 		/// </summary>
-		[field: SerializeField]
-		public SocialAgent Target { get; set; }
+		public SocialAgent Target => m_target;
 
 		#endregion
 

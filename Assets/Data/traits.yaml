@@ -22,7 +22,7 @@ authoritarian:
           reason: Other character has the Authoritarian trait
 
 happy_go_lucky:
-  display_name: HappyGoLucky
+  display_name: Happy-Go-Lucky
   description: >-
     This character is an overly optimistic attitude toward life.
   effects:

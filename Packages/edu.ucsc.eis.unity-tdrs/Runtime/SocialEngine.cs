@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using RePraxis;
+using System.Linq;
 
 
 namespace TDRS
@@ -42,7 +43,7 @@ namespace TDRS
 		public TraitLibrary TraitLibrary { get; protected set; }
 		public EffectLibrary EffectLibrary { get; protected set; }
 		public PreconditionLibrary PreconditionLibrary { get; protected set; }
-		public IEnumerable<SocialAgent> Nodes => _nodes.Values;
+		public List<SocialAgent> Agents => _nodes.Values.ToList();
 		public RePraxisDatabase DB { get; protected set; }
 
 		#endregion
@@ -115,7 +116,7 @@ namespace TDRS
 			}
 
 			// Configure initial traits
-			foreach (var traitID in agent.traitsAtStart)
+			foreach (var traitID in agent.BaseTraits)
 			{
 				agent.AddTrait(traitID);
 			}
@@ -180,7 +181,7 @@ namespace TDRS
 			}
 
 			// Configure initial traits
-			foreach (var traitID in relationship.traitsAtStart)
+			foreach (var traitID in relationship.BaseTraits)
 			{
 				relationship.AddTrait(traitID);
 			}

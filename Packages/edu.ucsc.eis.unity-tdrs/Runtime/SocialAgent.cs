@@ -10,13 +10,19 @@ namespace TDRS
 	/// </summary>
 	public class SocialAgent : SocialEntity
 	{
+		#region Fields
+
+		[SerializeField]
+		protected string m_UID;
+
+		#endregion
+
 		#region Properties
 
 		/// <summary>
 		/// Get the unique ID of the entity
 		/// </summary>
-		[field: SerializeField]
-		public string UID { get; protected set; }
+		public string UID => m_UID;
 
 		/// <summary>
 		/// Relationships directed toward this entity

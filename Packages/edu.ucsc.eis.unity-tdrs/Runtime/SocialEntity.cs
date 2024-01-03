@@ -6,25 +6,35 @@ namespace TDRS
 {
 	public abstract class SocialEntity : MonoBehaviour
 	{
+		#region Fields
+
+		[SerializeField]
+		private StatSchemaScriptableObj m_statSchema;
+
+		[SerializeField]
+		private List<StatInitializer> m_baseStats;
+
+		[SerializeField]
+		private List<string> m_baseTraits;
+
+		#endregion
+
 		#region Properties
 
 		/// <summary>
 		/// The schema of what stats to add to the entity on initialization.
 		/// </summary>
-		[field: SerializeField]
-		public StatSchemaScriptableObj StatSchema { get; protected set; }
+		public StatSchemaScriptableObj StatSchema => m_statSchema;
 
 		/// <summary>
 		/// Initial values for this entity's stats.
 		/// </summary>
-		[field: SerializeField]
-		public List<StatInitializer> BaseStats { get; protected set; }
+		public List<StatInitializer> BaseStats => m_baseStats;
 
 		/// <summary>
 		/// IDs of traits to add when initializing the entity.
 		/// </summary>
-		[field: SerializeField]
-		public List<string> traitsAtStart { get; protected set; }
+		public List<string> BaseTraits => m_baseTraits;
 
 		/// <summary>
 		/// A reference to the manager that owns this entity

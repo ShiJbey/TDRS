@@ -24,7 +24,15 @@ namespace TDRS
 			_reason = reason;
 		}
 
-		public string Description => $"{_statName} ({_amount}): {_reason}";
+		public string Description
+		{
+			get
+			{
+				string amountPrefix = _amount > 0 ? "+" : "";
+				return $"{_statName} {amountPrefix}{_amount}: {_reason}";
+			}
+
+		}
 
 		public void Apply(SocialEntity target)
 		{

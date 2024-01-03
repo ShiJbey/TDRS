@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TDRS
 {
@@ -41,7 +42,7 @@ namespace TDRS
 		/// <summary>
 		/// All traits within the collection.
 		/// </summary>
-		public IEnumerable<Trait> Traits => _traits.Values;
+		public List<Trait> Traits => _traits.Values.ToList();
 
 		#endregion
 

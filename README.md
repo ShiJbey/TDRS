@@ -12,7 +12,7 @@
 - 📊 Track various agent and relationship stat values like sociability, confidence, friendship, romance, trust, and reputation.
 - 🏷️ Tag agents and relationships with various traits to influence stats
 - 📏 Associate traits with social rules that change how characters treat others
-- 🎊 Uses an expressive event system to propagate information
+- 🎊 Dispatch custom social events that propagate through the social network and change relationships
 
 ## What this project is **NOT**
 
