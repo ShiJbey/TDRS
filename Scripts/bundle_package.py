@@ -1,6 +1,10 @@
+#!/usr/bin/python3
+
 """Unity-TDRS package bundler script
 
-This script create a new tar distribution for Unity_TDRS.
+This Python script to facilitates creating package distributions.
+Running it will create a `dist` directory and output the bundled Unity
+package as a `.tgz` archive.
 
 """
 

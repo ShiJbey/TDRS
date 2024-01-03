@@ -8,9 +8,9 @@
 
 ## Features
 
-- ❤️ Model relationships between NPCs, Social Groups, and Player(s)
-- 📊 Track various relationship stats like friendship, romance, trust, and reputation
-- 🏷️ Tag characters and relationships with various traits to influence stats
+- ❤️ Model relationships between Agents (NPCs, Groups, and Player(s))
+- 📊 Track various agent and relationship stat values like sociability, confidence, friendship, romance, trust, and reputation.
+- 🏷️ Tag agents and relationships with various traits to influence stats
 - 📏 Associate traits with social rules that change how characters treat others
 - 🎊 Uses an expressive event system to propagate information
 
@@ -54,17 +54,3 @@ You can learn more about TDRS and how to get started by visiting the [Wiki](http
 ### How do I persist data between scenes
 
 Unity-TDRS does not offer a particular solution for persisting social data between scenes. This task is left to the discretion of the user. If you have ideas for a solution, please create a GitHub issue explaining your approach.
-
-## To-Do List
-
-- [ ] Write unit tests for adding and removing traits.
-- [ ] Write unit tests for adding and removing social rules.
-- [ ] Write unit tests for loading trait information from YAML.
-- [ ] Write unit tests for TDRSManager public interface methods.
-- [x] Add default implementations for basic effects
-- [x] Implement a custom inspector for `TDRSEntity` components to display stat, trait, and relationship data.
-- [ ] Implement social event system.
-
-## Building a package distribution
-
-This project uses a Python script to facilitate creating package distributions. It can be found at `Scripts/build_distro.py`. Running this script will create a new `.tgz` archive in the `dist/` directory.
