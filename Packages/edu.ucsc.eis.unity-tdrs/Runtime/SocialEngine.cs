@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using RePraxis;
 using System.Linq;
 
@@ -30,10 +29,16 @@ namespace TDRS
 		/// A list of TextAssets assigned within the Unity inspector
 		/// </summary>
 		[SerializeField]
-		protected List<TextAsset> _traitDefinitions = new List<TextAsset>();
-		protected Queue<SocialRelationship> relationshipQueue;
-		protected Dictionary<string, SocialAgent> _nodes;
-		protected Dictionary<(string, string), SocialRelationship> _relationships;
+		protected List<TextAsset> m_traitDefinitions;
+		protected Queue<SocialRelationship> m_relationshipQueue;
+		protected Dictionary<string, SocialAgent> m_agents;
+		protected Dictionary<(string, string), SocialRelationship> m_relationships;
+
+		[SerializeField]
+		private List<EffectFactoryEntry> m_effectFactories;
+
+		[SerializeField]
+		private List<PreconditionFactoryEntry> m_preconditionFactories;
 
 		#endregion
 
@@ -43,18 +48,13 @@ namespace TDRS
 		public TraitLibrary TraitLibrary { get; protected set; }
 		public EffectLibrary EffectLibrary { get; protected set; }
 		public PreconditionLibrary PreconditionLibrary { get; protected set; }
-		public List<SocialAgent> Agents => _nodes.Values.ToList();
+		public List<SocialAgent> Agents => m_agents.Values.ToList();
 		public RePraxisDatabase DB { get; protected set; }
 
 		#endregion
 
-		#region Events
-
-		public LoadFactoriesEvent OnLoadFactories;
-
-		#endregion
-
 		#region Unity Methods
+
 		private void Awake()
 		{
 			// Ensure there is only one instance of this MonoBehavior active within the scene
@@ -65,13 +65,13 @@ namespace TDRS
 			else
 			{
 				Instance = this;
-				relationshipQueue = new Queue<SocialRelationship>();
+				m_relationshipQueue = new Queue<SocialRelationship>();
 				TraitLibrary = new TraitLibrary();
 				EffectLibrary = new EffectLibrary();
 				PreconditionLibrary = new PreconditionLibrary();
 				DB = new RePraxisDatabase();
-				_nodes = new Dictionary<string, SocialAgent>();
-				_relationships = new Dictionary<(string, string), SocialRelationship>();
+				m_agents = new Dictionary<string, SocialAgent>();
+				m_relationships = new Dictionary<(string, string), SocialRelationship>();
 			}
 		}
 
@@ -96,12 +96,12 @@ namespace TDRS
 		/// <param name="agent"></param>
 		public bool RegisterAgent(SocialAgent agent)
 		{
-			if (_nodes.ContainsKey(agent.UID))
+			if (m_agents.ContainsKey(agent.UID))
 			{
 				throw new Exception($"Agent already exists with ID: {agent.UID}");
 			}
 
-			_nodes[agent.UID] = agent;
+			m_agents[agent.UID] = agent;
 
 			DB.Insert($"{agent.UID}");
 
@@ -139,24 +139,24 @@ namespace TDRS
 		{
 			if (!HasAgent(relationship.Owner.UID))
 			{
-				relationshipQueue.Enqueue(relationship);
+				m_relationshipQueue.Enqueue(relationship);
 				return false;
 			}
 
 			if (!HasAgent(relationship.Target.UID))
 			{
-				relationshipQueue.Enqueue(relationship);
+				m_relationshipQueue.Enqueue(relationship);
 				return false;
 			}
 
-			if (_relationships.ContainsKey((relationship.Owner.UID, relationship.Target.UID)))
+			if (m_relationships.ContainsKey((relationship.Owner.UID, relationship.Target.UID)))
 			{
 				throw new Exception(
 					"A relationship already exists between "
 					+ $"{relationship.Owner} and {relationship.Target}.");
 			}
 
-			_relationships[(relationship.Owner.UID, relationship.Target.UID)] = relationship;
+			m_relationships[(relationship.Owner.UID, relationship.Target.UID)] = relationship;
 
 			var owner = relationship.Owner;
 			var target = relationship.Target;
@@ -214,44 +214,44 @@ namespace TDRS
 		/// <summary>
 		/// Get a reference to a node.
 		/// </summary>
-		/// <param name="nodeId"></param>
+		/// <param name="agentID"></param>
 		/// <returns></returns>
 		/// <exception cref="KeyNotFoundException">If no node found with given ID.</exception>
-		public SocialAgent GetAgent(string nodeId)
+		public SocialAgent GetAgent(string agentID)
 		{
-			if (!_nodes.ContainsKey(nodeId))
+			if (!m_agents.ContainsKey(agentID))
 			{
-				throw new KeyNotFoundException($"Cannot find node with ID: {nodeId}.");
+				throw new KeyNotFoundException($"Cannot find node with ID: {agentID}.");
 			}
 
-			return _nodes[nodeId];
+			return m_agents[agentID];
 		}
 
 		/// <summary>
 		/// Get a reference to a relationship.
 		/// </summary>
-		/// <param name="ownerId"></param>
-		/// <param name="targetId"></param>
+		/// <param name="ownerID"></param>
+		/// <param name="targetID"></param>
 		/// <returns></returns>
-		public SocialRelationship GetRelationship(string ownerId, string targetId)
+		public SocialRelationship GetRelationship(string ownerID, string targetID)
 		{
-			if (!_nodes.ContainsKey(ownerId))
+			if (!m_agents.ContainsKey(ownerID))
 			{
-				throw new KeyNotFoundException($"Cannot find node with ID: {ownerId}.");
+				throw new KeyNotFoundException($"Cannot find node with ID: {ownerID}.");
 			}
 
-			if (!_nodes.ContainsKey(targetId))
+			if (!m_agents.ContainsKey(targetID))
 			{
-				throw new KeyNotFoundException($"Cannot find node with ID: {targetId}.");
+				throw new KeyNotFoundException($"Cannot find node with ID: {targetID}.");
 			}
 
-			var owner = GetAgent(ownerId);
-			var target = GetAgent(targetId);
+			var owner = GetAgent(ownerID);
+			var target = GetAgent(targetID);
 
 			if (!owner.OutgoingRelationships.ContainsKey(target))
 			{
 				throw new KeyNotFoundException(
-					$"Cannot find relationship from {ownerId} to {targetId}.");
+					$"Cannot find relationship from {ownerID} to {targetID}.");
 			}
 
 			return owner.OutgoingRelationships[target];
@@ -260,68 +260,68 @@ namespace TDRS
 		/// <summary>
 		/// Check if a node exists
 		/// </summary>
-		/// <param name="nodeId"></param>
+		/// <param name="agentID"></param>
 		/// <returns></returns>
-		public bool HasAgent(string nodeId)
+		public bool HasAgent(string agentID)
 		{
-			return _nodes.ContainsKey(nodeId);
+			return m_agents.ContainsKey(agentID);
 		}
 
 		/// <summary>
 		/// Check if a relationship exists
 		/// </summary>
-		/// <param name="ownerId"></param>
-		/// <param name="targetId"></param>
+		/// <param name="ownerID"></param>
+		/// <param name="targetID"></param>
 		/// <returns></returns>
-		public bool HasRelationship(string ownerId, string targetId)
+		public bool HasRelationship(string ownerID, string targetID)
 		{
-			if (!_nodes.ContainsKey(ownerId)) return false;
-			if (!_nodes.ContainsKey(targetId)) return false;
+			if (!m_agents.ContainsKey(ownerID)) return false;
+			if (!m_agents.ContainsKey(targetID)) return false;
 
-			var targetNode = _nodes[targetId];
+			var targetNode = m_agents[targetID];
 
-			return _nodes[ownerId].OutgoingRelationships.ContainsKey(targetNode);
+			return m_agents[ownerID].OutgoingRelationships.ContainsKey(targetNode);
 		}
 
 		/// <summary>
 		/// Try to get a reference to a node
 		/// </summary>
-		/// <param name="nodeId"></param>
-		/// <param name="node"></param>
+		/// <param name="agentID"></param>
+		/// <param name="agent"></param>
 		/// <returns></returns>
-		public bool TryGetAgent(string nodeId, out SocialAgent node)
+		public bool TryGetAgent(string agentID, out SocialAgent agent)
 		{
-			node = null;
+			agent = null;
 
-			if (!_nodes.ContainsKey(nodeId)) return false;
+			if (!m_agents.ContainsKey(agentID)) return false;
 
-			node = _nodes[nodeId];
+			agent = m_agents[agentID];
 			return true;
 		}
 
 		/// <summary>
 		/// Try to get a reference to a relationship
 		/// </summary>
-		/// <param name="ownerId"></param>
-		/// <param name="targetId"></param>
+		/// <param name="ownerID"></param>
+		/// <param name="targetID"></param>
 		/// <param name="relationship"></param>
 		/// <returns></returns>
 		public bool TryGetRelationship(
-			string ownerId,
-			string targetId,
+			string ownerID,
+			string targetID,
 			out SocialRelationship relationship)
 		{
 			relationship = null;
 
-			if (!_nodes.ContainsKey(ownerId)) return false;
-			if (!_nodes.ContainsKey(targetId)) return false;
+			if (!m_agents.ContainsKey(ownerID)) return false;
+			if (!m_agents.ContainsKey(targetID)) return false;
 
-			var ownerNode = _nodes[ownerId];
-			var targetNode = _nodes[targetId];
+			var ownerNode = m_agents[ownerID];
+			var targetNode = m_agents[targetID];
 
 			if (!ownerNode.OutgoingRelationships.ContainsKey(targetNode)) return false;
 
-			relationship = _nodes[ownerId].OutgoingRelationships[targetNode];
+			relationship = m_agents[ownerID].OutgoingRelationships[targetNode];
 			return true;
 		}
 
@@ -329,10 +329,15 @@ namespace TDRS
 
 		#region Private Methods
 
+		/// <summary>
+		/// Iterate over the relationship queue and try to register pending relationships.
+		/// </summary>
 		private void ProcessRelationshipQueue()
 		{
-			List<SocialRelationship> relationships = new List<SocialRelationship>(relationshipQueue);
-			relationshipQueue.Clear();
+			List<SocialRelationship> relationships =
+				new List<SocialRelationship>(m_relationshipQueue);
+
+			m_relationshipQueue.Clear();
 
 			foreach (var relationship in relationships)
 			{
@@ -340,14 +345,28 @@ namespace TDRS
 			}
 		}
 
+		/// <summary>
+		/// Load the various factory instances into their respective libraries.
+		/// </summary>
 		private void LoadFactories()
 		{
-			OnLoadFactories.Invoke(this);
+			foreach (var entry in m_preconditionFactories)
+			{
+				PreconditionLibrary.AddFactory(entry.m_preconditionType, entry.m_factory);
+			}
+
+			foreach (var entry in m_effectFactories)
+			{
+				EffectLibrary.AddFactory(entry.m_effectType, entry.m_factory);
+			}
 		}
 
+		/// <summary>
+		/// Load traits from the text assets provided in the inspector.
+		/// </summary>
 		private void LoadTraits()
 		{
-			foreach (var textAsset in _traitDefinitions)
+			foreach (var textAsset in m_traitDefinitions)
 			{
 				TraitLibrary.LoadTraits(textAsset.text);
 			}
@@ -356,16 +375,29 @@ namespace TDRS
 		}
 
 		#endregion
+
+		#region Helper Classes
+
+		/// <summary>
+		/// Helper class for organizing effect factories in the inspector
+		/// </summary>
+		[Serializable]
+		public class EffectFactoryEntry
+		{
+			public string m_effectType;
+			public EffectFactory m_factory;
+		}
+
+		/// <summary>
+		/// Helper class for organizing precondition factories in the inspector.
+		/// </summary>
+		[Serializable]
+		public class PreconditionFactoryEntry
+		{
+			public string m_preconditionType;
+			public PreconditionFactory m_factory;
+		}
+
+		#endregion
 	}
-
-
-	#region Custom Event Classes
-
-	[Serializable]
-	/// <summary>
-	/// Event dispatched when the TDRSmanager is loading factory instances during start.
-	/// </summary>
-	public class LoadFactoriesEvent : UnityEvent<SocialEngine> { }
-
-	#endregion
 }

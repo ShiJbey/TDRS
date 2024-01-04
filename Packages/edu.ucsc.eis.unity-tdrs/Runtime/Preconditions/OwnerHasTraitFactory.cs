@@ -3,9 +3,9 @@ using TDRS.Helpers;
 
 namespace TDRS
 {
-	public class OwnerHasTraitFactory : IPreconditionFactory
+	public class OwnerHasTraitFactory : PreconditionFactory
 	{
-		public IPrecondition Instantiate(SocialEngine engine, YamlNode preconditionNode)
+		public override IPrecondition Instantiate(SocialEngine engine, YamlNode preconditionNode)
 		{
 			var mapping = (YamlMappingNode)preconditionNode;
 

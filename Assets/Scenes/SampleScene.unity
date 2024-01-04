@@ -284,7 +284,10 @@ GameObject:
   m_Component:
   - component: {fileID: 568713666}
   - component: {fileID: 568713667}
-  - component: {fileID: 568713668}
+  - component: {fileID: 568713670}
+  - component: {fileID: 568713669}
+  - component: {fileID: 568713672}
+  - component: {fileID: 568713671}
   m_Layer: 0
   m_Name: TDRSManager
   m_TagString: Untagged
@@ -319,24 +322,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3643f8d86d34b46a98f5794ed7f28d85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _traitDefinitions:
+  m_traitDefinitions:
   - {fileID: 4900000, guid: 905ca4f98d10e89449e9f617372a2de9, type: 3}
-  OnLoadFactories:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 568713668}
-        m_TargetAssemblyTypeName: TDRS.DefaultTDRSFactories, edu.ucsc.eis.unity-tdrs
-        m_MethodName: LoadFactories
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &568713668
+  m_effectFactories:
+  - m_effectType: AddSocialRule
+    m_factory: {fileID: 568713670}
+  - m_effectType: StatBuff
+    m_factory: {fileID: 568713669}
+  m_preconditionFactories:
+  - m_preconditionType: OwnerHasTrait
+    m_factory: {fileID: 568713672}
+  - m_preconditionType: TargetHasTrait
+    m_factory: {fileID: 568713671}
+--- !u!114 &568713669
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -345,7 +343,43 @@ MonoBehaviour:
   m_GameObject: {fileID: 568713664}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 554e66d51f7bb43a6ac58dfc698ab310, type: 3}
+  m_Script: {fileID: 11500000, guid: 9e5aa65ce32db49d98213f8a49ee76ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &568713670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568713664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d54c957de77ec401c8abff5b7672efff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &568713671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568713664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c00fb07545f453282979ef8c06fcd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &568713672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568713664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c84f90b2633e4a109163d8fca5790f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &680955580

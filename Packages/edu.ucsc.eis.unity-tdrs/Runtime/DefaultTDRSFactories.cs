@@ -12,10 +12,10 @@ namespace TDRS
 	{
 		public void LoadFactories(SocialEngine engine)
 		{
-			engine.EffectLibrary.AddFactory("StatBuff", new StatBuffEffectFactory());
-			engine.EffectLibrary.AddFactory("AddSocialRule", new AddSocialRuleFactory());
-			engine.PreconditionLibrary.AddFactory("TargetHasTrait", new TargetHasTraitFactory());
-			engine.PreconditionLibrary.AddFactory("OwnerHasTrait", new OwnerHasTraitFactory());
+			// engine.EffectLibrary.AddFactory("StatBuff", new StatBuffEffectFactory());
+			// engine.EffectLibrary.AddFactory("AddSocialRule", new AddSocialRuleFactory());
+			// engine.PreconditionLibrary.AddFactory("TargetHasTrait", new TargetHasTraitFactory());
+			// engine.PreconditionLibrary.AddFactory("OwnerHasTrait", new OwnerHasTraitFactory());
 		}
 	}
 }

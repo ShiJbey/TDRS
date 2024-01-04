@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace TDRS
 {
-	public class AddSocialRuleFactory : IEffectFactory
+	public class AddSocialRuleFactory : EffectFactory
 	{
-		public IEffect Instantiate(SocialEngine engine, YamlNode effectNode)
+		public override IEffect Instantiate(SocialEngine engine, YamlNode effectNode)
 		{
 			bool isOutgoing = true;
 

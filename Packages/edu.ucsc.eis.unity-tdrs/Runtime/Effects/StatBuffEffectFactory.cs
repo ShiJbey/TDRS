@@ -3,9 +3,9 @@ using TDRS.Helpers;
 
 namespace TDRS
 {
-	public class StatBuffEffectFactory : IEffectFactory
+	public class StatBuffEffectFactory : EffectFactory
 	{
-		public IEffect Instantiate(SocialEngine engine, YamlNode preconditionNode)
+		public override IEffect Instantiate(SocialEngine engine, YamlNode preconditionNode)
 		{
 			var mapping = (YamlMappingNode)preconditionNode;
 
