@@ -189,7 +189,7 @@ namespace TDRS.StatSystem
 		{
 			var removed_any_modifier = false;
 
-			for (int i = _modifiers.Count; i >= 0; i--)
+			for (int i = _modifiers.Count - 1; i >= 0; i--)
 			{
 				var modifier = _modifiers[i];
 				if (modifier.Source == source)

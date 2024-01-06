@@ -33,12 +33,18 @@ namespace TDRS
 		/// </summary>
 		public HashSet<string> ConflictingTraits { get; }
 
+		/// <summary>
+		/// How long the trait lasts (-1 is indefinite)
+		/// </summary>
+		public int Duration { get; }
+
 		public TraitDefinition(
 			string traitID,
 			string displayName,
 			string description,
 			YamlNode effectData,
-			HashSet<string> conflictingTraits
+			HashSet<string> conflictingTraits,
+			int duration = -1
 		)
 		{
 			TraitID = traitID;
@@ -46,6 +52,7 @@ namespace TDRS
 			Description = description;
 			EffectData = effectData;
 			ConflictingTraits = conflictingTraits;
+			Duration = duration;
 		}
 	}
 }

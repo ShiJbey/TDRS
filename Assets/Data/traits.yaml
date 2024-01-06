@@ -51,3 +51,21 @@ lovers:
       stat: Romance
       amount: 10
       reason: Lovers trait
+
+friend:
+  display_name: Friend
+  description: These characters are friends
+
+family:
+  display_name: Family
+  description: These characters are family
+
+angry_at:
+  display_name: Angry-at
+  description: This character is angry at the other one
+  effects:
+    - type: StatBuff
+      stat: Friendship
+      amount: -10
+      reason: Angry-at trait
+  duration: 10

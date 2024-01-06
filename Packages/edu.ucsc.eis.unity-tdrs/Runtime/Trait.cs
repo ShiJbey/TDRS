@@ -44,6 +44,11 @@ namespace TDRS
 		public string Description { get; }
 
 		/// <summary>
+		/// The amount of simulation ticks this trait lasts for
+		/// </summary>
+		public int Duration { get; }
+
+		/// <summary>
 		/// Effects to apply when the trait is added
 		/// </summary>
 		public IEnumerable<IEffect> Effects => _effects;
@@ -62,7 +67,8 @@ namespace TDRS
 			string displayName,
 			string description,
 			IEnumerable<IEffect> effects,
-			HashSet<string> conflictingTraits
+			HashSet<string> conflictingTraits,
+			int duration
 			)
 		{
 			TraitID = traitID;
@@ -70,6 +76,7 @@ namespace TDRS
 			Description = description;
 			_effects = effects.ToList();
 			_conflictingTraits = conflictingTraits;
+			Duration = duration;
 		}
 
 		#endregion

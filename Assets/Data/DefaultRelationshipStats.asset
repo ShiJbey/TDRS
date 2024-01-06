@@ -23,8 +23,3 @@ MonoBehaviour:
     maxValue: 50
     minValue: -50
     isDiscrete: 1
-  - statName: Influence
-    baseValue: 0
-    maxValue: 50
-    minValue: -50
-    isDiscrete: 1

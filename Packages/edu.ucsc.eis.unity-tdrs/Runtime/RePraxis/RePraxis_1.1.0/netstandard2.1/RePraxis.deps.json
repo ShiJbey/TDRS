@@ -7,7 +7,7 @@
   "targets": {
     ".NETStandard,Version=v2.1": {},
     ".NETStandard,Version=v2.1/": {
-      "RePraxis/1.0.0": {
+      "RePraxis/1.1.0": {
         "runtime": {
           "RePraxis.dll": {}
         }
@@ -15,7 +15,7 @@
     }
   },
   "libraries": {
-    "RePraxis/1.0.0": {
+    "RePraxis/1.1.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

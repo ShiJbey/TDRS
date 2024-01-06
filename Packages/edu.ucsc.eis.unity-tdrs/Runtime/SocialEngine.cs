@@ -23,7 +23,7 @@ namespace TDRS
 	[DefaultExecutionOrder(-5)]
 	public class SocialEngine : MonoBehaviour
 	{
-		#region Attributes
+		#region Fields
 
 		/// <summary>
 		/// A list of TextAssets assigned within the Unity inspector
@@ -33,6 +33,9 @@ namespace TDRS
 		protected Queue<SocialRelationship> m_relationshipQueue;
 		protected Dictionary<string, SocialAgent> m_agents;
 		protected Dictionary<(string, string), SocialRelationship> m_relationships;
+
+		[SerializeField]
+		protected SocialEventLibrary m_socialEventLibrary;
 
 		[SerializeField]
 		private List<EffectFactoryEntry> m_effectFactories;
@@ -79,6 +82,8 @@ namespace TDRS
 		{
 			LoadFactories();
 			LoadTraits();
+			m_socialEventLibrary.LoadFactories();
+			m_socialEventLibrary.LoadSocialEvents();
 		}
 
 		private void Update()
@@ -88,7 +93,7 @@ namespace TDRS
 
 		#endregion
 
-		#region Methods
+		#region Public Methods
 
 		/// <summary>
 		/// Register a new entity with the manager.
@@ -323,6 +328,90 @@ namespace TDRS
 
 			relationship = m_agents[ownerID].OutgoingRelationships[targetNode];
 			return true;
+		}
+
+
+		/// <summary>
+		/// Dispatch an event throughout the social network and apply effects
+		/// </summary>
+		/// <param name="socialEvent"></param>
+		public void DispatchEvent(string eventName, params string[] agents)
+		{
+			// Get the event type definition from the library
+			var eventType = m_socialEventLibrary.GetEventType($"{eventName}/{agents.Length}");
+
+			// Create the base context for the events
+			var ctx = new SocialEventContext(this, eventType, agents);
+
+			// Iterate through the responses
+			foreach (var response in eventType.Responses)
+			{
+				if (response.Query != null)
+				{
+					var results = response.Query.Run(ctx.Engine.DB, ctx.Bindings);
+
+					// Skip this response because the query failed
+					if (!results.Success) continue;
+
+					// Create a new context for each binding result
+					foreach (var bindingSet in results.Bindings)
+					{
+						var scopedCtx = ctx.WithBindings(bindingSet);
+
+						foreach (var effectEntry in response.Effects)
+						{
+							// Separate the entry into multiple parts
+							List<string> effectParts = effectEntry
+								.Split(" ").Select(s => s.Trim()).ToList();
+
+							string effectName = effectParts[0]; // The effect name is the first part
+							effectParts.RemoveAt(0); // Remove the name from the front of the list
+
+							// Get the factory
+							var effectFactory = m_socialEventLibrary.GetEffectFactory(effectName);
+
+							var effect = effectFactory.CreateInstance(scopedCtx, effectParts.ToArray());
+
+							effect.Apply();
+						}
+					}
+				}
+				else
+				{
+					foreach (var effectEntry in response.Effects)
+					{
+						// Separate the entry into multiple parts
+						List<string> effectParts = effectEntry
+							.Split(" ").Select(s => s.Trim()).ToList();
+
+						string effectName = effectParts[0]; // The effect name is the first part
+						effectParts.RemoveAt(0); // Remove the name from the front of the list
+
+						// Get the factory
+						var effectFactory = m_socialEventLibrary.GetEffectFactory(effectName);
+
+						var effect = effectFactory.CreateInstance(ctx, effectParts.ToArray());
+
+						effect.Apply();
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Advance the simulation by one simulation tick
+		/// </summary>
+		public void Tick()
+		{
+			foreach (var agent in m_agents.Values)
+			{
+				agent.Tick();
+			}
+
+			foreach (var relationship in m_relationships.Values)
+			{
+				relationship.Tick();
+			}
 		}
 
 		#endregion

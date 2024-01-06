@@ -42,6 +42,8 @@ namespace Calypso
 		{
 			scrollView.Clear();
 
+			if (socialEngine == null || socialEngine.DB == null) return;
+
 			var nodeStack = new Stack<INode>(socialEngine.DB.Root.Children);
 
 			while (nodeStack.Count > 0)

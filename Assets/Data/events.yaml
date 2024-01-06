@@ -1,0 +1,77 @@
+# This file contains sample definition of various social events that could be triggered by some
+# in-game logic. TDRS uses YAML instead of scriptable objects because it is easier to build
+# expressive constructs without needing to do complicated editor scripting. The main trade-off is
+# that documentation needs to be clear about what options are available to users, how to user them,
+# how to expand upon them. Documentation for the event specifications is provided on the GitHub wiki
+# and in the "Documentation~" directory under the Unity-TDRS package.
+
+# (1) Multiple events may be provided within a file by using YAML sequences
+
+# (2) Each event is a YAML mapping starting with an "event" key. This key is followed by the name of
+# the event and the names of agent roles involved in the event. Role names are prefixed with an
+# '?' to signify these are variables.
+#
+# The order of mapping keys for an event specification is optional. The examples below are only
+# examples. So, users are free to find an ordering that works best for them. What matters is
+# the information is present.
+- event: betrayal ?betrayer ?victim
+
+  # (3) The description of the event uses a template syntax where the display names of the agents
+  # bound to the specified roles are substituted into the description text.
+  description: "[betrayer] betrayed [victim]."
+
+  # (4) Next, we specify effects that should be applied when the event is invoked. Each effect is
+  # specified as a text item in a YAML sequence. Effects start with the effect name followed by a
+  # series of parameters separated by one or more spaces. Some effects accept the role variables
+  # as parameters. These are expanded by the event system to refer to the social agents bound to
+  # the roles.
+  responses:
+    - apply:
+        - DecreaseRelationshipStat ?victim ?betrayer Friendship 10 5
+        - RemoveRelationshipTrait ?victim ?betrayer friend
+
+    - where: |
+        ?victim.relationship.?victim_friend.trait.friend
+        neq ?victim_friend ?betrayer
+      apply:
+        - DecreaseRelationshipStat ?victim_friend ?betrayer Friendship 5 6
+
+    - where: |
+        ?victim.relationship.?victim_family.trait.family
+        neq ?victim_family ?betrayer
+      apply:
+        - AddRelationshipTrait ?victim_family ?betrayer angry_at 10
+
+  # (5) "responses" is an optional parameter that allows designers to specify 2nd-order effects of
+  # an event on the social network. In this example, we want the victim's family and friends to
+  # respond negatively toward the betrayer. Each route starts with a "query". This specifies a
+  # RePraxis query on the social engine to look for additional agents that meet some
+  # preconditions. Assuming that some are found, we can then use their bound variable name to
+  # specify effects the same way we did above. Also, we can provide a duration that those agents
+  # will remember this event.
+# Below are some additional event specifications without the additional comments.
+
+# - event: new_friend ?character_a ?character_b
+#   description: "[character_a] considers [character_b] to be a friend."
+#   effects:
+#     - AddRelationshipTrait ?character_a ?character_b friend
+
+# - event: start_dating ?character_a ?character_b
+#   description: "[character_a] and [character_b] started dating."
+#   effects:
+#     - AddRelationshipTrait ?character_a ?character_b dating
+#     - AddRelationshipTrait ?character_b ?character_a dating
+
+# - event: break_up ?character_a ?character_b
+#   description: "[character_a] broke-up with [character_b]."
+#   effects:
+#     - RemoveRelationshipTrait ?character_a ?character_b dating
+#     - RemoveRelationshipTrait ?character_b ?character_a dating
+#     - AddRelationshipTrait ?character_a ?character_b ex-partner
+#     - AddRelationshipTrait ?character_b ?character_a ex-partner
+#   routes:
+#     - query: |
+#         ?character_b.relationship.?other.traits.rival
+#         neq ?other ?character_a
+#       effects:
+#         - IncreaseAgentStat ?other confidence 5

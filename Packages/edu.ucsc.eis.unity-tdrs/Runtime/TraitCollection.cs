@@ -14,7 +14,7 @@ namespace TDRS
 		/// <summary>
 		/// Traits currently applied to the entity
 		/// </summary>
-		protected Dictionary<string, Trait> _traits;
+		protected Dictionary<string, TraitEntry> _traits;
 
 		/// <summary>
 		/// Collection of TraitID's that conflict with the current traits
@@ -42,7 +42,7 @@ namespace TDRS
 		/// <summary>
 		/// All traits within the collection.
 		/// </summary>
-		public List<Trait> Traits => _traits.Values.ToList();
+		public List<TraitEntry> Traits => _traits.Values.ToList();
 
 		#endregion
 
@@ -50,7 +50,7 @@ namespace TDRS
 
 		public TraitCollection()
 		{
-			_traits = new Dictionary<string, Trait>();
+			_traits = new Dictionary<string, TraitEntry>();
 			_conflictingTraits = new HashSet<string>();
 		}
 
@@ -75,7 +75,7 @@ namespace TDRS
 				return false;
 			}
 
-			_traits[trait.TraitID] = trait;
+			_traits[trait.TraitID] = new TraitEntry(trait);
 
 			_conflictingTraits.UnionWith(trait.ConflictingTraits);
 
@@ -99,9 +99,9 @@ namespace TDRS
 			_traits.Remove(traitID);
 
 			_conflictingTraits.Clear();
-			foreach (var (_, remainingTrait) in _traits)
+			foreach (var (_, entry) in _traits)
 			{
-				_conflictingTraits.UnionWith(remainingTrait.ConflictingTraits);
+				_conflictingTraits.UnionWith(entry.Trait.ConflictingTraits);
 			}
 
 			OnTraitRemoved(this, traitID);
@@ -150,5 +150,31 @@ namespace TDRS
 		}
 
 		#endregion
+
+
 	}
+
+	#region Helper Types
+
+	public class TraitEntry
+	{
+		protected int m_duration;
+		protected Trait m_trait;
+
+		public int Duration => m_duration;
+		public Trait Trait => m_trait;
+
+		public TraitEntry(Trait trait)
+		{
+			m_trait = trait;
+			m_duration = trait.Duration;
+		}
+
+		public void DecrementDuration()
+		{
+			m_duration -= 1;
+		}
+	}
+
+	#endregion
 }

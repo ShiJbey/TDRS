@@ -1,5 +1,10 @@
+using UnityEngine;
+
 namespace TDRS.StatSystem
 {
+	/// <summary>
+	/// A modifier applied to a agent or relationship that changes their stat values
+	/// </summary>
 	public class StatModifier
 	{
 		#region Properties
@@ -34,6 +39,11 @@ namespace TDRS.StatSystem
 		/// </summary>
 		public object Source { get; }
 
+		/// <summary>
+		/// The remaining amount of time that the modifier lasts for
+		/// </summary>
+		public int Duration { get; private set; }
+
 		#endregion
 
 		#region Constructors
@@ -43,6 +53,7 @@ namespace TDRS.StatSystem
 			string description,
 			float value,
 			StatModifierType modifierType,
+			int duration,
 			object source = null
 		)
 		{
@@ -51,6 +62,7 @@ namespace TDRS.StatSystem
 			Value = value;
 			ModifierType = modifierType;
 			Order = (int)modifierType;
+			Duration = duration;
 			Source = source;
 		}
 
@@ -60,6 +72,7 @@ namespace TDRS.StatSystem
 			float value,
 			StatModifierType modifierType,
 			int order,
+			int duration,
 			object source = null
 		)
 		{
@@ -68,7 +81,20 @@ namespace TDRS.StatSystem
 			Value = value;
 			ModifierType = modifierType;
 			Order = order;
+			Duration = duration;
 			Source = source;
+		}
+
+		#endregion
+
+		#region Public Methods
+
+		/// <summary>
+		/// Decrement the amount of time remaining for this modifier
+		/// </summary>
+		public void DecrementDuration()
+		{
+			Duration -= 1;
 		}
 
 		#endregion

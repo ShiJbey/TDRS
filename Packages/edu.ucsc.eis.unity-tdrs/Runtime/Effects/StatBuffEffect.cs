@@ -28,8 +28,7 @@ namespace TDRS
 		{
 			get
 			{
-				string amountPrefix = _amount > 0 ? "+" : "";
-				return $"{_statName} {amountPrefix}{_amount}: {_reason}";
+				return _reason;
 			}
 
 		}
@@ -42,6 +41,7 @@ namespace TDRS
 					Description,
 					_amount,
 					StatSystem.StatModifierType.FLAT,
+					-1,
 					this
 				)
 			);

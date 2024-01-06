@@ -75,6 +75,11 @@ namespace TDRS
 		/// </summary>
 		public StatChangeEvent OnStatChange;
 
+		/// <summary>
+		/// Event invoked when an entity is ticked;
+		/// </summary>
+		public TickEvent OnTick;
+
 		#endregion
 
 		#region Constructors
@@ -104,7 +109,7 @@ namespace TDRS
 		/// Add a trait to an entity.
 		/// </summary>
 		/// <param name="traitID"></param>
-		public virtual void AddTrait(string traitID)
+		public virtual void AddTrait(string traitID, int duration = -1)
 		{
 			var trait = Engine.TraitLibrary.GetTrait(traitID);
 			Traits.AddTrait(trait);
@@ -122,9 +127,47 @@ namespace TDRS
 			trait.OnRemove(this);
 		}
 
+		/// <summary>
+		/// Advance the simulation by one simulation tick
+		/// </summary>
+		public void Tick()
+		{
+			TickTraits();
+			Stats.Tick();
+
+			if (OnTick != null) OnTick.Invoke();
+		}
+
+		private void TickTraits()
+		{
+			List<TraitEntry> traits = Traits.Traits;
+
+			// Loop backward since we may remove items from the list
+			for (int i = traits.Count - 1; i >= 0; i--)
+			{
+				var trait = traits[i];
+
+				if (trait.Duration > 0)
+				{
+					trait.DecrementDuration();
+				}
+
+				if (trait.Duration == 0)
+				{
+					RemoveTrait(trait.Trait.TraitID);
+				}
+			}
+		}
+
 		#endregion
 
 		#region Custom Event Classes
+
+		/// <summary>
+		/// Event dispatched when an entity is ticked
+		/// </summary>
+		[System.Serializable]
+		public class TickEvent : UnityEvent { }
 
 		/// <summary>
 		/// Event dispatched when a trait is added to a social entity

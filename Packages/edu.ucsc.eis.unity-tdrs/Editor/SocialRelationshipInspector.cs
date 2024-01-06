@@ -10,52 +10,70 @@ public class SocialRelationshipInspector : Editor
 {
 	public VisualTreeAsset m_UXml;
 
-	private List<Trait> m_traitsList = new List<Trait>();
+	private VisualElement m_root;
+	private List<TraitEntry> m_traitsList;
 	private List<KeyValuePair<string, Stat>> m_statsList;
 	private List<StatModifier> m_statModifiers;
 	private SocialRelationship m_relationship;
+	private MultiColumnListView m_traitListView;
+	private MultiColumnListView m_statsListView;
+	private MultiColumnListView m_statModifiersView;
 
 	public override VisualElement CreateInspectorGUI()
 	{
-		var root = new VisualElement();
-		m_UXml.CloneTree(root);
+		m_relationship = target as SocialRelationship;
+		m_root = new VisualElement();
+		m_UXml.CloneTree(m_root);
 
-		CreateTraitGUI(root);
-		CreateStatsGUI(root);
+		CreateTraitGUI(m_root);
+		CreateStatsGUI(m_root);
 
-		return root;
+		return m_root;
 	}
 
 	private void CreateTraitGUI(VisualElement root)
 	{
-		var traitListView = root.Q<MultiColumnListView>(name: "Traits");
+		m_traitsList = new List<TraitEntry>();
+		m_traitListView = root.Q<MultiColumnListView>(name: "Traits");
 
-		m_relationship = target as SocialRelationship;
 
 		if (m_relationship.Traits != null)
 		{
 			m_traitsList = m_relationship.Traits.Traits;
 		}
 
-		traitListView.itemsSource = m_traitsList;
+		m_traitListView.itemsSource = m_traitsList;
 
-		var cols = traitListView.columns;
+		var cols = m_traitListView.columns;
 
 		// Set makeCell
 
 		cols["trait"].makeCell = () => new Label();
 		cols["description"].makeCell = () => new TextElement() { };
+		cols["cooldown"].makeCell = () => new TextElement();
 
 		// Set bindCell
 
 		cols["trait"].bindCell = (VisualElement e, int index) =>
 		{
-			(e as Label).text = m_traitsList[index].DisplayName;
+			(e as Label).text = m_traitsList[index].Trait.DisplayName;
 		};
 
 		cols["description"].bindCell = (VisualElement e, int index) =>
 		{
-			(e as TextElement).text = m_traitsList[index].Description;
+			(e as TextElement).text = m_traitsList[index].Trait.Description;
+		};
+
+		cols["cooldown"].bindCell = (VisualElement e, int index) =>
+		{
+			if (m_traitsList[index].Duration < 0)
+			{
+				(e as TextElement).text = "n/a";
+			}
+			else
+			{
+				(e as TextElement).text = m_traitsList[index].Duration.ToString();
+			}
 		};
 	}
 
@@ -64,9 +82,7 @@ public class SocialRelationshipInspector : Editor
 		m_statsList = new List<KeyValuePair<string, Stat>>();
 		m_statModifiers = new List<StatModifier>();
 
-		var statListView = root.Q<MultiColumnListView>(name: "Stats");
-
-		m_relationship = target as SocialRelationship;
+		m_statsListView = root.Q<MultiColumnListView>(name: "Stats");
 
 		if (m_relationship.Stats != null && m_relationship.Stats.Modifiers != null)
 		{
@@ -74,9 +90,9 @@ public class SocialRelationshipInspector : Editor
 			m_statModifiers = m_relationship.Stats.Modifiers.ToList();
 		}
 
-		statListView.itemsSource = m_statsList;
+		m_statsListView.itemsSource = m_statsList;
 
-		var cols = statListView.columns;
+		var cols = m_statsListView.columns;
 
 		// Set makeCell
 
@@ -96,29 +112,92 @@ public class SocialRelationshipInspector : Editor
 			(e as TextElement).text = $"{stat.Value}({stat.BaseValue})";
 		};
 
-		var modifiersListView = root.Q<ListView>(name: "StatModifiersList");
+		m_statModifiersView = root.Q<MultiColumnListView>(name: "StatModifiers");
 
-		modifiersListView.itemsSource = m_statModifiers;
+		m_statModifiersView.itemsSource = m_statModifiers;
 
-		modifiersListView.makeItem = () => new TextElement();
+		var modifierCols = m_statModifiersView.columns;
 
-		modifiersListView.bindItem = (VisualElement e, int index) =>
+		// Set makeCell
+
+		modifierCols["stat"].makeCell = () => new Label();
+		modifierCols["value"].makeCell = () => new TextElement();
+		modifierCols["description"].makeCell = () => new TextElement();
+		modifierCols["cooldown"].makeCell = () => new TextElement();
+
+		// Set bindCell
+
+		modifierCols["stat"].bindCell = (VisualElement e, int index) =>
 		{
-			var modifier = m_statModifiers[index];
+			(e as Label).text = m_statModifiers[index].Stat;
+		};
 
-			if (modifier.Source != null)
+		modifierCols["value"].bindCell = (VisualElement e, int index) =>
+		{
+			(e as TextElement).text = $"{m_statModifiers[index].Value}";
+		};
+
+		modifierCols["description"].bindCell = (VisualElement e, int index) =>
+		{
+			(e as TextElement).text = m_statModifiers[index].Description;
+		};
+
+		modifierCols["cooldown"].bindCell = (VisualElement e, int index) =>
+		{
+			if (m_statModifiers[index].Duration < 0)
 			{
-				(e as TextElement).text = modifier.Description;
+				(e as TextElement).text = "n/a";
 			}
 			else
 			{
-				(e as TextElement).text = "";
+				(e as TextElement).text = m_statModifiers[index].Duration.ToString();
 			}
 		};
 	}
 
-	public override bool RequiresConstantRepaint()
+	public void OnEnable()
 	{
-		return true;
+		m_relationship = target as SocialRelationship;
+
+		m_relationship.OnTick.AddListener(HandleOnTick);
+		m_relationship.OnStatChange.AddListener(HandleOnStatChange);
+		m_relationship.OnTraitAdded.AddListener(HandleTraitUpdate);
+		m_relationship.OnTraitRemoved.AddListener(HandleTraitUpdate);
+	}
+
+	public void OnDisable()
+	{
+		m_relationship.OnTick.RemoveListener(HandleOnTick);
+		m_relationship.OnStatChange.RemoveListener(HandleOnStatChange);
+		m_relationship.OnTraitAdded.RemoveListener(HandleTraitUpdate);
+		m_relationship.OnTraitRemoved.RemoveListener(HandleTraitUpdate);
+	}
+
+	private void HandleOnTick()
+	{
+		UpdateGUI();
+	}
+
+	private void HandleOnStatChange(string stat, float value)
+	{
+		UpdateGUI();
+	}
+
+	private void HandleTraitUpdate(string trait)
+	{
+		UpdateGUI();
+	}
+
+	private void UpdateGUI()
+	{
+		m_traitsList = m_relationship.Traits.Traits;
+		m_statsList = m_relationship.Stats.Stats.ToList();
+		m_statModifiers = m_relationship.Stats.Modifiers.ToList();
+
+		m_traitListView.itemsSource = m_traitsList;
+		m_statModifiersView.itemsSource = m_statModifiers;
+		m_statsListView.itemsSource = m_statsList;
+
+		m_root.MarkDirtyRepaint();
 	}
 }

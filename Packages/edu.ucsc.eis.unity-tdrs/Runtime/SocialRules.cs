@@ -69,7 +69,7 @@ namespace TDRS
 		public void RemoveAllSocialRulesFromSource(object source)
 		{
 			// Loop backward through the social rules and remove all that have the given source
-			for (int i = _rules.Count; i > 0; i--)
+			for (int i = _rules.Count - 1; i > 0; i--)
 			{
 				var rule = _rules[i];
 

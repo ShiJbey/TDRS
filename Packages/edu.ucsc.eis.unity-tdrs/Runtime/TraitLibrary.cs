@@ -107,12 +107,20 @@ namespace TDRS
 				}
 			}
 
+			int duration = -1;
+
+			if (mapping.TryGetChild("duration", out var durationNode))
+			{
+				duration = int.Parse(durationNode.GetValue());
+			}
+
 			_traitDefinitions[traitID] = new TraitDefinition(
 				traitID,
 				displayName,
 				description,
 				effectsNode,
-				conflictingTraits
+				conflictingTraits,
+				duration
 			);
 		}
 
@@ -173,7 +181,8 @@ namespace TDRS
 						traitDef.DisplayName,
 						traitDef.Description,
 						effects,
-						traitDef.ConflictingTraits
+						traitDef.ConflictingTraits,
+						traitDef.Duration
 					)
 				);
 			}

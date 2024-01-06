@@ -100,8 +100,8 @@ namespace TDRS
 		public void AddModifier(StatModifier modifier)
 		{
 			Stat stat = GetStat(modifier.Stat);
-			stat.AddModifier(modifier);
 			_modifiers.Add(modifier);
+			stat.AddModifier(modifier);
 		}
 
 		/// <summary>
@@ -131,7 +131,7 @@ namespace TDRS
 		{
 			bool modifierRemoved = false;
 
-			for (int i = _modifiers.Count; i >= 0; i--)
+			for (int i = _modifiers.Count - 1; i >= 0; i--)
 			{
 				var modifier = _modifiers[i];
 				if (modifier.Source == source)
@@ -141,6 +141,28 @@ namespace TDRS
 			}
 
 			return modifierRemoved;
+		}
+
+		/// <summary>
+		/// Update the stats and modifiers by one simulation tick
+		/// </summary>
+		public void Tick()
+		{
+			// Loop backward since we may remove items from the list
+			for (int i = _modifiers.Count - 1; i >= 0; i--)
+			{
+				var modifier = _modifiers[i];
+
+				if (modifier.Duration > 0)
+				{
+					modifier.DecrementDuration();
+				}
+
+				if (modifier.Duration == 0)
+				{
+					RemoveModifier(modifier);
+				}
+			}
 		}
 
 		#endregion
