@@ -411,20 +411,17 @@ GameObject:
   m_Component:
   - component: {fileID: 568713666}
   - component: {fileID: 568713667}
-  - component: {fileID: 568713670}
-  - component: {fileID: 568713669}
-  - component: {fileID: 568713672}
-  - component: {fileID: 568713671}
   - component: {fileID: 568713673}
-  - component: {fileID: 568713675}
-  - component: {fileID: 568713674}
+  - component: {fileID: 568713683}
+  - component: {fileID: 568713684}
   - component: {fileID: 568713682}
   - component: {fileID: 568713681}
   - component: {fileID: 568713680}
+  - component: {fileID: 568713674}
   - component: {fileID: 568713679}
   - component: {fileID: 568713678}
   - component: {fileID: 568713677}
-  - component: {fileID: 568713676}
+  - component: {fileID: 568713675}
   m_Layer: 0
   m_Name: SocialEngine
   m_TagString: Untagged
@@ -459,67 +456,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3643f8d86d34b46a98f5794ed7f28d85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_traitDefinitions:
-  - {fileID: 4900000, guid: 905ca4f98d10e89449e9f617372a2de9, type: 3}
+  m_effectFactories: {fileID: 568713684}
   m_socialEventLibrary: {fileID: 568713673}
-  m_effectFactories:
-  - m_effectType: AddSocialRule
-    m_factory: {fileID: 568713670}
-  - m_effectType: StatBuff
-    m_factory: {fileID: 568713669}
-  m_preconditionFactories:
-  - m_preconditionType: OwnerHasTrait
-    m_factory: {fileID: 568713672}
-  - m_preconditionType: TargetHasTrait
-    m_factory: {fileID: 568713671}
---- !u!114 &568713669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568713664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e5aa65ce32db49d98213f8a49ee76ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &568713670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568713664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d54c957de77ec401c8abff5b7672efff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &568713671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568713664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3c00fb07545f453282979ef8c06fcd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &568713672
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568713664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c84f90b2633e4a109163d8fca5790f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_traitLibrary: {fileID: 568713683}
 --- !u!114 &568713673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -532,17 +471,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8020da5ae52d426aa87dc19733f0c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eventDefinitionFiles:
+  m_definitionFiles:
   - {fileID: 4900000, guid: 946f59a4d0fc74da88438cdc26e6886e, type: 3}
-  m_effectFactories:
-  - {fileID: 568713682}
-  - {fileID: 568713681}
-  - {fileID: 568713680}
-  - {fileID: 568713674}
-  - {fileID: 568713679}
-  - {fileID: 568713678}
-  - {fileID: 568713677}
-  - {fileID: 568713676}
 --- !u!114 &568713674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -556,18 +486,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &568713675
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568713664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fd4f848837a54b85ad1af43be4d5cc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &568713676
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -649,6 +567,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f93e613925e1a48f0ae72ba1be780232, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &568713683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568713664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78182d11a7886cf47bb1df2746f09aff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_definitionFiles:
+  - {fileID: 4900000, guid: 905ca4f98d10e89449e9f617372a2de9, type: 3}
+--- !u!114 &568713684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568713664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cdc3531872444268b7b5a0a94d717fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &680955580
@@ -888,7 +832,7 @@ MonoBehaviour:
   m_statSchema: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
   m_baseStats: []
   m_baseTraits:
-  - authoritarian
+  - jerk
   OnTraitAdded:
     m_PersistentCalls:
       m_Calls: []

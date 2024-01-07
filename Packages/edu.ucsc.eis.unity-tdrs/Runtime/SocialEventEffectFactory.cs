@@ -4,7 +4,7 @@ namespace TDRS
 {
 	public abstract class SocialEventEffectFactory : MonoBehaviour, ISocialEventEffectFactory
 	{
-		public abstract string EffectType { get; }
-		public abstract ISocialEventEffect CreateInstance(SocialEventContext ctx, params string[] args);
+		public abstract string EffectName { get; }
+		public abstract ISocialEventEffect CreateInstance(EffectBindingContext ctx, params string[] args);
 	}
 }

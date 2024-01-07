@@ -18,23 +18,12 @@ namespace TDRS
 		/// A list of text files containing social event definitions.
 		/// </summary>
 		[SerializeField]
-		protected List<TextAsset> m_eventDefinitionFiles;
-
-		/// <summary>
-		/// SocialEventFactory instances supplied within the inspector.
-		/// </summary>
-		[SerializeField]
-		protected List<SocialEventEffectFactory> m_effectFactories;
+		protected List<TextAsset> m_definitionFiles;
 
 		/// <summary>
 		/// Event definitions sorted by name and cardinality.
 		/// </summary>
 		protected Dictionary<string, SocialEventType> m_eventTypes;
-
-		/// <summary>
-		/// Effect names mapped to factories that create instances of that effect.
-		/// </summary>
-		protected Dictionary<string, ISocialEventEffectFactory> m_effectFactoryDict;
 
 		#endregion
 
@@ -43,12 +32,6 @@ namespace TDRS
 		private void Awake()
 		{
 			m_eventTypes = new Dictionary<string, SocialEventType>();
-			m_effectFactoryDict = new Dictionary<string, ISocialEventEffectFactory>();
-		}
-
-		private void Start()
-		{
-			LoadFactories();
 		}
 
 		#endregion
@@ -56,21 +39,11 @@ namespace TDRS
 		#region Public Methods
 
 		/// <summary>
-		/// Add a factory to the library.
-		/// </summary>
-		/// <param name="effectType"></param>
-		/// <param name="factory"></param>
-		public void AddEffectFactory(string effectType, ISocialEventEffectFactory factory)
-		{
-			m_effectFactoryDict[effectType] = factory;
-		}
-
-		/// <summary>
 		/// Load social event definitions from text assets provided in the inspector.
 		/// </summary>
-		public void LoadSocialEvents()
+		public void LoadEventDefinitions()
 		{
-			foreach (var textAsset in m_eventDefinitionFiles)
+			foreach (var textAsset in m_definitionFiles)
 			{
 				var input = new StringReader(textAsset.text);
 
@@ -100,17 +73,6 @@ namespace TDRS
 		}
 
 		/// <summary>
-		/// Load the various factory instances.
-		/// </summary>
-		public void LoadFactories()
-		{
-			foreach (var entry in m_effectFactories)
-			{
-				AddEffectFactory(entry.EffectType, entry);
-			}
-		}
-
-		/// <summary>
 		/// Get an event type by name (eventName/#)
 		/// </summary>
 		/// <param name="eventName"></param>
@@ -118,30 +80,6 @@ namespace TDRS
 		public SocialEventType GetEventType(string eventName)
 		{
 			return m_eventTypes[eventName];
-		}
-
-		/// <summary>
-		/// Get an effect factory by event type
-		/// </summary>
-		/// <param name="effectType"></param>
-		/// <returns></returns>
-		public ISocialEventEffectFactory GetEffectFactory(string effectType)
-		{
-			return m_effectFactoryDict[effectType];
-		}
-
-		#endregion
-
-		#region Helper Classes
-
-		/// <summary>
-		/// Helper class for organizing effect factories in the inspector
-		/// </summary>
-		[Serializable]
-		public class EffectFactoryEntry
-		{
-			public string m_effectType;
-			public SocialEventEffectFactory m_factory;
 		}
 
 		#endregion

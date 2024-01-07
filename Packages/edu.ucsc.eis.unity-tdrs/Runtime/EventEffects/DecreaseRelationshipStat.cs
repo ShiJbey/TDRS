@@ -35,15 +35,21 @@ namespace TDRS
 						m_reason,
 						-m_value,
 						StatSystem.StatModifierType.FLAT,
-						m_duration
+						m_duration,
+						this
 					)
 				);
 			}
+
+			public void Remove()
+			{
+				m_relationship.Stats.RemoveModifiersFromSource(this);
+			}
 		}
 
-		public override string EffectType => "DecreaseRelationshipStat";
+		public override string EffectName => "DecreaseRelationshipStat";
 
-		public override ISocialEventEffect CreateInstance(SocialEventContext ctx, params string[] args)
+		public override ISocialEventEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length < 4)
 			{

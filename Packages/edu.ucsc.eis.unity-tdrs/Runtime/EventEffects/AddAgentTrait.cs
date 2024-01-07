@@ -25,12 +25,18 @@ namespace TDRS
 			{
 				m_agent.AddTrait(m_traitID, m_duration);
 			}
+
+			public void Remove()
+			{
+				// Trait additions are permanent
+				return;
+			}
 		}
 
-		public override string EffectType => "AddAgentTrait";
+		public override string EffectName => "AddAgentTrait";
 
 		public override ISocialEventEffect CreateInstance(
-			SocialEventContext ctx,
+			EffectBindingContext ctx,
 			params string[] args
 		)
 		{

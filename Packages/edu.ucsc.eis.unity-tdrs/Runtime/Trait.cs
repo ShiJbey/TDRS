@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace TDRS
 {
@@ -12,17 +11,27 @@ namespace TDRS
 	/// </summary>
 	public class Trait
 	{
-		#region Attributes
+		#region Fields
+
+		/// <summary>
+		/// The definition for this trait instance
+		/// </summary>
+		protected TraitDefinition m_definition;
+
+		/// <summary>
+		/// The hydrated description template
+		/// </summary>
+		protected string m_description;
+
+		/// <summary>
+		/// Remaining time for this traits to exist
+		/// </summary>
+		protected int m_duration;
 
 		/// <summary>
 		/// Effects to apply when the trait is added
 		/// </summary>
-		protected readonly List<IEffect> _effects;
-
-		/// <summary>
-		/// IDs of traits that this trait cannot be present with
-		/// </summary>
-		protected readonly HashSet<string> _conflictingTraits;
+		protected ISocialEventEffect[] m_effects;
 
 		#endregion
 
@@ -31,80 +40,73 @@ namespace TDRS
 		/// <summary>
 		/// A unique ID for this Trait.
 		/// </summary>
-		public string TraitID { get; }
+		public string TraitID => m_definition.TraitID;
 
 		/// <summary>
 		/// An user-friendly name to use for GUIs.
 		/// </summary>
-		public string DisplayName { get; }
+		public string DisplayName => m_definition.DisplayName;
 
 		/// <summary>
 		/// A short description of the trait.
 		/// </summary>
-		public string Description { get; }
+		public string Description => m_description;
 
 		/// <summary>
 		/// The amount of simulation ticks this trait lasts for
 		/// </summary>
-		public int Duration { get; }
+		public int Duration => m_duration;
 
 		/// <summary>
 		/// Effects to apply when the trait is added
 		/// </summary>
-		public IEnumerable<IEffect> Effects => _effects;
+		public IEnumerable<ISocialEventEffect> Effects => m_effects;
 
 		/// <summary>
 		/// IDs of traits that this trait cannot be added with
 		/// </summary>
-		public HashSet<string> ConflictingTraits => _conflictingTraits;
+		public HashSet<string> ConflictingTraits => m_definition.ConflictingTraits;
+
+		/// <summary>
+		/// The social rules associated with this trait
+		/// </summary>
+		public SocialRuleDefinition[] SocialRuleDefinitions => m_definition.SocialRules;
 
 		#endregion
 
 		#region Constructors
 
 		public Trait(
-			string traitID,
-			string displayName,
-			string description,
-			IEnumerable<IEffect> effects,
-			HashSet<string> conflictingTraits,
-			int duration
-			)
+			TraitDefinition traitDefinition,
+			ISocialEventEffect[] effects,
+			string description
+		)
 		{
-			TraitID = traitID;
-			DisplayName = displayName;
-			Description = description;
-			_effects = effects.ToList();
-			_conflictingTraits = conflictingTraits;
-			Duration = duration;
+			m_definition = traitDefinition;
+			m_effects = effects;
+			m_duration = traitDefinition.Duration;
+			m_description = description;
 		}
 
 		#endregion
 
-		#region Methods
+		#region Public Methods
 
 		/// <summary>
-		/// Callback method executed when the trait is added to an object.
+		/// Override the current duration for the trait
 		/// </summary>
-		/// <param name="target"></param>
-		public void OnAdd(SocialEntity target)
+		/// <param name="duration"></param>
+		public void SetDuration(int duration)
 		{
-			foreach (var effect in _effects)
-			{
-				effect.Apply(target);
-			}
+			m_duration = duration;
 		}
 
 		/// <summary>
-		/// Callback method executed when the trait is removed from an object.
+		/// Decrease the time left for this trait by one time tick
 		/// </summary>
-		/// <param name="target"></param>
-		public void OnRemove(SocialEntity target)
+		public void DecrementDuration()
 		{
-			foreach (var effect in _effects)
-			{
-				effect.Remove(target);
-			}
+			m_duration -= 1;
 		}
 
 		public override string ToString()

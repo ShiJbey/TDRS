@@ -11,7 +11,7 @@ public class SocialAgentInspector : Editor
 	public VisualTreeAsset m_UXml;
 
 	private VisualElement m_root;
-	private List<TraitEntry> m_traitsList;
+	private List<Trait> m_traitsList;
 	private List<KeyValuePair<string, Stat>> m_statsList;
 	private List<StatModifier> m_statModifiers;
 	private SocialAgent m_agent;
@@ -33,7 +33,7 @@ public class SocialAgentInspector : Editor
 
 	private void CreateTraitGUI(VisualElement root)
 	{
-		m_traitsList = new List<TraitEntry>();
+		m_traitsList = new List<Trait>();
 		m_traitListView = root.Q<MultiColumnListView>(name: "Traits");
 
 
@@ -56,12 +56,12 @@ public class SocialAgentInspector : Editor
 
 		cols["trait"].bindCell = (VisualElement e, int index) =>
 		{
-			(e as Label).text = m_traitsList[index].Trait.DisplayName;
+			(e as Label).text = m_traitsList[index].DisplayName;
 		};
 
 		cols["description"].bindCell = (VisualElement e, int index) =>
 		{
-			(e as TextElement).text = m_traitsList[index].Trait.Description;
+			(e as TextElement).text = m_traitsList[index].Description;
 		};
 
 		cols["cooldown"].bindCell = (VisualElement e, int index) =>

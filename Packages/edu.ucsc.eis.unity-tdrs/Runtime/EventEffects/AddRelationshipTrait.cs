@@ -25,11 +25,17 @@ namespace TDRS
 			{
 				m_relationship.AddTrait(m_traitID, m_duration);
 			}
+
+			public void Remove()
+			{
+				// Trait additions are permanent
+				return;
+			}
 		}
 
-		public override string EffectType => "AddRelationshipTrait";
+		public override string EffectName => "AddRelationshipTrait";
 
-		public override ISocialEventEffect CreateInstance(SocialEventContext ctx, params string[] args)
+		public override ISocialEventEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length < 3)
 			{

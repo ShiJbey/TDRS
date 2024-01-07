@@ -7,19 +7,19 @@ namespace TDRS
 	/// <summary>
 	/// Manages the traits attached to a social entity or relationship.
 	/// </summary>
-	public class TraitCollection
+	public class TraitManager
 	{
-		#region Attributes
+		#region Fields
 
 		/// <summary>
 		/// Traits currently applied to the entity
 		/// </summary>
-		protected Dictionary<string, TraitEntry> _traits;
+		protected Dictionary<string, Trait> m_traits;
 
 		/// <summary>
 		/// Collection of TraitID's that conflict with the current traits
 		/// </summary>
-		protected HashSet<string> _conflictingTraits;
+		protected HashSet<string> m_conflictingTraits;
 
 		#endregion
 
@@ -37,35 +37,35 @@ namespace TDRS
 
 		#endregion
 
-		#region Public Properties
+		#region Properties
 
 		/// <summary>
 		/// All traits within the collection.
 		/// </summary>
-		public List<TraitEntry> Traits => _traits.Values.ToList();
+		public List<Trait> Traits => m_traits.Values.ToList();
 
 		#endregion
 
 		#region Constructors
 
-		public TraitCollection()
+		public TraitManager()
 		{
-			_traits = new Dictionary<string, TraitEntry>();
-			_conflictingTraits = new HashSet<string>();
+			m_traits = new Dictionary<string, Trait>();
+			m_conflictingTraits = new HashSet<string>();
 		}
 
 		#endregion
 
-		#region Methods
+		#region Public Methods
 
 		/// <summary>
 		/// Add a trait to the entity
 		/// </remarks>
 		/// <param name="trait"></param>
 		/// <returns></returns>
-		public bool AddTrait(Trait trait)
+		public bool AddTrait(Trait trait, int duration = -1)
 		{
-			if (_traits.ContainsKey(trait.TraitID))
+			if (m_traits.ContainsKey(trait.TraitID))
 			{
 				return false;
 			}
@@ -75,9 +75,11 @@ namespace TDRS
 				return false;
 			}
 
-			_traits[trait.TraitID] = new TraitEntry(trait);
+			m_traits[trait.TraitID] = trait;
 
-			_conflictingTraits.UnionWith(trait.ConflictingTraits);
+			trait.SetDuration(duration);
+
+			m_conflictingTraits.UnionWith(trait.ConflictingTraits);
 
 			if (OnTraitAdded != null) OnTraitAdded.Invoke(this, trait.TraitID);
 
@@ -91,17 +93,17 @@ namespace TDRS
 		/// <returns></returns>
 		public bool RemoveTrait(string traitID)
 		{
-			if (!_traits.ContainsKey(traitID))
+			if (!m_traits.ContainsKey(traitID))
 			{
 				return false;
 			}
 
-			_traits.Remove(traitID);
+			m_traits.Remove(traitID);
 
-			_conflictingTraits.Clear();
-			foreach (var (_, entry) in _traits)
+			m_conflictingTraits.Clear();
+			foreach (var (_, trait) in m_traits)
 			{
-				_conflictingTraits.UnionWith(entry.Trait.ConflictingTraits);
+				m_conflictingTraits.UnionWith(trait.ConflictingTraits);
 			}
 
 			OnTraitRemoved(this, traitID);
@@ -126,7 +128,7 @@ namespace TDRS
 		/// <returns></returns>
 		public bool HasTrait(string traitID)
 		{
-			return _traits.ContainsKey(traitID);
+			return m_traits.ContainsKey(traitID);
 		}
 
 		/// <summary>
@@ -136,7 +138,7 @@ namespace TDRS
 		/// <returns></returns>
 		public bool HasTrait(Trait trait)
 		{
-			return _traits.ContainsKey(trait.TraitID);
+			return m_traits.ContainsKey(trait.TraitID);
 		}
 
 		/// <summary>
@@ -146,35 +148,19 @@ namespace TDRS
 		/// <returns></returns>
 		public bool HasConflictingTrait(Trait trait)
 		{
-			return _conflictingTraits.Contains(trait.TraitID);
+			return m_conflictingTraits.Contains(trait.TraitID);
+		}
+
+		/// <summary>
+		/// Get a trait instance from the collection
+		/// </summary>
+		/// <param name="traitID"></param>
+		/// <returns></returns>
+		public Trait GetTrait(string traitID)
+		{
+			return m_traits[traitID];
 		}
 
 		#endregion
-
-
 	}
-
-	#region Helper Types
-
-	public class TraitEntry
-	{
-		protected int m_duration;
-		protected Trait m_trait;
-
-		public int Duration => m_duration;
-		public Trait Trait => m_trait;
-
-		public TraitEntry(Trait trait)
-		{
-			m_trait = trait;
-			m_duration = trait.Duration;
-		}
-
-		public void DecrementDuration()
-		{
-			m_duration -= 1;
-		}
-	}
-
-	#endregion
 }

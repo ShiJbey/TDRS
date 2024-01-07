@@ -1,14 +1,19 @@
 namespace TDRS
 {
 	/// <summary>
-	/// Interface implemented by all effects that can be triggered by a SocialEvent
+	/// Interface implemented by all effects that can be triggered by a social event, trait, or
+	/// social rule.
 	/// </summary>
 	public interface ISocialEventEffect
 	{
 		/// <summary>
 		/// Apply effects of the effect
 		/// </summary>
-		/// <param name="context"></param>
 		public void Apply();
+
+		/// <summary>
+		/// Remove effects of the effect
+		/// </summary>
+		public void Remove();
 	}
 }

@@ -7,47 +7,53 @@ namespace TDRS
 	/// <summary>
 	/// Manages stats associated with a Entity
 	/// </summary>
-	public class StatCollection
+	public class StatManager
 	{
-		#region Attributes
+		#region Fields
 
 		/// <summary>
 		/// Mapping of stat names to instances
 		/// </summary>
-		protected Dictionary<string, Stat> _stats;
+		protected Dictionary<string, Stat> m_stats;
 
-		protected List<StatModifier> _modifiers;
+		protected List<StatModifier> m_modifiers;
 
 		#endregion
 
 		#region Events
 
+		/// <summary>
+		/// Event invoked when a stat value changes
+		/// </summary>
 		public event EventHandler<(string, float)> OnValueChanged;
 
 		#endregion
 
 		#region Properties
 
-		public IEnumerable<StatModifier> Modifiers => _modifiers;
+		/// <summary>
+		/// All modifiers currently applied to the stats
+		/// </summary>
+		public IEnumerable<StatModifier> Modifiers => m_modifiers;
 
 		/// <summary>
 		/// Get all the stat instances.
 		/// </summary>
-		public IEnumerable<KeyValuePair<string, Stat>> Stats => _stats;
+		public IEnumerable<KeyValuePair<string, Stat>> Stats => m_stats;
 
 		#endregion
 
 		#region Constructors
 
-		public StatCollection()
+		public StatManager()
 		{
-			_stats = new Dictionary<string, Stat>();
-			_modifiers = new List<StatModifier>();
+			m_stats = new Dictionary<string, Stat>();
+			m_modifiers = new List<StatModifier>();
 		}
 
 		#endregion
 
-		#region Methods
+		#region Public Methods
 
 		/// <summary>
 		/// Add a new stat
@@ -56,7 +62,7 @@ namespace TDRS
 		/// <param name="stat"></param>
 		public void AddStat(string statName, Stat stat)
 		{
-			_stats[statName] = stat;
+			m_stats[statName] = stat;
 
 			stat.OnValueChanged += (stat, value) =>
 			{
@@ -74,9 +80,9 @@ namespace TDRS
 		/// <exception cref="KeyNotFoundException"></exception>
 		public Stat GetStat(string statName)
 		{
-			if (_stats.ContainsKey(statName))
+			if (m_stats.ContainsKey(statName))
 			{
-				return _stats[statName];
+				return m_stats[statName];
 			}
 
 			throw new KeyNotFoundException(
@@ -90,7 +96,7 @@ namespace TDRS
 		/// <returns></returns>
 		public bool HasStat(string statName)
 		{
-			return _stats.ContainsKey(statName);
+			return m_stats.ContainsKey(statName);
 		}
 
 		/// <summary>
@@ -100,7 +106,7 @@ namespace TDRS
 		public void AddModifier(StatModifier modifier)
 		{
 			Stat stat = GetStat(modifier.Stat);
-			_modifiers.Add(modifier);
+			m_modifiers.Add(modifier);
 			stat.AddModifier(modifier);
 		}
 
@@ -111,7 +117,7 @@ namespace TDRS
 		/// <returns></returns>
 		public bool RemoveModifier(StatModifier modifier)
 		{
-			var success = _modifiers.Remove(modifier);
+			var success = m_modifiers.Remove(modifier);
 
 			if (success)
 			{
@@ -131,9 +137,9 @@ namespace TDRS
 		{
 			bool modifierRemoved = false;
 
-			for (int i = _modifiers.Count - 1; i >= 0; i--)
+			for (int i = m_modifiers.Count - 1; i >= 0; i--)
 			{
-				var modifier = _modifiers[i];
+				var modifier = m_modifiers[i];
 				if (modifier.Source == source)
 				{
 					modifierRemoved = RemoveModifier(modifier);
@@ -141,28 +147,6 @@ namespace TDRS
 			}
 
 			return modifierRemoved;
-		}
-
-		/// <summary>
-		/// Update the stats and modifiers by one simulation tick
-		/// </summary>
-		public void Tick()
-		{
-			// Loop backward since we may remove items from the list
-			for (int i = _modifiers.Count - 1; i >= 0; i--)
-			{
-				var modifier = _modifiers[i];
-
-				if (modifier.Duration > 0)
-				{
-					modifier.DecrementDuration();
-				}
-
-				if (modifier.Duration == 0)
-				{
-					RemoveModifier(modifier);
-				}
-			}
 		}
 
 		#endregion

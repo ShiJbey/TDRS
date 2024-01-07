@@ -8,13 +8,15 @@ namespace TDRS
 		/// <summary>
 		///  Get the type of effect this factory produces
 		/// </summary>
-		public string EffectType { get; }
+		public string EffectName { get; }
 
 		/// <summary>
 		/// Create a new social event effect instance
 		/// </summary>
 		/// <param name="args"></param>
 		/// <returns></returns>
-		public ISocialEventEffect CreateInstance(SocialEventContext context, params string[] args);
+		public ISocialEventEffect CreateInstance(
+			EffectBindingContext context, params string[] args
+		);
 	}
 }

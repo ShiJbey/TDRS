@@ -1,9 +1,14 @@
 using System.Collections.Generic;
+using TDRS.StatSystem;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace TDRS
 {
+	/// <summary>
+	/// An object within the social engine's social network that has stats and traits associated
+	/// with it.
+	/// </summary>
 	public abstract class SocialEntity : MonoBehaviour
 	{
 		#region Fields
@@ -44,17 +49,12 @@ namespace TDRS
 		/// <summary>
 		/// The collection of traits associated with this entity
 		/// </summary>
-		public TraitCollection Traits { get; protected set; }
+		public TraitManager Traits { get; protected set; }
 
 		/// <summary>
 		/// A collection of stats associated with this entity
 		/// </summary>
-		public StatCollection Stats { get; protected set; }
-
-		/// <summary>
-		/// All social rules affecting this entity
-		/// </summary>
-		public SocialRules SocialRules { get; protected set; }
+		public StatManager Stats { get; protected set; }
 
 		#endregion
 
@@ -86,9 +86,8 @@ namespace TDRS
 
 		protected virtual void Awake()
 		{
-			Traits = new TraitCollection();
-			Stats = new StatCollection();
-			SocialRules = new SocialRules();
+			Traits = new TraitManager();
+			Stats = new StatManager();
 		}
 
 		protected virtual void Start()
@@ -103,44 +102,60 @@ namespace TDRS
 
 		#endregion
 
-		#region Methods
+		#region Public Methods
 
 		/// <summary>
 		/// Add a trait to an entity.
 		/// </summary>
 		/// <param name="traitID"></param>
-		public virtual void AddTrait(string traitID, int duration = -1)
-		{
-			var trait = Engine.TraitLibrary.GetTrait(traitID);
-			Traits.AddTrait(trait);
-			trait.OnAdd(this);
-		}
+		/// <param name="duration"></param>
+		public abstract void AddTrait(string traitID, int duration = -1);
 
 		/// <summary>
 		/// Remove a trait from the entity.
 		/// </summary>
 		/// <param name="traitID"></param>
-		public virtual void RemoveTrait(string traitID)
-		{
-			var trait = Engine.TraitLibrary.GetTrait(traitID);
-			Traits.RemoveTrait(trait);
-			trait.OnRemove(this);
-		}
+		public abstract void RemoveTrait(string traitID);
 
 		/// <summary>
 		/// Advance the simulation by one simulation tick
 		/// </summary>
-		public void Tick()
+		public virtual void Tick()
 		{
 			TickTraits();
-			Stats.Tick();
+			TickStats();
 
 			if (OnTick != null) OnTick.Invoke();
 		}
 
-		private void TickTraits()
+		/// <summary>
+		/// Update the stats and modifiers by one simulation tick
+		/// </summary>
+		public void TickStats()
 		{
-			List<TraitEntry> traits = Traits.Traits;
+			List<StatModifier> modifiers = new List<StatModifier>(Stats.Modifiers);
+
+			// Loop backward since we may remove items from the list
+			foreach (var modifier in modifiers)
+			{
+				if (modifier.Duration > 0)
+				{
+					modifier.DecrementDuration();
+				}
+
+				if (modifier.Duration == 0)
+				{
+					Stats.RemoveModifier(modifier);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Tick update the traits of characters
+		/// </summary>
+		public void TickTraits()
+		{
+			List<Trait> traits = Traits.Traits;
 
 			// Loop backward since we may remove items from the list
 			for (int i = traits.Count - 1; i >= 0; i--)
@@ -154,7 +169,7 @@ namespace TDRS
 
 				if (trait.Duration == 0)
 				{
-					RemoveTrait(trait.Trait.TraitID);
+					RemoveTrait(trait.TraitID);
 				}
 			}
 		}

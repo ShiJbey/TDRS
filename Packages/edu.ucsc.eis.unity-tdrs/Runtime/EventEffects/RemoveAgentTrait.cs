@@ -22,11 +22,17 @@ namespace TDRS
 			{
 				m_agent.RemoveTrait(m_traitID);
 			}
+
+			public void Remove()
+			{
+				// Trait removal is permanent
+				return;
+			}
 		}
 
-		public override string EffectType => "AddAgentTrait";
+		public override string EffectName => "AddAgentTrait";
 
-		public override ISocialEventEffect CreateInstance(SocialEventContext ctx, params string[] args)
+		public override ISocialEventEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length != 2)
 			{

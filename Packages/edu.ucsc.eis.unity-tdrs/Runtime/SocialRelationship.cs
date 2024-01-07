@@ -48,15 +48,11 @@ namespace TDRS
 
 		protected void OnEnable()
 		{
-			Traits.OnTraitAdded += HandleTraitAdded;
-			Traits.OnTraitRemoved += HandleTraitRemoved;
 			Stats.OnValueChanged += HandleStatChanged;
 		}
 
 		protected void OnDisable()
 		{
-			Traits.OnTraitAdded -= HandleTraitAdded;
-			Traits.OnTraitRemoved -= HandleTraitRemoved;
 			Stats.OnValueChanged -= HandleStatChanged;
 		}
 
@@ -68,19 +64,50 @@ namespace TDRS
 
 		#endregion
 
-		#region Event Handlers
+		#region Public Methods
 
-		private void HandleTraitAdded(object traits, string traitID)
+		public override void AddTrait(string traitID, int duration = -1)
 		{
+			Trait trait = Engine.TraitLibrary.CreateInstance(traitID, this);
+			Traits.AddTrait(trait, duration);
+
+			// Apply the trait's effects on the owner
+			foreach (var effect in trait.Effects)
+			{
+				effect.Apply();
+			}
+
+			// Add the social rules for this trait
+			foreach (var socialRuleDef in trait.SocialRuleDefinitions)
+			{
+				// SocialRules.AddSocialRuleDefinition(socialRuleDef, trait);
+			}
+
+			// Propagate on the event to a Unity event
 			Engine.DB.Insert($"{Owner.UID}.relationship.{Target.UID}.trait.{traitID}");
 			if (OnTraitAdded != null) OnTraitAdded.Invoke(traitID);
 		}
 
-		private void HandleTraitRemoved(object traits, string traitID)
+		public override void RemoveTrait(string traitID)
 		{
+			var trait = Traits.GetTrait(traitID);
+
+			// Undo the effects of the trait on the owner
+			foreach (var effect in trait.Effects)
+			{
+				effect.Remove();
+			}
+
+			Traits.RemoveTrait(trait);
+
 			Engine.DB.Delete($"{Owner.UID}.relationship.{Target.UID}.trait.{traitID}");
 			if (OnTraitRemoved != null) OnTraitRemoved.Invoke(traitID);
 		}
+
+		#endregion
+
+
+		#region Event Handlers
 
 		private void HandleStatChanged(object stats, (string, float) nameAndValue)
 		{

@@ -22,11 +22,17 @@ namespace TDRS
 			{
 				m_relationship.RemoveTrait(m_traitID);
 			}
+
+			public void Remove()
+			{
+				// trait removal is permanent
+				return;
+			}
 		}
 
-		public override string EffectType => "RemoveRelationshipTrait";
+		public override string EffectName => "RemoveRelationshipTrait";
 
-		public override ISocialEventEffect CreateInstance(SocialEventContext ctx, params string[] args)
+		public override ISocialEventEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length != 3)
 			{
