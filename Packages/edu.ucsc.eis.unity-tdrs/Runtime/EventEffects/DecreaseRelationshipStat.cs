@@ -53,8 +53,10 @@ namespace TDRS
 		{
 			if (args.Length < 4)
 			{
+				string argStr = string.Join(" ", args);
+
 				throw new System.ArgumentException(
-					"Incorrect number of arguments for IncreaseRelationshipStat. "
+					$"Incorrect number of arguments for 'DecreaseRelationshipStat {argStr}'. "
 					+ $"Expected at least 4 but was {args.Length}."
 				);
 			}
@@ -62,6 +64,19 @@ namespace TDRS
 			string relationshipOwnerVar = args[0];
 			string relationshipTargetVar = args[1];
 			string statName = args[2];
+
+			if (!ctx.Engine.HasRelationship(
+					ctx.Bindings[relationshipOwnerVar],
+					ctx.Bindings[relationshipTargetVar]
+					)
+				)
+			{
+				throw new System.ArgumentException(
+					"No relationship found from "
+					+ $"{ctx.Bindings[relationshipOwnerVar]} to"
+					+ $"{ctx.Bindings[relationshipTargetVar]}."
+				);
+			}
 
 			if (!float.TryParse(args[3], out var value))
 			{

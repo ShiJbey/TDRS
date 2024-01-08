@@ -49,19 +49,20 @@
   # relationship trait, they are applied to the character that owns the relationship. Social rules
   # allow on agent's traits to influence third-parties and their relationships with those
   # third-parties.
-  SocialRules:
+  socialRules:
     # People who are not jerks don't like jerks
     - where: |
-        not ?other.traits.jerk
+        not ?other.trait.jerk
       apply:
         - DecreaseRelationshipStat ?other ?owner Friendship 10
+      description: "[owner] is a jerk"
 
     # Jerks like other jerks
     - where: |
-        ?other.traits.jerk
+        ?other.trait.jerk
       apply:
         - IncreaseRelationshipStat ?owner ?other Friendship 10
-      description: Jerks like other jerks
+      description: "Jerks like other jerks"
 
 - traitID: happy_go_lucky
   traitType: agent
@@ -69,6 +70,9 @@
   description: "[owner] is happy-go-lucky."
   effects:
     - IncreaseAgentStat ?owner Sociability 10
+  socialRules:
+    - apply:
+        - IncreaseRelationshipStat ?owner ?other Friendship 3
 
 - traitID: advisor_of
   traitType: relationship

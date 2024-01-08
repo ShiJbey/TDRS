@@ -753,6 +753,7 @@ MonoBehaviour:
   m_baseStats: []
   m_baseTraits:
   - anti-social
+  - jerk
   OnTraitAdded:
     m_PersistentCalls:
       m_Calls: []
@@ -894,7 +895,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_statSchema: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
   m_baseStats: []
-  m_baseTraits: []
+  m_baseTraits:
+  - happy_go_lucky
   OnTraitAdded:
     m_PersistentCalls:
       m_Calls: []

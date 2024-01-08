@@ -43,7 +43,7 @@ namespace TDRS
 
 		#endregion
 
-		#region Methods
+		#region Public Methods
 
 		/// <summary>
 		/// Add a rule to the entities collection of active rules.
@@ -55,13 +55,26 @@ namespace TDRS
 			if (OnRuleAdded != null) OnRuleAdded.Invoke(this, rule);
 		}
 
-		public virtual void RemoveSocialRuleDefinition(SocialRuleDefinition rule)
+		public void RemoveSocialRuleDefinition(SocialRuleDefinition rule)
 		{
 			if (m_rules.Remove(rule))
 			{
 				RemoveAllInstancesOfRule(rule);
 				if (OnRuleRemoved != null) OnRuleRemoved.Invoke(this, rule);
 			}
+		}
+
+		public bool HasSocialRuleInstance(SocialRuleDefinition rule, string owner, string other)
+		{
+			foreach (var instance in m_ruleInstances)
+			{
+				if (instance.Source == rule && instance.Owner == owner && instance.Other == other)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -72,12 +85,7 @@ namespace TDRS
 		public void AddSocialRuleInstance(SocialRuleInstance instance)
 		{
 			m_ruleInstances.Add(instance);
-
-			// Apply all the effects of the instance
-			foreach (var effect in instance.Effects)
-			{
-				effect.Apply();
-			}
+			instance.Apply();
 		}
 
 		/// <summary>
@@ -98,10 +106,7 @@ namespace TDRS
 					m_ruleInstances.RemoveAt(i);
 
 					// Undo all its effects
-					foreach (var effect in ruleInstance.Effects)
-					{
-						effect.Remove();
-					}
+					ruleInstance.Remove();
 				}
 			}
 		}

@@ -68,8 +68,11 @@ namespace TDRS
 
 		public override void AddTrait(string traitID, int duration = -1)
 		{
+			if (Traits.HasTrait(traitID)) return;
+
 			Trait trait = Engine.TraitLibrary.CreateInstance(traitID, this);
 			Traits.AddTrait(trait, duration);
+			Engine.DB.Insert($"{Owner.UID}.relationship.{Target.UID}.trait.{traitID}");
 
 			// Apply the trait's effects on the owner
 			foreach (var effect in trait.Effects)
@@ -80,17 +83,20 @@ namespace TDRS
 			// Add the social rules for this trait
 			foreach (var socialRuleDef in trait.SocialRuleDefinitions)
 			{
-				// SocialRules.AddSocialRuleDefinition(socialRuleDef, trait);
+				Owner.SocialRules.AddSocialRuleDefinition(socialRuleDef);
 			}
 
 			// Propagate on the event to a Unity event
-			Engine.DB.Insert($"{Owner.UID}.relationship.{Target.UID}.trait.{traitID}");
 			if (OnTraitAdded != null) OnTraitAdded.Invoke(traitID);
 		}
 
 		public override void RemoveTrait(string traitID)
 		{
+			if (!Traits.HasTrait(traitID)) return;
+
 			var trait = Traits.GetTrait(traitID);
+			Traits.RemoveTrait(trait);
+			Engine.DB.Delete($"{Owner.UID}.relationship.{Target.UID}.trait.{traitID}");
 
 			// Undo the effects of the trait on the owner
 			foreach (var effect in trait.Effects)
@@ -98,9 +104,12 @@ namespace TDRS
 				effect.Remove();
 			}
 
-			Traits.RemoveTrait(trait);
+			// Remove social rules from the relationship owner
+			foreach (var socialRuleDef in trait.SocialRuleDefinitions)
+			{
+				Owner.SocialRules.RemoveSocialRuleDefinition(socialRuleDef);
+			}
 
-			Engine.DB.Delete($"{Owner.UID}.relationship.{Target.UID}.trait.{traitID}");
 			if (OnTraitRemoved != null) OnTraitRemoved.Invoke(traitID);
 		}
 

@@ -136,12 +136,12 @@ namespace TDRS
 			if (yamlNode.TryGetChild("socialRules", out var socialRulesNode))
 			{
 				traitDef.m_socialRules = (socialRulesNode as YamlSequenceNode).Children
-					.Select(node => SocialRuleDefinition.FromYaml(node))
+					.Select(node => SocialRuleDefinition.FromYaml(traitDef, node))
 					.ToArray();
 			}
 
 			// Attempt to set conflicting traits
-			if (yamlNode.TryGetChild("socialRules", out var conflictingTraitsNode))
+			if (yamlNode.TryGetChild("conflictingTraits", out var conflictingTraitsNode))
 			{
 				traitDef.m_conflictingTraits = new HashSet<string>(
 					(conflictingTraitsNode as YamlSequenceNode).Children

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -58,6 +59,28 @@ namespace TDRS
 			{
 				AddEffectFactory(factory.EffectName, factory);
 			}
+		}
+
+		/// <summary>
+		/// Instantiate a new event instance
+		/// </summary>
+		/// <param name="ctx"></param>
+		/// <param name="eventString"></param>
+		/// <returns></returns>
+		public ISocialEventEffect CreateInstance(EffectBindingContext ctx, string effectSting)
+		{
+			List<string> effectParts = effectSting
+					.Split(" ").Select(s => s.Trim()).ToList();
+
+			string effectName = effectParts[0]; // The effect name is the first part
+			effectParts.RemoveAt(0); // Remove the name from the front of the list
+
+			// Get the factory
+			var effectFactory = GetEffectFactory(effectName);
+
+			var effect = effectFactory.CreateInstance(ctx, effectParts.ToArray());
+
+			return effect;
 		}
 
 		#endregion

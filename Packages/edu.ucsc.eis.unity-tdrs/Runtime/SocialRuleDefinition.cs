@@ -16,7 +16,7 @@ namespace TDRS
 		protected DBQuery m_query;
 		protected string[] m_effects;
 		protected string m_descriptionTemplate;
-		protected object m_source;
+		protected TraitDefinition m_source;
 
 		#endregion
 
@@ -25,7 +25,7 @@ namespace TDRS
 		public DBQuery Query => m_query;
 		public string[] Effects => m_effects;
 		public string DescriptionTemplate => m_descriptionTemplate;
-		public object Source => m_source;
+		public TraitDefinition Source => m_source;
 
 		#endregion
 
@@ -41,19 +41,6 @@ namespace TDRS
 
 		#endregion
 
-		#region Public Methods
-
-		/// <summary>
-		/// Set the source for the social rule.
-		/// </summary>
-		/// <param name="source"></param>
-		public void SetSource(object source)
-		{
-			m_source = source;
-		}
-
-		#endregion
-
 		#region Static Methods
 
 		/// <summary>
@@ -61,9 +48,13 @@ namespace TDRS
 		/// </summary>
 		/// <param name="yamlNode"></param>
 		/// <returns></returns>
-		public static SocialRuleDefinition FromYaml(YamlNode yamlNode)
+		public static SocialRuleDefinition FromYaml(TraitDefinition traitDef, YamlNode yamlNode)
 		{
-			SocialRuleDefinition ruleDef = new SocialRuleDefinition();
+			SocialRuleDefinition ruleDef = new SocialRuleDefinition()
+			{
+				m_descriptionTemplate = traitDef.DescriptionTemplate,
+				m_source = traitDef
+			};
 
 			// Try to set the query
 			if (yamlNode.TryGetChild("where", out var whereNode))

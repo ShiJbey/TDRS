@@ -160,6 +160,8 @@ namespace TDRS
 			owner.OutgoingRelationships[target] = relationship;
 			target.IncomingRelationships[owner] = relationship;
 
+			DB.Insert($"{owner.UID}.relationship.{target.UID}");
+
 			foreach (var entry in relationship.StatSchema.stats)
 			{
 				relationship.Stats.AddStat(
@@ -182,19 +184,129 @@ namespace TDRS
 				relationship.AddTrait(traitID);
 			}
 
-			// Apply outgoing social rules from the owner
-			foreach (var rule in owner.SocialRules.Rules)
+			// Apply social rules from the owner
+			foreach (var socialRule in owner.SocialRules.Rules)
 			{
+				if (owner.SocialRules.HasSocialRuleInstance(socialRule, owner.UID, target.UID))
+				{
+					continue;
+				}
 
+				if (socialRule.Query != null)
+				{
+					var results = socialRule.Query.Run(
+						DB,
+						new Dictionary<string, string>()
+						{
+							{"?owner", owner.UID},
+							{"?other", target.UID}
+						}
+					);
+
+					if (!results.Success) continue;
+
+					foreach (var result in results.Bindings)
+					{
+						var ctx = new EffectBindingContext(
+							this,
+							socialRule.DescriptionTemplate,
+							// Here we limit the scope of available variables to only ?owner and ?other
+							new Dictionary<string, string>(){
+								{"?owner", result["?owner"]},
+								{"?other", result["?other"]}
+							}
+						);
+
+						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+						if (ruleInstance != null)
+						{
+							owner.SocialRules.AddSocialRuleInstance(ruleInstance);
+						}
+					}
+				}
+				else
+				{
+					var ctx = new EffectBindingContext(
+						this,
+						socialRule.DescriptionTemplate,
+						new Dictionary<string, string>()
+						{
+							{"?owner", owner.UID},
+							{"?other", target.UID}
+						}
+					);
+
+					var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+					if (ruleInstance != null)
+					{
+						owner.SocialRules.AddSocialRuleInstance(ruleInstance);
+					}
+				}
 			}
 
-			// Apply incoming social rules from the target
-			foreach (var rule in target.SocialRules.Rules)
+			// Apply social rules from the target
+			foreach (var socialRule in target.SocialRules.Rules)
 			{
+				if (target.SocialRules.HasSocialRuleInstance(socialRule, target.UID, owner.UID))
+				{
+					continue;
+				}
 
+				if (socialRule.Query != null)
+				{
+					var results = socialRule.Query.Run(
+						DB,
+						new Dictionary<string, string>()
+						{
+							{"?owner", target.UID},
+							{"?other", owner.UID}
+						}
+					);
+
+					if (!results.Success) continue;
+
+					foreach (var result in results.Bindings)
+					{
+						var ctx = new EffectBindingContext(
+							this,
+							socialRule.DescriptionTemplate,
+							// Here we limit the scope of available variables to only ?owner and ?other
+							new Dictionary<string, string>(){
+								{"?owner", result["?owner"]},
+								{"?other", result["?other"]}
+							}
+						);
+
+						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+						if (ruleInstance != null)
+						{
+							target.SocialRules.AddSocialRuleInstance(ruleInstance);
+						}
+					}
+				}
+				else
+				{
+					var ctx = new EffectBindingContext(
+						this,
+						socialRule.DescriptionTemplate,
+						new Dictionary<string, string>()
+						{
+							{"?owner", target.UID},
+							{"?other", owner.UID}
+						}
+					);
+
+					var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+					if (ruleInstance != null)
+					{
+						target.SocialRules.AddSocialRuleInstance(ruleInstance);
+					}
+				}
 			}
-
-			DB.Insert($"{owner.UID}.relationship.{target.UID}");
 
 			return true;
 		}
@@ -341,43 +453,43 @@ namespace TDRS
 					{
 						var scopedCtx = ctx.WithBindings(bindingSet);
 
-						foreach (var effectEntry in response.Effects)
+						try
 						{
-							// Separate the entry into multiple parts
-							List<string> effectParts = effectEntry
-								.Split(" ").Select(s => s.Trim()).ToList();
+							var effects = response.Effects
+							.Select(s => m_effectFactories.CreateInstance(scopedCtx, s));
 
-							string effectName = effectParts[0]; // The effect name is the first part
-							effectParts.RemoveAt(0); // Remove the name from the front of the list
-
-							// Get the factory
-							var effectFactory = m_effectFactories.GetEffectFactory(effectName);
-
-							var effect = effectFactory.CreateInstance(
-								scopedCtx, effectParts.ToArray()
+							foreach (var effect in effects)
+							{
+								effect.Apply();
+							}
+						}
+						catch (ArgumentException ex)
+						{
+							throw new ArgumentException(
+								$"Error encountered while instantiating effects for '{eventName}' event: "
+								+ ex.Message
 							);
-
-							effect.Apply();
 						}
 					}
 				}
 				else
 				{
-					foreach (var effectEntry in response.Effects)
+					try
 					{
-						// Separate the entry into multiple parts
-						List<string> effectParts = effectEntry
-							.Split(" ").Select(s => s.Trim()).ToList();
+						var effects = response.Effects
+						.Select(s => m_effectFactories.CreateInstance(ctx, s));
 
-						string effectName = effectParts[0]; // The effect name is the first part
-						effectParts.RemoveAt(0); // Remove the name from the front of the list
-
-						// Get the factory
-						var effectFactory = m_effectFactories.GetEffectFactory(effectName);
-
-						var effect = effectFactory.CreateInstance(ctx, effectParts.ToArray());
-
-						effect.Apply();
+						foreach (var effect in effects)
+						{
+							effect.Apply();
+						}
+					}
+					catch (ArgumentException ex)
+					{
+						throw new ArgumentException(
+							$"Error encountered while instantiating effects for '{eventName}' event: "
+							+ ex.Message
+						);
 					}
 				}
 			}

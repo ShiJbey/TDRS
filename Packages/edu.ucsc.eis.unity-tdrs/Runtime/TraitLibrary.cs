@@ -142,19 +142,18 @@ namespace TDRS
 			List<ISocialEventEffect> effects = new List<ISocialEventEffect>();
 			foreach (var effectEntry in traitDefinition.Effects)
 			{
-				// Separate the entry into multiple parts
-				List<string> effectParts = effectEntry
-					.Split(" ").Select(s => s.Trim()).ToList();
-
-				string effectName = effectParts[0]; // The effect name is the first part
-				effectParts.RemoveAt(0); // Remove the name from the front of the list
-
-				// Get the factory
-				var effectFactory = ctx.Engine.EffectFactories.GetEffectFactory(effectName);
-
-				var effect = effectFactory.CreateInstance(ctx, effectParts.ToArray());
-
-				effects.Add(effect);
+				try
+				{
+					var effect = ctx.Engine.EffectFactories.CreateInstance(ctx, effectEntry);
+					effects.Add(effect);
+				}
+				catch (ArgumentException ex)
+				{
+					throw new ArgumentException(
+						$"Error encountered while instantiating effects for '{traitID}' trait: "
+						+ ex.Message
+					);
+				}
 			}
 
 			return new Trait(traitDefinition, effects.ToArray(), ctx.Description);

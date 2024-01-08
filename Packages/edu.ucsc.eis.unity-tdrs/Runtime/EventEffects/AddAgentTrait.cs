@@ -42,8 +42,10 @@ namespace TDRS
 		{
 			if (args.Length < 2)
 			{
+				string argStr = string.Join(" ", args);
+
 				throw new System.ArgumentException(
-					"Incorrect number of arguments for AddAgentTrait. "
+					$"Incorrect number of arguments for 'AddAgentTrait {argStr}'. "
 					+ $"Expected at least 2 but was {args.Length}."
 				);
 			}
@@ -51,6 +53,13 @@ namespace TDRS
 			string agentVar = args[0];
 			string traitID = args[1];
 			int duration = -1;
+
+			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar]))
+			{
+				throw new System.ArgumentException(
+					$"No Agent found with ID: {ctx.Bindings[agentVar]}"
+				);
+			}
 
 			if (args.Length >= 3)
 			{

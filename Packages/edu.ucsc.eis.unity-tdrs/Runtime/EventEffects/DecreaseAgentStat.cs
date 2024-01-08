@@ -53,14 +53,23 @@ namespace TDRS
 		{
 			if (args.Length < 3)
 			{
+				string argStr = string.Join(" ", args);
+
 				throw new System.ArgumentException(
-					"Incorrect number of arguments for DecreaseAgentStat. "
+					$"Incorrect number of arguments for 'DecreaseAgentStat {argStr}'. "
 					+ $"Expected at least 3 but was {args.Length}."
 				);
 			}
 
 			string agentVar = args[0];
 			string statName = args[1];
+
+			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar]))
+			{
+				throw new System.ArgumentException(
+					$"No Agent found with ID: {ctx.Bindings[agentVar]}"
+				);
+			}
 
 			if (!float.TryParse(args[2], out var value))
 			{

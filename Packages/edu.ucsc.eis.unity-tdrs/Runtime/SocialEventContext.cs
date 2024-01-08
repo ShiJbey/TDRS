@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace TDRS
 {
@@ -80,6 +81,24 @@ namespace TDRS
 			m_socialEngine = ctx.m_socialEngine;
 			m_description = ctx.m_description;
 			m_variableBindings = new Dictionary<string, string>(ctx.m_variableBindings);
+		}
+
+		public EffectBindingContext(
+			SocialEngine engine,
+			string descriptionTemplate,
+			Dictionary<string, string> bindings
+		)
+		{
+			m_socialEngine = engine;
+			m_description = descriptionTemplate;
+			m_variableBindings = new Dictionary<string, string>(bindings);
+
+			foreach (var pair in bindings)
+			{
+				string variableName = pair.Key;
+				string agentID = pair.Value;
+				m_description = m_description.Replace($"[{variableName.Substring(1)}]", agentID);
+			}
 		}
 
 		public EffectBindingContext WithBindings(Dictionary<string, string> bindings)

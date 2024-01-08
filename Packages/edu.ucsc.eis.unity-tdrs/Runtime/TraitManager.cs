@@ -106,7 +106,7 @@ namespace TDRS
 				m_conflictingTraits.UnionWith(trait.ConflictingTraits);
 			}
 
-			OnTraitRemoved(this, traitID);
+			if (OnTraitRemoved != null) OnTraitRemoved.Invoke(this, traitID);
 
 			return true;
 		}
