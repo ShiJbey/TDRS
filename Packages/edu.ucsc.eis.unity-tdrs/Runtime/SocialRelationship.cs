@@ -48,15 +48,11 @@ namespace TDRS
 
 		protected void OnEnable()
 		{
-			Traits.OnTraitAdded += HandleTraitAdded;
-			Traits.OnTraitRemoved += HandleTraitRemoved;
 			Stats.OnValueChanged += HandleStatChanged;
 		}
 
 		protected void OnDisable()
 		{
-			Traits.OnTraitAdded -= HandleTraitAdded;
-			Traits.OnTraitRemoved -= HandleTraitRemoved;
 			Stats.OnValueChanged -= HandleStatChanged;
 		}
 
@@ -68,19 +64,59 @@ namespace TDRS
 
 		#endregion
 
-		#region Event Handlers
+		#region Public Methods
 
-		private void HandleTraitAdded(object traits, string traitID)
+		public override void AddTrait(string traitID, int duration = -1)
 		{
+			if (Traits.HasTrait(traitID)) return;
+
+			Trait trait = Engine.TraitLibrary.CreateInstance(traitID, this);
+			Traits.AddTrait(trait, duration);
 			Engine.DB.Insert($"{Owner.UID}.relationship.{Target.UID}.trait.{traitID}");
+
+			// Apply the trait's effects on the owner
+			foreach (var effect in trait.Effects)
+			{
+				effect.Apply();
+			}
+
+			// Add the social rules for this trait
+			foreach (var socialRuleDef in trait.SocialRuleDefinitions)
+			{
+				Owner.SocialRules.AddSocialRuleDefinition(socialRuleDef);
+			}
+
+			// Propagate on the event to a Unity event
 			if (OnTraitAdded != null) OnTraitAdded.Invoke(traitID);
 		}
 
-		private void HandleTraitRemoved(object traits, string traitID)
+		public override void RemoveTrait(string traitID)
 		{
+			if (!Traits.HasTrait(traitID)) return;
+
+			var trait = Traits.GetTrait(traitID);
+			Traits.RemoveTrait(trait);
 			Engine.DB.Delete($"{Owner.UID}.relationship.{Target.UID}.trait.{traitID}");
+
+			// Undo the effects of the trait on the owner
+			foreach (var effect in trait.Effects)
+			{
+				effect.Remove();
+			}
+
+			// Remove social rules from the relationship owner
+			foreach (var socialRuleDef in trait.SocialRuleDefinitions)
+			{
+				Owner.SocialRules.RemoveSocialRuleDefinition(socialRuleDef);
+			}
+
 			if (OnTraitRemoved != null) OnTraitRemoved.Invoke(traitID);
 		}
+
+		#endregion
+
+
+		#region Event Handlers
 
 		private void HandleStatChanged(object stats, (string, float) nameAndValue)
 		{

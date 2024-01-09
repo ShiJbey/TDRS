@@ -25,53 +25,45 @@ namespace TDRS
 	{
 		#region Fields
 
-		/// <summary>
-		/// A list of TextAssets assigned within the Unity inspector
-		/// </summary>
-		[SerializeField]
-		protected List<TextAsset> m_traitDefinitions;
 		protected Queue<SocialRelationship> m_relationshipQueue;
 		protected Dictionary<string, SocialAgent> m_agents;
 		protected Dictionary<(string, string), SocialRelationship> m_relationships;
-
+		[SerializeField]
+		protected EffectFactories m_effectFactories;
 		[SerializeField]
 		protected SocialEventLibrary m_socialEventLibrary;
-
 		[SerializeField]
-		private List<EffectFactoryEntry> m_effectFactories;
-
-		[SerializeField]
-		private List<PreconditionFactoryEntry> m_preconditionFactories;
+		protected TraitLibrary m_traitLibrary;
 
 		#endregion
 
 		#region Properties
 
 		public static SocialEngine Instance { get; private set; }
-		public TraitLibrary TraitLibrary { get; protected set; }
-		public EffectLibrary EffectLibrary { get; protected set; }
-		public PreconditionLibrary PreconditionLibrary { get; protected set; }
+		public TraitLibrary TraitLibrary => m_traitLibrary;
+		public EffectFactories EffectFactories => m_effectFactories;
 		public List<SocialAgent> Agents => m_agents.Values.ToList();
 		public RePraxisDatabase DB { get; protected set; }
+		public SocialEventLibrary SocialEventLibrary => m_socialEventLibrary;
 
 		#endregion
 
-		#region Unity Methods
+		#region Unity Messages
 
 		private void Awake()
 		{
 			// Ensure there is only one instance of this MonoBehavior active within the scene
 			if (Instance != null && Instance != this)
 			{
+				Debug.LogError(
+					"Only on SocialEngine may be active in a scene. Destroying this one."
+				);
 				Destroy(this);
 			}
 			else
 			{
 				Instance = this;
 				m_relationshipQueue = new Queue<SocialRelationship>();
-				TraitLibrary = new TraitLibrary();
-				EffectLibrary = new EffectLibrary();
-				PreconditionLibrary = new PreconditionLibrary();
 				DB = new RePraxisDatabase();
 				m_agents = new Dictionary<string, SocialAgent>();
 				m_relationships = new Dictionary<(string, string), SocialRelationship>();
@@ -80,10 +72,9 @@ namespace TDRS
 
 		private void Start()
 		{
-			LoadFactories();
-			LoadTraits();
-			m_socialEventLibrary.LoadFactories();
-			m_socialEventLibrary.LoadSocialEvents();
+			m_effectFactories.RegisterFactories();
+			m_traitLibrary.LoadTraitDefinitions();
+			m_socialEventLibrary.LoadEventDefinitions();
 		}
 
 		private void Update()
@@ -169,6 +160,8 @@ namespace TDRS
 			owner.OutgoingRelationships[target] = relationship;
 			target.IncomingRelationships[owner] = relationship;
 
+			DB.Insert($"{owner.UID}.relationship.{target.UID}");
+
 			foreach (var entry in relationship.StatSchema.stats)
 			{
 				relationship.Stats.AddStat(
@@ -191,27 +184,129 @@ namespace TDRS
 				relationship.AddTrait(traitID);
 			}
 
-			// Apply outgoing social rules from the owner
-			foreach (var rule in owner.SocialRules.Rules)
+			// Apply social rules from the owner
+			foreach (var socialRule in owner.SocialRules.Rules)
 			{
-				if (rule.IsOutgoing && rule.CheckPreconditions(relationship))
+				if (owner.SocialRules.HasSocialRuleInstance(socialRule, owner.UID, target.UID))
 				{
-					rule.OnAdd(relationship);
-					relationship.SocialRules.AddSocialRule(rule);
+					continue;
+				}
+
+				if (socialRule.Query != null)
+				{
+					var results = socialRule.Query.Run(
+						DB,
+						new Dictionary<string, string>()
+						{
+							{"?owner", owner.UID},
+							{"?other", target.UID}
+						}
+					);
+
+					if (!results.Success) continue;
+
+					foreach (var result in results.Bindings)
+					{
+						var ctx = new EffectBindingContext(
+							this,
+							socialRule.DescriptionTemplate,
+							// Here we limit the scope of available variables to only ?owner and ?other
+							new Dictionary<string, string>(){
+								{"?owner", result["?owner"]},
+								{"?other", result["?other"]}
+							}
+						);
+
+						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+						if (ruleInstance != null)
+						{
+							owner.SocialRules.AddSocialRuleInstance(ruleInstance);
+						}
+					}
+				}
+				else
+				{
+					var ctx = new EffectBindingContext(
+						this,
+						socialRule.DescriptionTemplate,
+						new Dictionary<string, string>()
+						{
+							{"?owner", owner.UID},
+							{"?other", target.UID}
+						}
+					);
+
+					var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+					if (ruleInstance != null)
+					{
+						owner.SocialRules.AddSocialRuleInstance(ruleInstance);
+					}
 				}
 			}
 
-			// Apply incoming social rules from the target
-			foreach (var rule in target.SocialRules.Rules)
+			// Apply social rules from the target
+			foreach (var socialRule in target.SocialRules.Rules)
 			{
-				if (!rule.IsOutgoing && rule.CheckPreconditions(relationship))
+				if (target.SocialRules.HasSocialRuleInstance(socialRule, target.UID, owner.UID))
 				{
-					rule.OnAdd(relationship);
-					relationship.SocialRules.AddSocialRule(rule);
+					continue;
+				}
+
+				if (socialRule.Query != null)
+				{
+					var results = socialRule.Query.Run(
+						DB,
+						new Dictionary<string, string>()
+						{
+							{"?owner", target.UID},
+							{"?other", owner.UID}
+						}
+					);
+
+					if (!results.Success) continue;
+
+					foreach (var result in results.Bindings)
+					{
+						var ctx = new EffectBindingContext(
+							this,
+							socialRule.DescriptionTemplate,
+							// Here we limit the scope of available variables to only ?owner and ?other
+							new Dictionary<string, string>(){
+								{"?owner", result["?owner"]},
+								{"?other", result["?other"]}
+							}
+						);
+
+						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+						if (ruleInstance != null)
+						{
+							target.SocialRules.AddSocialRuleInstance(ruleInstance);
+						}
+					}
+				}
+				else
+				{
+					var ctx = new EffectBindingContext(
+						this,
+						socialRule.DescriptionTemplate,
+						new Dictionary<string, string>()
+						{
+							{"?owner", target.UID},
+							{"?other", owner.UID}
+						}
+					);
+
+					var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+					if (ruleInstance != null)
+					{
+						target.SocialRules.AddSocialRuleInstance(ruleInstance);
+					}
 				}
 			}
-
-			DB.Insert($"{owner.UID}.relationship.{target.UID}");
 
 			return true;
 		}
@@ -341,7 +436,7 @@ namespace TDRS
 			var eventType = m_socialEventLibrary.GetEventType($"{eventName}/{agents.Length}");
 
 			// Create the base context for the events
-			var ctx = new SocialEventContext(this, eventType, agents);
+			var ctx = new EffectBindingContext(this, eventType, agents);
 
 			// Iterate through the responses
 			foreach (var response in eventType.Responses)
@@ -358,41 +453,43 @@ namespace TDRS
 					{
 						var scopedCtx = ctx.WithBindings(bindingSet);
 
-						foreach (var effectEntry in response.Effects)
+						try
 						{
-							// Separate the entry into multiple parts
-							List<string> effectParts = effectEntry
-								.Split(" ").Select(s => s.Trim()).ToList();
+							var effects = response.Effects
+							.Select(s => m_effectFactories.CreateInstance(scopedCtx, s));
 
-							string effectName = effectParts[0]; // The effect name is the first part
-							effectParts.RemoveAt(0); // Remove the name from the front of the list
-
-							// Get the factory
-							var effectFactory = m_socialEventLibrary.GetEffectFactory(effectName);
-
-							var effect = effectFactory.CreateInstance(scopedCtx, effectParts.ToArray());
-
-							effect.Apply();
+							foreach (var effect in effects)
+							{
+								effect.Apply();
+							}
+						}
+						catch (ArgumentException ex)
+						{
+							throw new ArgumentException(
+								$"Error encountered while instantiating effects for '{eventName}' event: "
+								+ ex.Message
+							);
 						}
 					}
 				}
 				else
 				{
-					foreach (var effectEntry in response.Effects)
+					try
 					{
-						// Separate the entry into multiple parts
-						List<string> effectParts = effectEntry
-							.Split(" ").Select(s => s.Trim()).ToList();
+						var effects = response.Effects
+						.Select(s => m_effectFactories.CreateInstance(ctx, s));
 
-						string effectName = effectParts[0]; // The effect name is the first part
-						effectParts.RemoveAt(0); // Remove the name from the front of the list
-
-						// Get the factory
-						var effectFactory = m_socialEventLibrary.GetEffectFactory(effectName);
-
-						var effect = effectFactory.CreateInstance(ctx, effectParts.ToArray());
-
-						effect.Apply();
+						foreach (var effect in effects)
+						{
+							effect.Apply();
+						}
+					}
+					catch (ArgumentException ex)
+					{
+						throw new ArgumentException(
+							$"Error encountered while instantiating effects for '{eventName}' event: "
+							+ ex.Message
+						);
 					}
 				}
 			}
@@ -432,59 +529,6 @@ namespace TDRS
 			{
 				RegisterRelationship(relationship);
 			}
-		}
-
-		/// <summary>
-		/// Load the various factory instances into their respective libraries.
-		/// </summary>
-		private void LoadFactories()
-		{
-			foreach (var entry in m_preconditionFactories)
-			{
-				PreconditionLibrary.AddFactory(entry.m_preconditionType, entry.m_factory);
-			}
-
-			foreach (var entry in m_effectFactories)
-			{
-				EffectLibrary.AddFactory(entry.m_effectType, entry.m_factory);
-			}
-		}
-
-		/// <summary>
-		/// Load traits from the text assets provided in the inspector.
-		/// </summary>
-		private void LoadTraits()
-		{
-			foreach (var textAsset in m_traitDefinitions)
-			{
-				TraitLibrary.LoadTraits(textAsset.text);
-			}
-
-			TraitLibrary.InstantiateTraits(this);
-		}
-
-		#endregion
-
-		#region Helper Classes
-
-		/// <summary>
-		/// Helper class for organizing effect factories in the inspector
-		/// </summary>
-		[Serializable]
-		public class EffectFactoryEntry
-		{
-			public string m_effectType;
-			public EffectFactory m_factory;
-		}
-
-		/// <summary>
-		/// Helper class for organizing precondition factories in the inspector.
-		/// </summary>
-		[Serializable]
-		public class PreconditionFactoryEntry
-		{
-			public string m_preconditionType;
-			public PreconditionFactory m_factory;
 		}
 
 		#endregion

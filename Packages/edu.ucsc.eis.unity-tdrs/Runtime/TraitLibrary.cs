@@ -2,190 +2,161 @@
 using System.Linq;
 using System.IO;
 using YamlDotNet.RepresentationModel;
-
-using TDRS.Helpers;
+using System;
+using UnityEngine;
 
 namespace TDRS
 {
 	/// <summary>
 	/// A repository of all the various trait types that exist in the game.
 	/// </summary>
-	public class TraitLibrary
+	public class TraitLibrary : MonoBehaviour
 	{
-		#region Attributes
+		#region Fields
 
 		/// <summary>
-		/// Repository of trait IDs mapped to Trait instances
+		/// A list of TextAssets assigned within the Unity inspector
 		/// </summary>
-		protected Dictionary<string, Trait> _traits;
+		[SerializeField]
+		protected List<TextAsset> m_definitionFiles;
 
 		/// <summary>
 		/// Repository of definition data for traits
 		/// </summary>
-		protected Dictionary<string, TraitDefinition> _traitDefinitions;
+		protected Dictionary<string, TraitDefinition> m_traitDefinitions;
 
 		#endregion
 
-		#region Properties
+		#region Unity Messages
 
-		/// <summary>
-		/// Get Enumerable with all the traits in the library
-		/// </summary>
-		public IEnumerable<Trait> Traits => _traits.Values.ToList();
-
-		#endregion
-
-		#region Constructor
-
-		public TraitLibrary()
+		private void Awake()
 		{
-			_traits = new Dictionary<string, Trait>();
-			_traitDefinitions = new Dictionary<string, TraitDefinition>();
+			m_traitDefinitions = new Dictionary<string, TraitDefinition>();
 		}
 
 		#endregion
 
-		#region Methods
+		#region Public Methods
 
 		/// <summary>
-		/// Add a trait to the library
-		///
-		/// <para>
-		/// This method might overwrite and existing trait if they have the same TraitID
-		/// </para>
+		/// Retrieves an existing trait definition using the trait ID
 		/// </summary>
-		/// <param name="trait"></param>
-		public void AddTrait(Trait trait)
-		{
-			_traits[trait.TraitID] = trait;
-		}
-
-
-		/// <summary>
-		/// Retrieves an existing Trait using its name
-		/// </summary>
-		/// <param name="name"></param>
+		/// <param name="traitID"></param>
 		/// <returns></returns>
-		public Trait GetTrait(string name)
+		public TraitDefinition GetTraitDefinition(string traitID)
 		{
-			return _traits[name];
+			return m_traitDefinitions[traitID];
 		}
 
 		/// <summary>
 		/// Add a trait definition
 		/// </summary>
-		/// <param name="traitID"></param>
-		/// <param name="traitNode"></param>
+		/// <param name="traitDefinition"></param>
 		/// <returns></returns>
-		private void AddTraitDefinition(string traitID, YamlNode traitNode)
+		public void AddTraitDefinition(TraitDefinition traitDefinition)
 		{
-			var mapping = (YamlMappingNode)traitNode;
-
-			// Default trait parameters
-
-			string displayName = ((YamlScalarNode)mapping.GetChild("display_name")).GetValue();
-			string description = ((YamlScalarNode)mapping.GetChild("description")).GetValue();
-			HashSet<string> conflictingTraits = new HashSet<string>();
-
-			// Get effects
-
-			YamlNode effectsNode;
-			mapping.Children.TryGetValue(new YamlScalarNode("effects"), out effectsNode);
-
-			// Get conflicting trait IDs
-
-			YamlNode conflictingTraitsNode;
-			mapping.Children.TryGetValue(new YamlScalarNode("conflicting_traits"), out conflictingTraitsNode);
-			if (conflictingTraitsNode != null)
-			{
-				var sequence = (YamlSequenceNode)conflictingTraitsNode;
-
-				foreach (var entry in sequence)
-				{
-					string conflictingTraitID = entry.GetValue();
-					conflictingTraits.Add(conflictingTraitID);
-				}
-			}
-
-			int duration = -1;
-
-			if (mapping.TryGetChild("duration", out var durationNode))
-			{
-				duration = int.Parse(durationNode.GetValue());
-			}
-
-			_traitDefinitions[traitID] = new TraitDefinition(
-				traitID,
-				displayName,
-				description,
-				effectsNode,
-				conflictingTraits,
-				duration
-			);
+			m_traitDefinitions[traitDefinition.TraitID] = traitDefinition;
 		}
 
 		/// <summary>
-		/// Load trait definition data from a string
+		/// Check if the library has a trait definition
 		/// </summary>
-		/// <param name="dataString"></param>
-		public void LoadTraits(string dataString)
+		/// <param name="traitID"></param>
+		/// /// <returns></returns>
+		public bool HasTraitDefinition(string traitID)
 		{
-			var input = new StringReader(dataString);
+			return m_traitDefinitions.ContainsKey(traitID);
+		}
 
-			var yaml = new YamlStream();
-			yaml.Load(input);
-
-			var rootMapping = (YamlMappingNode)yaml.Documents[0].RootNode;
-
-			foreach (var traitEntry in rootMapping.Children)
+		/// <summary>
+		/// Load trait definitions from definition filed provided in the inspector
+		/// </summary>
+		public void LoadTraitDefinitions()
+		{
+			foreach (var textAsset in m_definitionFiles)
 			{
-				string traitID = ((YamlScalarNode)traitEntry.Key).GetValue();
+				var input = new StringReader(textAsset.text);
 
-				AddTraitDefinition(traitID, traitEntry.Value);
+				var yaml = new YamlStream();
+				yaml.Load(input);
+
+				var rootMapping = (YamlSequenceNode)yaml.Documents[0].RootNode;
+
+				foreach (var node in rootMapping.Children)
+				{
+					AddTraitDefinition(TraitDefinition.FromYaml(node));
+				}
 			}
 		}
 
 		/// <summary>
 		/// Instantiate all the traits within the traits definition dictionary
 		/// </summary>
-		/// <param name="engine"></param>
+		/// <param name="traitID"></param>
+		/// <param name="target"></param>
 		/// <returns></returns>
-		public void InstantiateTraits(SocialEngine engine)
+		public Trait CreateInstance(string traitID, SocialEntity target)
 		{
-			foreach (var (traitID, traitDef) in _traitDefinitions)
+			// Check that a definition even exists for this trait
+			if (!HasTraitDefinition(traitID))
 			{
-				// Default trait parameters
-
-				List<IEffect> effects = new List<IEffect>();
-				HashSet<string> conflictingTraits = new HashSet<string>();
-
-				// Get effects
-
-				YamlNode effectsNode = traitDef.EffectData;
-				if (effectsNode != null)
-				{
-					var sequence = (YamlSequenceNode)effectsNode;
-
-					foreach (var entry in sequence)
-					{
-						var effectType = entry.GetChild("type").GetValue();
-						var factory = engine.EffectLibrary.GetEffectFactory(effectType);
-						var effect = factory.Instantiate(engine, entry);
-						effects.Add(effect);
-					}
-				}
-
-				AddTrait(
-					new Trait(
-						traitID,
-						traitDef.DisplayName,
-						traitDef.Description,
-						effects,
-						traitDef.ConflictingTraits,
-						traitDef.Duration
-					)
+				throw new KeyNotFoundException(
+					$"TraitDefinition not found with ID: {traitID}"
 				);
 			}
+
+			var traitDefinition = GetTraitDefinition(traitID);
+
+			// Create a new binding context to create the effects
+
+			EffectBindingContext ctx;
+
+			if (
+				traitDefinition.TraitType == TraitType.Agent
+				&& target is SocialAgent
+			)
+			{
+				ctx = new EffectBindingContext(
+					target as SocialAgent,
+					traitDefinition.DescriptionTemplate
+				);
+			}
+			else if (
+				traitDefinition.TraitType == TraitType.Relationship
+				&& target is SocialRelationship
+			)
+			{
+				ctx = new EffectBindingContext(
+					target as SocialRelationship,
+					traitDefinition.DescriptionTemplate
+				);
+			}
+			else
+			{
+				throw new ArgumentException(
+					$"Trait ({traitID}) and target ({target.name}) are not of same type."
+				);
+			}
+
+			// Instantiate the effects
+			List<IEffect> effects = new List<IEffect>();
+			foreach (var effectEntry in traitDefinition.Effects)
+			{
+				try
+				{
+					var effect = ctx.Engine.EffectFactories.CreateInstance(ctx, effectEntry);
+					effects.Add(effect);
+				}
+				catch (ArgumentException ex)
+				{
+					throw new ArgumentException(
+						$"Error encountered while instantiating effects for '{traitID}' trait: "
+						+ ex.Message
+					);
+				}
+			}
+
+			return new Trait(traitDefinition, effects.ToArray(), ctx.Description);
 		}
 
 		#endregion

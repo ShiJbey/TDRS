@@ -1,18 +1,22 @@
-using YamlDotNet.RepresentationModel;
-
 namespace TDRS
 {
 	/// <summary>
-	/// An object that creates instances of effects.
+	/// Interface implemented by all factory classes that create social event effects
 	/// </summary>
 	public interface IEffectFactory
 	{
 		/// <summary>
-		/// Construct a new instance of an Effect.
+		///  Get the type of effect this factory produces
 		/// </summary>
-		/// <param name="engine"></param>
-		/// <param name="effectNode"></param>
+		public string EffectName { get; }
+
+		/// <summary>
+		/// Create a new social event effect instance
+		/// </summary>
+		/// <param name="args"></param>
 		/// <returns></returns>
-		public IEffect Instantiate(SocialEngine engine, YamlNode effectNode);
+		public IEffect CreateInstance(
+			EffectBindingContext context, params string[] args
+		);
 	}
 }

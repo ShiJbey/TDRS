@@ -1,124 +1,90 @@
-#nullable enable
-
-using System.Collections.Generic;
+using System;
 using System.Linq;
+using YamlDotNet.RepresentationModel;
+using RePraxis;
+using TDRS.Helpers;
 
 namespace TDRS
 {
 	/// <summary>
-	/// Rules that are applied when a character is calculating their opinion of
-	/// another. Rules have preconditions that must be met before they may be
-	/// applied.
+	/// Data used to instantiate social rules when instantiating traits
 	/// </summary>
 	public class SocialRule
 	{
-		#region Attributes
+		#region Fields
 
-		/// <summary>
-		/// Preconditions that need to pass for the social rule to be applied
-		/// </summary>
-		protected readonly List<IPrecondition> _preconditions;
-
-		/// <summary>
-		/// Effects applied by the social rule if its preconditions pass
-		/// </summary>
-		protected readonly List<IEffect> _effects;
-
-		/// <summary>
-		/// is True if this rule is applied to outgoing relationships
-		/// </summary>
-		protected readonly bool _isOutgoing = true;
-
-		/// <summary>
-		/// The object responsible to creating and adding this rule to a collection
-		/// </summary>
-		protected readonly object? _source = null;
+		protected DBQuery m_query;
+		protected string[] m_effects;
+		protected string m_descriptionTemplate;
+		protected TraitDefinition m_source;
 
 		#endregion
 
 		#region Properties
 
-		/// <summary>
-		/// Preconditions that need to pass for the social rule to be applied
-		/// </summary>
-		public IEnumerable<IPrecondition> Preconditions => _preconditions;
-
-		/// <summary>
-		/// Effects applied by the social rule if its preconditions pass
-		/// </summary>
-		public IEnumerable<IEffect> Effects => _effects;
-
-		/// <summary>
-		/// is True if this rule is applied to outgoing relationships
-		/// </summary>
-		public bool IsOutgoing => _isOutgoing;
-
-		/// <summary>
-		/// The object responsible to creating and adding this rule to a collection
-		/// </summary>
-		public object? Source => _source;
+		public DBQuery Query => m_query;
+		public string[] Effects => m_effects;
+		public string DescriptionTemplate => m_descriptionTemplate;
+		public TraitDefinition Source => m_source;
 
 		#endregion
 
 		#region Constructors
 
-		public SocialRule(
-			IEnumerable<IPrecondition> preconditions,
-			IEnumerable<IEffect> effects,
-			bool outgoing = true,
-			object? source = null
-			)
+		public SocialRule()
 		{
-			_preconditions = preconditions.ToList();
-			_effects = effects.ToList();
-			_isOutgoing = outgoing;
-			_source = source;
+			m_query = null;
+			m_effects = new string[0];
+			m_descriptionTemplate = "";
+			m_source = null;
 		}
 
 		#endregion
 
-		#region Methods
+		#region Static Methods
 
 		/// <summary>
-		/// Check that a given relationship passes the preconditions of the social rule
+		/// Create a new social rule definition from Yaml data.
 		/// </summary>
-		/// <param name="relationship"></param>
+		/// <param name="yamlNode"></param>
 		/// <returns></returns>
-		public bool CheckPreconditions(SocialEntity relationship)
+		public static SocialRule FromYaml(TraitDefinition traitDef, YamlNode yamlNode)
 		{
-			foreach (var precondition in _preconditions)
+			SocialRule ruleDef = new SocialRule()
 			{
-				if (precondition.CheckPrecondition(relationship) == false)
-				{
-					return false;
-				}
+				m_descriptionTemplate = traitDef.DescriptionTemplate,
+				m_source = traitDef
+			};
+
+			// Try to set the query
+			if (yamlNode.TryGetChild("where", out var whereNode))
+			{
+				ruleDef.m_query = new DBQuery(
+					whereNode.GetValue()
+						.Split("\n")
+						.Where(clause => clause != "")
+						.ToArray()
+				);
 			}
 
-			return true;
-		}
-
-		/// <summary>
-		/// Callback method executed when the social rule is applied to a relationship.
-		/// </summary>
-		/// <param name="relationship"></param>
-		public void OnAdd(SocialRelationship relationship)
-		{
-			foreach (var effect in _effects)
+			// Try to set the effects
+			if (yamlNode.TryGetChild("apply", out var effectsNode))
 			{
-				effect.Apply(relationship);
+				ruleDef.m_effects = (effectsNode as YamlSequenceNode).Children
+					.Select(node => node.GetValue())
+					.ToArray();
 			}
-		}
-
-		/// <summary>
-		/// Callback method executed when the social rule is removed from a relationship.
-		/// </summary>
-		/// <param name="relationship"></param>
-		public void OnRemove(SocialRelationship relationship)
-		{
-			foreach (var effect in _effects)
+			else
 			{
-				effect.Remove(relationship);
+				throw new ArgumentException("Social rule definition is missing 'apply' section");
 			}
+
+			if (yamlNode.TryGetChild("description", out var descriptionNode))
+			{
+				ruleDef.m_descriptionTemplate = descriptionNode.GetValue();
+			}
+
+			return ruleDef;
 		}
 
 		#endregion

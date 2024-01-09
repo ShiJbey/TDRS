@@ -1,26 +1,19 @@
 namespace TDRS
 {
 	/// <summary>
-	/// An Effect is modifies the state of a GameObject as part of a trait
-	/// or other effect.
+	/// Interface implemented by all effects that can be triggered by a social event, trait, or
+	/// social rule.
 	/// </summary>
 	public interface IEffect
 	{
 		/// <summary>
-		/// Get a string description of the effect.
+		/// Apply effects of the effect
 		/// </summary>
-		public string Description { get; }
+		public void Apply();
 
 		/// <summary>
-		/// Apply this effect to a target object.
+		/// Remove effects of the effect
 		/// </summary>
-		/// <param name="target"></param>
-		public void Apply(SocialEntity target);
-
-		/// <summary>
-		/// Remove this effect from a target object.
-		/// </summary>
-		/// <param name="target"></param>
-		public void Remove(SocialEntity target);
+		public void Remove();
 	}
 }

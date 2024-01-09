@@ -1,71 +1,100 @@
-anti-social:
-  display_name: Anti-Social
-  description: This character is not a fan of socializing
+# Unity-TDRS Sample Traits
+
+# Traits are of course at the core of the Trait-Driven Relationship System (TDRS). They are tags of
+# information and logic that we associate with agents and relationships to affect various effects.
+# This file contains sample definitions of traits to be used in the sample scene provided in the
+# Unity-TDRS repo. All traits are specified using YAML because it is much easier to create content
+# using YAML than using Unity ScriptableObjects. YAML is a superset of JSON, and is a popular
+# language for data serialization and software configuration. You can familiarize yourself with
+# YAML's syntax using this cheatsheet: https://quickref.me/yaml. YAML was chosen over JSON primarily
+# for its compatibility with JSON syntax, easy readability, and ability to add comments to files.
+
+# (1) Users may define multiple traits within the same file. All traits should be provided as a
+# YAML mapping where the keys are the unique IDs of the traits.
+
+# (2) Each trait starts with an all-lowercase unique ID to be referenced by within C# code. This
+# cannot contain spaces.
+- traitID: anti-social
+
+  # (3) Traits can be for agents or relationships. This parameter ensures that traits are not
+  # applied to the wrong object type
+  traitType: agent
+
+  # (4) Next we provide a display name to be showed in Game GUI's and the inspector. This name can
+  # contain capital letters and spaces.
+  displayName: Anti-Social
+
+  # (5) The trait description is a short summary of the trait. There is no internal limit to the
+  # description length, but it's recommended to keep it concise.
+  description: "[owner] is anti-social"
+
+  # (6) Finally, we specify effects to be added or removed while this trait is attached. The target
+  # of the effects depends on what it is attached to. Traits attached to agents will apply effects
+  # agents, and traits added to relationships will modify the relationship.
   effects:
-    - type: StatBuff
-      stat: Sociability
-      amount: -10
-      reason: Anti-Social Trait
+    # (7) Effects are specified as a sequence of mappings. Typically the first key should be "type"
+    # followed by the name of the effect to trigger. All key value pairs provided afterward are
+    # used to parameterize the effect. The effect below handles adding a stat buf to the
+    # "sociability" stat assuming one is present.
+    - DecreaseAgentStat ?owner Sociability 10
 
-authoritarian:
-  display_name: Authoritarian
-  description: >-
-    This character is likely to throw their social weight around when in
-    a position of power
+- traitID: jerk
+  traitType: agent
+  displayName: Jerk
+  description: "[owner] is a jerk"
+
+  # (8) Social rules are additional effects applied given that additional, usually
+  # relationship-related preconditions are met. When social rules are supplied on an agent trait,
+  # they are added to the character that owns the trait. when social rules are supplied to a
+  # relationship trait, they are applied to the character that owns the relationship. Social rules
+  # allow on agent's traits to influence third-parties and their relationships with those
+  # third-parties.
+  socialRules:
+    # People who are not jerks don't like jerks
+    - where: |
+        not ?other.trait.jerk
+      apply:
+        - DecreaseRelationshipStat ?other ?owner Friendship 10
+      description: "[owner] is a jerk"
+
+    # Jerks like other jerks
+    - where: |
+        ?other.trait.jerk
+      apply:
+        - IncreaseRelationshipStat ?owner ?other Friendship 10
+      description: "Jerks like other jerks"
+
+- traitID: happy_go_lucky
+  traitType: agent
+  displayName: Happy-Go-Lucky
+  description: "[owner] is happy-go-lucky."
   effects:
-    - type: AddSocialRule
-      is_outgoing: false
-      effects:
-        - type: StatBuff
-          stat: Friendship
-          amount: -10
-          reason: Other character has the Authoritarian trait
+    - IncreaseAgentStat ?owner Sociability 10
+  socialRules:
+    - apply:
+        - IncreaseRelationshipStat ?owner ?other Friendship 3
 
-happy_go_lucky:
-  display_name: Happy-Go-Lucky
-  description: >-
-    This character is an overly optimistic attitude toward life.
+- traitID: lovers
+  traitType: relationship
+  displayName: Lovers
+  description: "[owner] considers [target] to be a lover"
   effects:
-    - type: StatBuff
-      stat: Sociability
-      amount: 10
-      reason: HappyGoLucky trait
+    - IncreaseRelationshipStat ?owner ?target Romance 10
 
-advisor_of:
-  display_name: Advisor-Of
-  description: >-
-    The owner of this relationship is the advisor of the target.
+- traitID: friend
+  traitType: relationship
+  displayName: Friend
+  description: "[owner] considers [target] to be a friend"
+
+- traitID: family
+  traitType: relationship
+  displayName: Family
+  description: "[owner] is family of [target]"
+
+- traitID: angry_at
+  traitType: relationship
+  displayName: Angry-at
+  description: "[owner] is angry at [target]"
   effects:
-    - type: StatBuff
-      stat: Influence
-      amount: 10
-      reason: Advisor-Of trait
-
-lovers:
-  display_name: Lovers
-  description: >-
-    These characters are romantically involved, but this does not assume
-    as serious relationship.
-  effects:
-    - type: StatBuff
-      stat: Romance
-      amount: 10
-      reason: Lovers trait
-
-friend:
-  display_name: Friend
-  description: These characters are friends
-
-family:
-  display_name: Family
-  description: These characters are family
-
-angry_at:
-  display_name: Angry-at
-  description: This character is angry at the other one
-  effects:
-    - type: StatBuff
-      stat: Friendship
-      amount: -10
-      reason: Angry-at trait
+    - DecreaseRelationshipStat ?owner ?target Friendship 10
   duration: 10

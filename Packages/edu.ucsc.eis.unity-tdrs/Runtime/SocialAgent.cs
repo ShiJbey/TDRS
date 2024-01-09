@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,18 +25,29 @@ namespace TDRS
 		public string UID => m_UID;
 
 		/// <summary>
+		/// All social rules affecting this entity
+		/// </summary>
+		public SocialRuleManager SocialRules { get; protected set; }
+
+		/// <summary>
 		/// Relationships directed toward this entity
 		/// </summary>
-		public Dictionary<SocialAgent, SocialRelationship> IncomingRelationships { get; protected set; }
+		public Dictionary<SocialAgent, SocialRelationship> IncomingRelationships
+		{
+			get; protected set;
+		}
 
 		/// <summary>
 		/// Relationships from this entity directed toward other entities
 		/// </summary>
-		public Dictionary<SocialAgent, SocialRelationship> OutgoingRelationships { get; protected set; }
+		public Dictionary<SocialAgent, SocialRelationship> OutgoingRelationships
+		{
+			get; protected set;
+		}
 
 		#endregion
 
-		#region Unity Methods
+		#region Unity Messages
 
 		protected override void Awake()
 		{
@@ -48,26 +60,19 @@ namespace TDRS
 				);
 			}
 
+			SocialRules = new SocialRuleManager();
 			IncomingRelationships = new Dictionary<SocialAgent, SocialRelationship>();
 			OutgoingRelationships = new Dictionary<SocialAgent, SocialRelationship>();
 		}
 
 		protected void OnEnable()
 		{
-			Traits.OnTraitAdded += HandleTraitAdded;
-			Traits.OnTraitRemoved += HandleTraitRemoved;
 			Stats.OnValueChanged += HandleStatChanged;
-			SocialRules.OnRuleAdded += HandleSocialRuleAdded;
-			SocialRules.OnRuleRemoved += HandleSocialRuleRemoved;
 		}
 
 		protected void OnDisable()
 		{
-			Traits.OnTraitAdded -= HandleTraitAdded;
-			Traits.OnTraitRemoved -= HandleTraitRemoved;
 			Stats.OnValueChanged -= HandleStatChanged;
-			SocialRules.OnRuleAdded -= HandleSocialRuleAdded;
-			SocialRules.OnRuleRemoved -= HandleSocialRuleRemoved;
 		}
 
 		protected override void Start()
@@ -78,19 +83,180 @@ namespace TDRS
 
 		#endregion
 
-		#region Event Handlers
+		#region Public Methods
 
-		private void HandleTraitAdded(object traits, string traitID)
+		public override void AddTrait(string traitID, int duration = -1)
 		{
+			if (Traits.HasTrait(traitID)) return;
+
+			Trait trait = Engine.TraitLibrary.CreateInstance(traitID, this);
+			Traits.AddTrait(trait, duration);
 			Engine.DB.Insert($"{UID}.trait.{traitID}");
+
+			// Apply the trait's effects on the owner
+			foreach (var effect in trait.Effects)
+			{
+				effect.Apply();
+			}
+
+			// Add the social rules for this trait
+			foreach (var socialRule in trait.SocialRuleDefinitions)
+			{
+				SocialRules.AddSocialRuleDefinition(socialRule);
+
+				// Try to apply the social rule to existing outgoing relationships
+				foreach (var (other, relationship) in OutgoingRelationships)
+				{
+					if (SocialRules.HasSocialRuleInstance(socialRule, UID, other.UID))
+					{
+						continue;
+					}
+
+					if (socialRule.Query != null)
+					{
+						var results = socialRule.Query.Run(
+							Engine.DB,
+							new Dictionary<string, string>()
+							{
+								{"?owner", UID},
+								{"?other", other.UID}
+							}
+						);
+
+						if (!results.Success) continue;
+
+						foreach (var result in results.Bindings)
+						{
+							var ctx = new EffectBindingContext(
+								Engine,
+								socialRule.DescriptionTemplate,
+								// Here we limit the scope of available variables to only ?owner and ?other
+								new Dictionary<string, string>(){
+									{"?owner", result["?owner"]},
+									{"?other", result["?other"]}
+								}
+							);
+
+							var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+							if (ruleInstance != null)
+							{
+								SocialRules.AddSocialRuleInstance(ruleInstance);
+							}
+						}
+					}
+					else
+					{
+						var ctx = new EffectBindingContext(
+							Engine,
+							socialRule.DescriptionTemplate,
+							new Dictionary<string, string>()
+							{
+								{"?owner", UID},
+								{"?other", other.UID}
+							}
+						);
+
+						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+						if (ruleInstance != null)
+						{
+							SocialRules.AddSocialRuleInstance(ruleInstance);
+						}
+					}
+				}
+
+				// Try to apply the social rule to existing incoming relationships
+				foreach (var (other, relationship) in IncomingRelationships)
+				{
+					if (SocialRules.HasSocialRuleInstance(socialRule, other.UID, UID))
+					{
+						continue;
+					}
+
+					if (socialRule.Query != null)
+					{
+						var results = socialRule.Query.Run(
+							Engine.DB,
+							new Dictionary<string, string>()
+							{
+								{"?owner", UID},
+								{"?other", other.UID}
+							}
+						);
+
+						if (!results.Success) continue;
+
+						foreach (var result in results.Bindings)
+						{
+							var ctx = new EffectBindingContext(
+								Engine,
+								socialRule.DescriptionTemplate,
+								// Here we limit the scope of available variables to only ?owner and ?other
+								new Dictionary<string, string>(){
+									{"?owner", result["?owner"]},
+									{"?other", result["?other"]}
+								}
+							);
+
+							var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+							if (ruleInstance != null)
+							{
+								SocialRules.AddSocialRuleInstance(ruleInstance);
+							}
+						}
+					}
+					else
+					{
+						var ctx = new EffectBindingContext(
+							Engine,
+							socialRule.DescriptionTemplate,
+							new Dictionary<string, string>()
+							{
+								{"?owner", UID},
+								{"?other", other.UID}
+							}
+						);
+
+						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+
+						if (ruleInstance != null)
+						{
+							SocialRules.AddSocialRuleInstance(ruleInstance);
+						}
+					}
+				}
+			}
+
+			// Propagate on the event to a Unity event
 			if (OnTraitAdded != null) OnTraitAdded.Invoke(traitID);
 		}
 
-		private void HandleTraitRemoved(object traits, string traitID)
+		public override void RemoveTrait(string traitID)
 		{
+			var trait = Traits.GetTrait(traitID);
+			Traits.RemoveTrait(trait);
 			Engine.DB.Delete($"{UID}.trait.{traitID}");
+
+			// Undo the effects of the trait on the owner
+			foreach (var effect in trait.Effects)
+			{
+				effect.Remove();
+			}
+
+			// Remove all the social rules
+			foreach (var socialRule in trait.SocialRuleDefinitions)
+			{
+				SocialRules.RemoveSocialRuleDefinition(socialRule);
+			}
+
 			if (OnTraitRemoved != null) OnTraitRemoved.Invoke(traitID);
 		}
+
+		#endregion
+
+		#region Event Handlers
 
 		private void HandleStatChanged(object stats, (string, float) nameAndValue)
 		{
@@ -98,51 +264,6 @@ namespace TDRS
 			float value = nameAndValue.Item2;
 			Engine.DB.Insert($"{UID}.stat.{statName}!{value}");
 			if (OnStatChange != null) OnStatChange.Invoke(statName, value);
-		}
-
-		private void HandleSocialRuleAdded(object socialRules, SocialRule rule)
-		{
-			Dictionary<SocialAgent, SocialRelationship> relationships;
-
-			if (rule.IsOutgoing)
-			{
-				relationships = OutgoingRelationships;
-			}
-			else
-			{
-				relationships = IncomingRelationships;
-			}
-
-			foreach (var (_, relationship) in relationships)
-			{
-				if (rule.CheckPreconditions(relationship))
-				{
-					relationship.SocialRules.AddSocialRule(rule);
-					rule.OnAdd(relationship);
-				}
-			}
-		}
-
-		private void HandleSocialRuleRemoved(object socialRules, SocialRule rule)
-		{
-			Dictionary<SocialAgent, SocialRelationship> relationships;
-			if (rule.IsOutgoing)
-			{
-				relationships = OutgoingRelationships;
-			}
-			else
-			{
-				relationships = IncomingRelationships;
-			}
-
-			foreach (var (_, relationship) in relationships)
-			{
-				if (relationship.SocialRules.HasSocialRule(rule))
-				{
-					rule.OnRemove(relationship);
-					relationship.SocialRules.RemoveSocialRule(rule);
-				}
-			}
 		}
 
 		#endregion
