@@ -20,7 +20,7 @@ PROJECT_ROOT = pathlib.Path(__file__).parent.parent
 DIST_PATH = PROJECT_ROOT / "dist"
 """The path to place the tar archive."""
 
-PACKAGE_ROOT = PROJECT_ROOT / "Packages" / "edu.ucsc.eis.unity-tdrs"
+PACKAGE_ROOT = PROJECT_ROOT / "Packages" / "com.shijbey.tdrs"
 """The path to the root folder of the package."""
 
 

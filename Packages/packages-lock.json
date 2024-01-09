@@ -225,8 +225,8 @@
       },
       "url": "https://packages.unity.com"
     },
-    "edu.ucsc.eis.unity-tdrs": {
-      "version": "file:edu.ucsc.eis.unity-tdrs",
+    "com.shijbey.tdrs": {
+      "version": "file:com.shijbey.tdrs",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}

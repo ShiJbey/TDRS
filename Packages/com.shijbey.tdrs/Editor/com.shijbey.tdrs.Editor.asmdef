@@ -1,8 +1,14 @@
 {
-    "name": "edu.ucsc.eis.unity-tdrs.stat-system",
+    "name": "com.shijbey.tdrs.Editor",
     "rootNamespace": "",
-    "references": [],
-    "includePlatforms": [],
+    "references": [
+        "GUID:16a970661161b4a4791f3528a28c031a",
+        "GUID:4a8957a6f21097b49aeea45fb8871de3",
+        "GUID:73bb6a7717abb405ba01c69bf74e1bf2"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
