@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace TDRS
 {
-	public class IncreaseAgentStatFactory : SocialEventEffectFactory
+	public class IncreaseAgentStatFactory : EffectFactory
 	{
-		public class IncreaseAgentStat : ISocialEventEffect
+		public class IncreaseAgentStat : IEffect
 		{
 			protected SocialAgent m_agent;
 			protected string m_statName;
@@ -49,7 +49,7 @@ namespace TDRS
 
 		public override string EffectName => "IncreaseAgentStat";
 
-		public override ISocialEventEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length < 3)
 			{

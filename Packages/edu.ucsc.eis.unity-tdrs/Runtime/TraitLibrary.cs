@@ -139,7 +139,7 @@ namespace TDRS
 			}
 
 			// Instantiate the effects
-			List<ISocialEventEffect> effects = new List<ISocialEventEffect>();
+			List<IEffect> effects = new List<IEffect>();
 			foreach (var effectEntry in traitDefinition.Effects)
 			{
 				try

@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace TDRS
 {
-	public class DecreaseRelationshipStatFactory : SocialEventEffectFactory
+	public class DecreaseRelationshipStatFactory : EffectFactory
 	{
-		public class DecreaseRelationshipStat : ISocialEventEffect
+		public class DecreaseRelationshipStat : IEffect
 		{
 			protected SocialRelationship m_relationship;
 			protected string m_statName;
@@ -49,7 +49,7 @@ namespace TDRS
 
 		public override string EffectName => "DecreaseRelationshipStat";
 
-		public override ISocialEventEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length < 4)
 			{

@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace TDRS
 {
-	public class RemoveAgentTraitFactory : SocialEventEffectFactory
+	public class RemoveAgentTraitFactory : EffectFactory
 	{
-		public class RemoveAgentTrait : ISocialEventEffect
+		public class RemoveAgentTrait : IEffect
 		{
 			protected SocialAgent m_agent;
 			protected string m_traitID;
@@ -32,7 +32,7 @@ namespace TDRS
 
 		public override string EffectName => "AddAgentTrait";
 
-		public override ISocialEventEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length != 2)
 			{

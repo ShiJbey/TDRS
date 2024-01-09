@@ -13,7 +13,7 @@ namespace TDRS
 		/// <summary>
 		/// Social rules to check when a character gains a new incoming or outgoing relationship.
 		/// </summary>
-		protected List<SocialRuleDefinition> m_rules;
+		protected List<SocialRule> m_rules;
 
 		protected List<SocialRuleInstance> m_ruleInstances;
 
@@ -21,15 +21,15 @@ namespace TDRS
 
 		#region Properties
 
-		public IList<SocialRuleDefinition> Rules => m_rules;
+		public IList<SocialRule> Rules => m_rules;
 		public IList<SocialRuleInstance> SocialRuleInstances => m_ruleInstances;
 
 		#endregion
 
 		#region Events
 
-		public event EventHandler<SocialRuleDefinition> OnRuleAdded;
-		public event EventHandler<SocialRuleDefinition> OnRuleRemoved;
+		public event EventHandler<SocialRule> OnRuleAdded;
+		public event EventHandler<SocialRule> OnRuleRemoved;
 
 		#endregion
 
@@ -37,7 +37,7 @@ namespace TDRS
 
 		public SocialRuleManager()
 		{
-			m_rules = new List<SocialRuleDefinition>();
+			m_rules = new List<SocialRule>();
 			m_ruleInstances = new List<SocialRuleInstance>();
 		}
 
@@ -49,13 +49,13 @@ namespace TDRS
 		/// Add a rule to the entities collection of active rules.
 		/// </summary>
 		/// <param name="rule"></param>
-		public virtual void AddSocialRuleDefinition(SocialRuleDefinition rule)
+		public virtual void AddSocialRuleDefinition(SocialRule rule)
 		{
 			m_rules.Add(rule);
 			if (OnRuleAdded != null) OnRuleAdded.Invoke(this, rule);
 		}
 
-		public void RemoveSocialRuleDefinition(SocialRuleDefinition rule)
+		public void RemoveSocialRuleDefinition(SocialRule rule)
 		{
 			if (m_rules.Remove(rule))
 			{
@@ -64,7 +64,7 @@ namespace TDRS
 			}
 		}
 
-		public bool HasSocialRuleInstance(SocialRuleDefinition rule, string owner, string other)
+		public bool HasSocialRuleInstance(SocialRule rule, string owner, string other)
 		{
 			foreach (var instance in m_ruleInstances)
 			{
@@ -92,7 +92,7 @@ namespace TDRS
 		/// Remove all social rule instances from a given source
 		/// </summary>
 		/// <param name="source"></param>
-		private void RemoveAllInstancesOfRule(SocialRuleDefinition rule)
+		private void RemoveAllInstancesOfRule(SocialRule rule)
 		{
 			// Loop backward through the social rules instances and remove all that have the
 			// given source

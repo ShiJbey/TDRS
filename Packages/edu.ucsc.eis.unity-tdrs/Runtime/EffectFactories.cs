@@ -14,7 +14,7 @@ namespace TDRS
 		/// <summary>
 		/// Lookup table of factories by effect name
 		/// </summary>
-		protected Dictionary<string, ISocialEventEffectFactory> m_factoryLookup;
+		protected Dictionary<string, IEffectFactory> m_factoryLookup;
 
 		#endregion
 
@@ -22,7 +22,7 @@ namespace TDRS
 
 		private void Awake()
 		{
-			m_factoryLookup = new Dictionary<string, ISocialEventEffectFactory>();
+			m_factoryLookup = new Dictionary<string, IEffectFactory>();
 		}
 
 		#endregion
@@ -34,7 +34,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="effectName"></param>
 		/// <param name="factory"></param>
-		public void AddEffectFactory(string effectName, ISocialEventEffectFactory factory)
+		public void AddEffectFactory(string effectName, IEffectFactory factory)
 		{
 			m_factoryLookup[effectName] = factory;
 		}
@@ -44,7 +44,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="effectName"></param>
 		/// <returns></returns>
-		public ISocialEventEffectFactory GetEffectFactory(string effectName)
+		public IEffectFactory GetEffectFactory(string effectName)
 		{
 			return m_factoryLookup[effectName];
 		}
@@ -54,7 +54,7 @@ namespace TDRS
 		/// </summary>
 		public void RegisterFactories()
 		{
-			var effectFactories = GetComponents<SocialEventEffectFactory>();
+			var effectFactories = GetComponents<EffectFactory>();
 			foreach (var factory in effectFactories)
 			{
 				AddEffectFactory(factory.EffectName, factory);
@@ -67,7 +67,7 @@ namespace TDRS
 		/// <param name="ctx"></param>
 		/// <param name="eventString"></param>
 		/// <returns></returns>
-		public ISocialEventEffect CreateInstance(EffectBindingContext ctx, string effectSting)
+		public IEffect CreateInstance(EffectBindingContext ctx, string effectSting)
 		{
 			List<string> effectParts = effectSting
 					.Split(" ").Select(s => s.Trim()).ToList();

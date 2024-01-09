@@ -9,7 +9,7 @@ namespace TDRS
 	/// <summary>
 	/// Data used to instantiate social rules when instantiating traits
 	/// </summary>
-	public class SocialRuleDefinition
+	public class SocialRule
 	{
 		#region Fields
 
@@ -31,7 +31,7 @@ namespace TDRS
 
 		#region Constructors
 
-		public SocialRuleDefinition()
+		public SocialRule()
 		{
 			m_query = null;
 			m_effects = new string[0];
@@ -48,9 +48,9 @@ namespace TDRS
 		/// </summary>
 		/// <param name="yamlNode"></param>
 		/// <returns></returns>
-		public static SocialRuleDefinition FromYaml(TraitDefinition traitDef, YamlNode yamlNode)
+		public static SocialRule FromYaml(TraitDefinition traitDef, YamlNode yamlNode)
 		{
-			SocialRuleDefinition ruleDef = new SocialRuleDefinition()
+			SocialRule ruleDef = new SocialRule()
 			{
 				m_descriptionTemplate = traitDef.DescriptionTemplate,
 				m_source = traitDef

@@ -12,8 +12,8 @@ namespace TDRS
 		#region Fields
 
 		protected Dictionary<string, string> m_bindings;
-		protected ISocialEventEffect[] m_effects;
-		protected SocialRuleDefinition m_source;
+		protected IEffect[] m_effects;
+		protected SocialRule m_source;
 		protected string m_owner;
 		protected string m_other;
 
@@ -28,11 +28,11 @@ namespace TDRS
 		/// <summary>
 		/// The instantiated effects created from the bindings.
 		/// </summary>
-		public ISocialEventEffect[] Effects => m_effects;
+		public IEffect[] Effects => m_effects;
 		/// <summary>
 		/// The social rule responsible for this instance.
 		/// </summary>
-		public SocialRuleDefinition Source => m_source;
+		public SocialRule Source => m_source;
 		/// <summary>
 		/// The UID of the owner of the relationship this was instanced for.
 		/// </summary>
@@ -48,8 +48,8 @@ namespace TDRS
 
 		public SocialRuleInstance(
 			Dictionary<string, string> bindings,
-			ISocialEventEffect[] effects,
-			SocialRuleDefinition source
+			IEffect[] effects,
+			SocialRule source
 		)
 		{
 			m_bindings = bindings;
@@ -90,11 +90,11 @@ namespace TDRS
 		#region Static Methods
 
 		public static SocialRuleInstance TryInstantiateRule(
-			SocialRuleDefinition socialRule,
+			SocialRule socialRule,
 			EffectBindingContext ctx
 		)
 		{
-			List<ISocialEventEffect> effects = new List<ISocialEventEffect>();
+			List<IEffect> effects = new List<IEffect>();
 			try
 			{
 				// Create instances of each of the effects associated with this rule

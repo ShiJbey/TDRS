@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace TDRS
 {
-	public class RemoveRelationshipTraitFactory : SocialEventEffectFactory
+	public class RemoveRelationshipTraitFactory : EffectFactory
 	{
-		public class RemoveRelationshipTrait : ISocialEventEffect
+		public class RemoveRelationshipTrait : IEffect
 		{
 			protected SocialRelationship m_relationship;
 			protected string m_traitID;
@@ -32,7 +32,7 @@ namespace TDRS
 
 		public override string EffectName => "RemoveRelationshipTrait";
 
-		public override ISocialEventEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length != 3)
 			{

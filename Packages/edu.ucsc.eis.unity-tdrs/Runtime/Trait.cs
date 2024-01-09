@@ -31,7 +31,7 @@ namespace TDRS
 		/// <summary>
 		/// Effects to apply when the trait is added
 		/// </summary>
-		protected ISocialEventEffect[] m_effects;
+		protected IEffect[] m_effects;
 
 		#endregion
 
@@ -60,7 +60,7 @@ namespace TDRS
 		/// <summary>
 		/// Effects to apply when the trait is added
 		/// </summary>
-		public IEnumerable<ISocialEventEffect> Effects => m_effects;
+		public IEnumerable<IEffect> Effects => m_effects;
 
 		/// <summary>
 		/// IDs of traits that this trait cannot be added with
@@ -70,7 +70,7 @@ namespace TDRS
 		/// <summary>
 		/// The social rules associated with this trait
 		/// </summary>
-		public SocialRuleDefinition[] SocialRuleDefinitions => m_definition.SocialRules;
+		public SocialRule[] SocialRuleDefinitions => m_definition.SocialRules;
 
 		#endregion
 
@@ -78,7 +78,7 @@ namespace TDRS
 
 		public Trait(
 			TraitDefinition traitDefinition,
-			ISocialEventEffect[] effects,
+			IEffect[] effects,
 			string description
 		)
 		{

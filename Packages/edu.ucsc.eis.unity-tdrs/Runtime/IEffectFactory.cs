@@ -3,7 +3,7 @@ namespace TDRS
 	/// <summary>
 	/// Interface implemented by all factory classes that create social event effects
 	/// </summary>
-	public interface ISocialEventEffectFactory
+	public interface IEffectFactory
 	{
 		/// <summary>
 		///  Get the type of effect this factory produces
@@ -15,7 +15,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="args"></param>
 		/// <returns></returns>
-		public ISocialEventEffect CreateInstance(
+		public IEffect CreateInstance(
 			EffectBindingContext context, params string[] args
 		);
 	}

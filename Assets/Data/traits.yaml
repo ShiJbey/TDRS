@@ -74,13 +74,6 @@
     - apply:
         - IncreaseRelationshipStat ?owner ?other Friendship 3
 
-- traitID: advisor_of
-  traitType: relationship
-  displayName: Advisor-Of
-  description: "[owner] is an advisor to [target]"
-  effects:
-    - IncreaseRelationshipStat ?owner ?target Influence 10
-
 - traitID: lovers
   traitType: relationship
   displayName: Lovers
@@ -103,5 +96,5 @@
   displayName: Angry-at
   description: "[owner] is angry at [target]"
   effects:
-    - DecreaseRelationshipStat ?owner ?target 10
+    - DecreaseRelationshipStat ?owner ?target Friendship 10
   duration: 10

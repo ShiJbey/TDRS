@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace TDRS
 {
-	public class AddRelationshipTraitFactory : SocialEventEffectFactory
+	public class AddRelationshipTraitFactory : EffectFactory
 	{
-		public class AddRelationshipTrait : ISocialEventEffect
+		public class AddRelationshipTrait : IEffect
 		{
 			protected SocialRelationship m_relationship;
 			protected string m_traitID;
@@ -35,7 +35,7 @@ namespace TDRS
 
 		public override string EffectName => "AddRelationshipTrait";
 
-		public override ISocialEventEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length < 3)
 			{

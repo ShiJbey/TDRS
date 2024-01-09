@@ -4,7 +4,7 @@ namespace TDRS
 	/// Interface implemented by all effects that can be triggered by a social event, trait, or
 	/// social rule.
 	/// </summary>
-	public interface ISocialEventEffect
+	public interface IEffect
 	{
 		/// <summary>
 		/// Apply effects of the effect

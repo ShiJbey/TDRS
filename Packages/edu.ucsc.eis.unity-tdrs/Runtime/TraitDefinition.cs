@@ -18,7 +18,7 @@ namespace TDRS
 		protected string m_displayName;
 		protected string m_descriptionTemplate;
 		protected string[] m_effects;
-		protected SocialRuleDefinition[] m_socialRules;
+		protected SocialRule[] m_socialRules;
 		protected HashSet<string> m_conflictingTraits;
 		protected int m_duration;
 
@@ -64,7 +64,7 @@ namespace TDRS
 		/// <summary>
 		/// Social rules associated with this trait
 		/// </summary>
-		public SocialRuleDefinition[] SocialRules => m_socialRules;
+		public SocialRule[] SocialRules => m_socialRules;
 
 		#endregion
 
@@ -76,7 +76,7 @@ namespace TDRS
 			m_displayName = "";
 			m_descriptionTemplate = "";
 			m_effects = new string[0];
-			m_socialRules = new SocialRuleDefinition[0];
+			m_socialRules = new SocialRule[0];
 			m_conflictingTraits = new HashSet<string>();
 			m_duration = -1;
 		}
@@ -87,7 +87,7 @@ namespace TDRS
 			string displayName,
 			string descriptionTemplate,
 			string[] effects,
-			SocialRuleDefinition[] socialRules,
+			SocialRule[] socialRules,
 			HashSet<string> conflictingTraits,
 			int duration = -1
 		)
@@ -136,7 +136,7 @@ namespace TDRS
 			if (yamlNode.TryGetChild("socialRules", out var socialRulesNode))
 			{
 				traitDef.m_socialRules = (socialRulesNode as YamlSequenceNode).Children
-					.Select(node => SocialRuleDefinition.FromYaml(traitDef, node))
+					.Select(node => SocialRule.FromYaml(traitDef, node))
 					.ToArray();
 			}
 
