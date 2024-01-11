@@ -1,65 +1,33 @@
-using UnityEngine;
-
 namespace TDRS
 {
-	public class RemoveAgentTraitFactory : EffectFactory
+	public class RemoveAgentTrait : IEffect
 	{
-		public class RemoveAgentTrait : IEffect
+		protected SocialAgent m_agent;
+		protected string m_traitID;
+
+		public RemoveAgentTrait(
+			SocialAgent agent,
+			string traitID
+		)
 		{
-			protected SocialAgent m_agent;
-			protected string m_traitID;
-
-			public RemoveAgentTrait(
-				SocialAgent agent,
-				string traitID
-			)
-			{
-				m_agent = agent;
-				m_traitID = traitID;
-			}
-
-			public void Apply()
-			{
-				m_agent.RemoveTrait(m_traitID);
-			}
-
-			public void Remove()
-			{
-				// Trait removal is permanent
-				return;
-			}
+			m_agent = agent;
+			m_traitID = traitID;
 		}
 
-		public override string EffectName => "AddAgentTrait";
-
-		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public void Apply()
 		{
-			if (args.Length != 2)
-			{
-				string argStr = string.Join(" ", args);
+			m_agent.RemoveTrait(m_traitID);
+		}
 
-				throw new System.ArgumentException(
-					$"Incorrect number of arguments for 'RemoveAgentTrait {argStr}'. "
-					+ $"Expected 2 but was {args.Length}."
-				);
-			}
+		public void Remove()
+		{
+			// Trait removal is permanent
+			return;
+		}
 
-			string agentVar = args[0];
-			string traitID = args[1];
-
-			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar]))
-			{
-				throw new System.ArgumentException(
-					$"No Agent found with ID: {ctx.Bindings[agentVar]}"
-				);
-			}
-
-			return new RemoveAgentTrait(
-				ctx.Engine.GetAgent(
-					ctx.Bindings[agentVar]
-				),
-				traitID
-			);
+		public override string ToString()
+		{
+			return $"RemoveAgentTrait {m_agent.UID} {m_traitID}";
 		}
 	}
 }

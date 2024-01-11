@@ -3,6 +3,9 @@ using UnityEngine;
 using TDRS;
 using System.Linq;
 
+/// <summary>
+/// Mock simulates a social event being emitted by some game system
+/// </summary>
 public class MockSocialEventCreator : MonoBehaviour
 {
 	[SerializeField]

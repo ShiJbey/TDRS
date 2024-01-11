@@ -1,113 +1,50 @@
-using System;
-using UnityEngine;
-
 namespace TDRS
 {
-	public class IncreaseRelationshipStatFactory : EffectFactory
+	public class IncreaseRelationshipStat : IEffect
 	{
-		public class IncreaseRelationshipStat : IEffect
+		protected SocialRelationship m_relationship;
+		protected string m_statName;
+		protected float m_value;
+		protected int m_duration;
+		protected string m_reason;
+
+		public IncreaseRelationshipStat(
+			SocialRelationship relationship,
+			string statName,
+			float value,
+			int duration,
+			string reason
+		)
 		{
-			protected SocialRelationship m_relationship;
-			protected string m_statName;
-			protected float m_value;
-			protected int m_duration;
-			protected string m_reason;
-
-			public IncreaseRelationshipStat(
-				SocialRelationship relationship,
-				string statName,
-				float value,
-				int duration,
-				string reason
-			)
-			{
-				m_relationship = relationship;
-				m_statName = statName;
-				m_value = value;
-				m_duration = duration;
-				m_reason = reason;
-			}
-
-			public void Apply()
-			{
-				m_relationship.Stats.AddModifier(
-					new StatSystem.StatModifier(
-						m_statName,
-						m_reason,
-						m_value,
-						StatSystem.StatModifierType.FLAT,
-						m_duration,
-						this
-					)
-				);
-			}
-
-			public void Remove()
-			{
-				m_relationship.Stats.RemoveModifiersFromSource(this);
-			}
+			m_relationship = relationship;
+			m_statName = statName;
+			m_value = value;
+			m_duration = duration;
+			m_reason = reason;
 		}
 
-		public override string EffectName => "IncreaseRelationshipStat";
-
-		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public void Apply()
 		{
-			if (args.Length < 4)
-			{
-				string argStr = string.Join(" ", args);
-
-				throw new ArgumentException(
-					$"Incorrect number of arguments for 'IncreaseRelationshipStat {argStr}'. "
-					+ $"Expected 4 but was {args.Length}."
-				);
-			}
-
-			string relationshipOwnerVar = args[0];
-			string relationshipTargetVar = args[1];
-			string statName = args[2];
-
-			if (!ctx.Engine.HasRelationship(
-					ctx.Bindings[relationshipOwnerVar],
-					ctx.Bindings[relationshipTargetVar]
-					)
+			m_relationship.Stats.AddModifier(
+				new StatSystem.StatModifier(
+					m_statName,
+					m_reason,
+					m_value,
+					StatSystem.StatModifierType.FLAT,
+					m_duration,
+					this
 				)
-			{
-				throw new System.ArgumentException(
-					"No relationship found from "
-					+ $"{ctx.Bindings[relationshipOwnerVar]} to"
-					+ $"{ctx.Bindings[relationshipTargetVar]}."
-				);
-			}
-
-			if (!float.TryParse(args[3], out var value))
-			{
-				throw new ArgumentException(
-					$"Expected number as last argument but was '{args[3]}'"
-				);
-			}
-
-			int duration = -1;
-
-			if (args.Length >= 5)
-			{
-				if (!int.TryParse(args[4], out duration))
-				{
-					throw new System.ArgumentException(
-						$"Expected integer as 5th argument but was '{args[4]}'"
-					);
-				}
-			}
-
-			return new IncreaseRelationshipStat(
-				ctx.Engine.GetRelationship(
-					ctx.Bindings[relationshipOwnerVar],
-					ctx.Bindings[relationshipTargetVar]
-				),
-				statName,
-				value,
-				duration,
-				ctx.Description
 			);
+		}
+
+		public void Remove()
+		{
+			m_relationship.Stats.RemoveModifiersFromSource(this);
+		}
+
+		public override string ToString()
+		{
+			return $"IncreaseRelationshipStat {m_relationship.Owner.UID} {m_relationship.Target.UID} {m_statName} {m_value} {(m_duration == -1 ? "" : m_duration)}";
 		}
 	}
 }

@@ -1,8 +1,7 @@
 # Trait-Driven Relationship System (TDRS) for Unity
 
 ![Static Badge](https://img.shields.io/badge/Unity-2022.3-black)
-![Static Badge](https://img.shields.io/badge/Project_Status-Unstable-red)
-![Static Badge](https://img.shields.io/badge/Version-1.0.0_Unreleased-yellow)
+![Static Badge](https://img.shields.io/badge/Version-1.0.0-green)
 
 **Unity-TDRS** is a toolkit for modeling dynamic character relationships for life sims, dating sims, visual novels, and adventure games in Unity. It enables game developers to track relationships between social entities (NPCs, players, factions, etc.). Designers can create and tag relationships and characters with various traits that modify how characters feel about each other. Also, they can dispatch various event types that change relationships and build interpersonal histories between characters. Game designers can leverage this package for NPC decision-making, customizing dialogue, and adding a semblance of social intelligence.
 
@@ -51,6 +50,6 @@ You can learn more about TDRS and how to get started by visiting the [Wiki](http
 
 ## Frequently asked questions
 
-### How do I persist data between scenes
+### How do I persist data between scenes?
 
 Unity-TDRS does not offer a particular solution for persisting social data between scenes. This task is left to the discretion of the user. If you have ideas for a solution, please create a GitHub issue explaining your approach.

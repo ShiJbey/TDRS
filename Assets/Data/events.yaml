@@ -1,92 +1,45 @@
 # Unity-TDRS Sample Social Events
 
-# This file contains sample definitions of various social events that could be triggered by some
-# in-game logic. TDRS uses YAML instead of scriptable objects because it is easier to build
-# expressive constructs without complicated editor scripting or recompilation. The main trade-off is
-# that documentation needs to be clear about what options are available to users, how to use them,
-# how to expand upon them. Documentation for the event specifications is provided below and on the
-# GitHub wiki: https://github.com/ShiJbey/Unity-TDRS/wiki. If you want to better familiarize
-# yourself with YAML, the following page has been helpful: https://quickref.me/yaml.
-
-# (1) Events within YAML files must be organized as a sequence of mappings. Where each entry
-# Contains all the required mapping keys: event, description, and responses. Each is explained
-# in more detail below.
-
-# (2) Each social event definition should start with an "event" key followed by the name of
-# the event and the names of agent roles involved in the event. Role names must be prefixed with an
-# '?'. This is a convention for naming variables in TDRS' database query language.
 - event: betrayal ?betrayer ?victim
-
-  # (3) The description of the event uses a template syntax where the IDs of the agents
-  # bound to the specified roles are substituted into the description text. This description is
-  # used within the stat modifier system, among other things, to explain why some modifiers are
-  # present.
   description: "[betrayer] betrayed [victim]."
-
-  # (4) Next, we specify effects that should be applied when the event is invoked. These are
-  # referred to as "responses" because they specify who should react to the event and how. Each
-  # response has two parts, "apply" and "where". The "apply" section is a sequence of strings that
-  # describe effects to trigger as a result of the event. Effects start with the effect name
-  # followed by a  series of parameters separated by one or more spaces. Some effects accept
-  # variables as parameters. These are expanded by the event system to refer to the agents bound to
-  # the roles. The "where" section allows users to specify a database query
-  # as a precondition for the "apply" section. By default, the role names are always available as
-  # variables for the effects. The "where" query allows users to bind additional variables within
-  # the query and use them in effects. Below we use queries to find family and friends of the
-  # victim to change how they feel about the betrayer. All queries use the RePraxis query language.
-  # You can read more about it here: https://github.com/ShiJbey/RePraxis. Each query is provided as
-  # a multi-line YAML string.
   responses:
-    # This response runs automatically since no "where" parameter is provided. The variables
-    # available are only the roles specified above.
-    - apply:
+    - effects:
         - DecreaseRelationshipStat ?victim ?betrayer Friendship 10 5
         - RemoveRelationshipTrait ?victim ?betrayer friend
-
-    # Below we look for all instances where the victim has a relationship with someone that has
-    # a "friend" trait attached. We bind that agent's ID to the ?victim_friend variable. Then we
-    # perform another query operation where we ensure that ?victim_friend and ?betrayer are not the
-    # same.
-    - where: |
-        ?victim.relationship.?victim_friend.trait.friend
+    - precondition: |
+        ?victim.relationships.?victim_friend.traits.friend
         neq ?victim_friend ?betrayer
-      apply:
+      effects:
         - DecreaseRelationshipStat ?victim_friend ?betrayer Friendship 5 6
-
-    # Below we do the same as above. However, this query looks for family members.
-    - where: |
-        ?victim.relationship.?victim_family.trait.family
+    - precondition: |
+        ?victim.relationships.?victim_family.traits.family
         neq ?victim_family ?betrayer
-      apply:
+      effects:
         - AddRelationshipTrait ?victim_family ?betrayer angry_at 10
-
-# Below are some additional event specifications without the additional comments. Feel free to edit
-# this file and re-run the sample. Since this file is loaded at runtime, there is no compilation
-# required.
 
 - event: new_friend ?character_a ?character_b
   description: "[character_a] considers [character_b] to be a friend."
   responses:
-    - apply:
+    - effects:
         - AddRelationshipTrait ?character_a ?character_b friend
 
 - event: start_dating ?character_a ?character_b
   description: "[character_a] and [character_b] started dating."
   responses:
-    - apply:
+    - effects:
         - AddRelationshipTrait ?character_a ?character_b dating
         - AddRelationshipTrait ?character_b ?character_a dating
 
 - event: break_up ?character_a ?character_b
   description: "[character_a] broke-up with [character_b]."
   responses:
-    - apply:
+    - effects:
         - RemoveRelationshipTrait ?character_a ?character_b dating
         - RemoveRelationshipTrait ?character_b ?character_a dating
         - AddRelationshipTrait ?character_a ?character_b ex-partner
         - AddRelationshipTrait ?character_b ?character_a ex-partner
-    - where: |
-        ?character_b.relationship.?other.traits.rival
+    - precondition: |
+        ?character_b.relationships.?other.traits.rival
         neq ?other ?character_a
-      apply:
+      effects:
         - IncreaseAgentStat ?other confidence 5

@@ -72,7 +72,7 @@ namespace TDRS
 
 			Trait trait = Engine.TraitLibrary.CreateInstance(traitID, this);
 			Traits.AddTrait(trait, duration);
-			Engine.DB.Insert($"{Owner.UID}.relationship.{Target.UID}.trait.{traitID}");
+			Engine.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
 
 			// Apply the trait's effects on the owner
 			foreach (var effect in trait.Effects)
@@ -96,7 +96,7 @@ namespace TDRS
 
 			var trait = Traits.GetTrait(traitID);
 			Traits.RemoveTrait(trait);
-			Engine.DB.Delete($"{Owner.UID}.relationship.{Target.UID}.trait.{traitID}");
+			Engine.DB.Delete($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
 
 			// Undo the effects of the trait on the owner
 			foreach (var effect in trait.Effects)
@@ -122,7 +122,7 @@ namespace TDRS
 		{
 			string statName = nameAndValue.Item1;
 			float value = nameAndValue.Item2;
-			Engine.DB.Insert($"{Owner.UID}.relationship.{Target.UID}.stat.{statName}!{value}");
+			Engine.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.stat.{statName}!{value}");
 			if (OnStatChange != null) OnStatChange.Invoke(statName, value);
 		}
 

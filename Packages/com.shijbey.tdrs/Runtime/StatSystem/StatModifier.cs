@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace TDRS.StatSystem
 {
 	/// <summary>

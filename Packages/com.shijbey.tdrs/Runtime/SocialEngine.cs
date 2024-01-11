@@ -160,7 +160,7 @@ namespace TDRS
 			owner.OutgoingRelationships[target] = relationship;
 			target.IncomingRelationships[owner] = relationship;
 
-			DB.Insert($"{owner.UID}.relationship.{target.UID}");
+			DB.Insert($"{owner.UID}.relationships.{target.UID}");
 
 			foreach (var entry in relationship.StatSchema.stats)
 			{

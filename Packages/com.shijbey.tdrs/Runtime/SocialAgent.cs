@@ -91,7 +91,7 @@ namespace TDRS
 
 			Trait trait = Engine.TraitLibrary.CreateInstance(traitID, this);
 			Traits.AddTrait(trait, duration);
-			Engine.DB.Insert($"{UID}.trait.{traitID}");
+			Engine.DB.Insert($"{UID}.traits.{traitID}");
 
 			// Apply the trait's effects on the owner
 			foreach (var effect in trait.Effects)
@@ -237,7 +237,7 @@ namespace TDRS
 		{
 			var trait = Traits.GetTrait(traitID);
 			Traits.RemoveTrait(trait);
-			Engine.DB.Delete($"{UID}.trait.{traitID}");
+			Engine.DB.Delete($"{UID}.traits.{traitID}");
 
 			// Undo the effects of the trait on the owner
 			foreach (var effect in trait.Effects)

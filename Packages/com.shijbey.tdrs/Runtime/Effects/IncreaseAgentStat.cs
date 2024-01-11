@@ -1,104 +1,50 @@
-using UnityEngine;
-
 namespace TDRS
 {
-	public class IncreaseAgentStatFactory : EffectFactory
+	public class IncreaseAgentStat : IEffect
 	{
-		public class IncreaseAgentStat : IEffect
+		protected SocialAgent m_agent;
+		protected string m_statName;
+		protected float m_value;
+		protected int m_duration;
+		protected string m_reason;
+
+		public IncreaseAgentStat(
+			SocialAgent agent,
+			string statName,
+			float value,
+			int duration,
+			string reason
+		)
 		{
-			protected SocialAgent m_agent;
-			protected string m_statName;
-			protected float m_value;
-			protected int m_duration;
-			protected string m_reason;
-
-			public IncreaseAgentStat(
-				SocialAgent agent,
-				string statName,
-				float value,
-				int duration,
-				string reason
-			)
-			{
-				m_agent = agent;
-				m_statName = statName;
-				m_value = value;
-				m_duration = duration;
-				m_reason = reason;
-			}
-
-			public void Apply()
-			{
-				m_agent.Stats.AddModifier(
-					new StatSystem.StatModifier(
-						m_statName,
-						m_reason,
-						m_value,
-						StatSystem.StatModifierType.FLAT,
-						m_duration,
-						this
-					)
-				);
-			}
-
-			public void Remove()
-			{
-				m_agent.Stats.RemoveModifiersFromSource(this);
-			}
+			m_agent = agent;
+			m_statName = statName;
+			m_value = value;
+			m_duration = duration;
+			m_reason = reason;
 		}
 
-		public override string EffectName => "IncreaseAgentStat";
-
-		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public void Apply()
 		{
-			if (args.Length < 3)
-			{
-				string argStr = string.Join(" ", args);
-
-				throw new System.ArgumentException(
-					$"Incorrect number of arguments for IncreaseAgentStat {argStr}'. "
-					+ $"Expected 3 but was {args.Length}."
-				);
-			}
-
-			string agentVar = args[0];
-			string statName = args[1];
-
-			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar]))
-			{
-				throw new System.ArgumentException(
-					$"No Agent found with ID: {ctx.Bindings[agentVar]}"
-				);
-			}
-
-			if (!float.TryParse(args[2], out var value))
-			{
-				throw new System.ArgumentException(
-					$"Expected number as last argument but was '{args[2]}'"
-				);
-			}
-
-			int duration = -1;
-
-			if (args.Length >= 4)
-			{
-				if (!int.TryParse(args[3], out duration))
-				{
-					throw new System.ArgumentException(
-						$"Expected integer as 4th argument but was '{args[3]}'"
-					);
-				}
-			}
-
-			return new IncreaseAgentStat(
-				ctx.Engine.GetAgent(
-					ctx.Bindings[agentVar]
-				),
-				statName,
-				value,
-				duration,
-				ctx.Description
+			m_agent.Stats.AddModifier(
+				new StatSystem.StatModifier(
+					m_statName,
+					m_reason,
+					m_value,
+					StatSystem.StatModifierType.FLAT,
+					m_duration,
+					this
+				)
 			);
+		}
+
+		public void Remove()
+		{
+			m_agent.Stats.RemoveModifiersFromSource(this);
+		}
+
+		public override string ToString()
+		{
+			return $"IncreaseAgentStat {m_agent.UID} {m_statName} {m_value} {(m_duration == -1 ? "" : m_duration)}";
 		}
 	}
 }

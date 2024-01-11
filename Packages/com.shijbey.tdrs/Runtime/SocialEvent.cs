@@ -135,10 +135,10 @@ namespace TDRS
 
 			// Try to set the query
 
-			if (node.TryGetChild("where", out var whereNode))
+			if (node.TryGetChild("precondition", out var preconditionNode))
 			{
 				response.m_query = new DBQuery(
-					whereNode.GetValue()
+					preconditionNode.GetValue()
 						.Split("\n")
 						.Where(clause => clause != "")
 						.ToArray()
@@ -147,7 +147,7 @@ namespace TDRS
 
 			// Try to set the effects
 
-			if (node.TryGetChild("apply", out var effectsNode))
+			if (node.TryGetChild("effects", out var effectsNode))
 			{
 				List<string> effects = new List<string>();
 

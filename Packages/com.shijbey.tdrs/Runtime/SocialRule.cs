@@ -57,10 +57,10 @@ namespace TDRS
 			};
 
 			// Try to set the query
-			if (yamlNode.TryGetChild("where", out var whereNode))
+			if (yamlNode.TryGetChild("precondition", out var preconditionNode))
 			{
 				ruleDef.m_query = new DBQuery(
-					whereNode.GetValue()
+					preconditionNode.GetValue()
 						.Split("\n")
 						.Where(clause => clause != "")
 						.ToArray()
@@ -68,7 +68,7 @@ namespace TDRS
 			}
 
 			// Try to set the effects
-			if (yamlNode.TryGetChild("apply", out var effectsNode))
+			if (yamlNode.TryGetChild("effects", out var effectsNode))
 			{
 				ruleDef.m_effects = (effectsNode as YamlSequenceNode).Children
 					.Select(node => node.GetValue())
@@ -76,7 +76,7 @@ namespace TDRS
 			}
 			else
 			{
-				throw new ArgumentException("Social rule definition is missing 'apply' section");
+				throw new ArgumentException("Social rule definition is missing 'effects' section");
 			}
 
 			if (yamlNode.TryGetChild("description", out var descriptionNode))

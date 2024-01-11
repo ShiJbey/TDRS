@@ -1,73 +1,33 @@
-using UnityEngine;
-
 namespace TDRS
 {
-	public class RemoveRelationshipTraitFactory : EffectFactory
+	public class RemoveRelationshipTrait : IEffect
 	{
-		public class RemoveRelationshipTrait : IEffect
+		protected SocialRelationship m_relationship;
+		protected string m_traitID;
+
+		public RemoveRelationshipTrait(
+			SocialRelationship relationship,
+			string traitID
+		)
 		{
-			protected SocialRelationship m_relationship;
-			protected string m_traitID;
-
-			public RemoveRelationshipTrait(
-				SocialRelationship relationship,
-				string traitID
-			)
-			{
-				m_relationship = relationship;
-				m_traitID = traitID;
-			}
-
-			public void Apply()
-			{
-				m_relationship.RemoveTrait(m_traitID);
-			}
-
-			public void Remove()
-			{
-				// trait removal is permanent
-				return;
-			}
+			m_relationship = relationship;
+			m_traitID = traitID;
 		}
 
-		public override string EffectName => "RemoveRelationshipTrait";
-
-		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public void Apply()
 		{
-			if (args.Length != 3)
-			{
-				string argStr = string.Join(" ", args);
+			m_relationship.RemoveTrait(m_traitID);
+		}
 
-				throw new System.ArgumentException(
-					$"Incorrect number of arguments for 'RemoveRelationshipTrait {argStr}'. "
-					+ $"Expected 3 but was {args.Length}."
-				);
-			}
+		public void Remove()
+		{
+			// trait removal is permanent
+			return;
+		}
 
-			string relationshipOwnerVar = args[0];
-			string relationshipTargetVar = args[1];
-			string traitID = args[2];
-
-			if (!ctx.Engine.HasRelationship(
-					ctx.Bindings[relationshipOwnerVar],
-					ctx.Bindings[relationshipTargetVar]
-					)
-				)
-			{
-				throw new System.ArgumentException(
-					"No relationship found from "
-					+ $"{ctx.Bindings[relationshipOwnerVar]} to"
-					+ $"{ctx.Bindings[relationshipTargetVar]}."
-				);
-			}
-
-			return new RemoveRelationshipTrait(
-				ctx.Engine.GetRelationship(
-					ctx.Bindings[relationshipOwnerVar],
-					ctx.Bindings[relationshipTargetVar]
-				),
-				traitID
-			);
+		public override string ToString()
+		{
+			return $"RemoveRelationshipTrait {m_relationship.Owner.UID} {m_relationship.Target.UID} {m_traitID}";
 		}
 	}
 }
