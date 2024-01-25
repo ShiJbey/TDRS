@@ -34,7 +34,7 @@ namespace Calypso
 			if (socialEngine == null)
 			{
 				Debug.LogError(
-					"Database Viewer cannot find GameObject with TDRSManager component.");
+					"Database Viewer cannot find GameObject with SocialEngine component.");
 			}
 		}
 

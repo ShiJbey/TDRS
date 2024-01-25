@@ -96,7 +96,7 @@ namespace TDRS
 
 			if (Engine == null)
 			{
-				Debug.LogError("Cannot find GameObject with TDRSManager component in scene.");
+				Debug.LogError("Cannot find GameObject with SocialEngine component in scene.");
 			}
 		}
 

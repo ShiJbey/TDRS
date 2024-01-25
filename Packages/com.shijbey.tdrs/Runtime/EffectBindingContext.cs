@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace TDRS
 {
 	/// <summary>
-	/// Contains information an bindings used to instantiate effects
+	/// Contains information and bindings used to instantiate effects
 	/// </summary>
 	public class EffectBindingContext
 	{

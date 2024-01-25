@@ -17,7 +17,7 @@ namespace TDRS
 	/// </para>
 	///
 	/// <para>
-	/// This is a singleton class. Only one TDRSManager should be present in a scene.
+	/// This is a singleton class. Only one SocialEngine should be present in a scene.
 	/// </para>
 	/// </summary>
 	[DefaultExecutionOrder(-5)]

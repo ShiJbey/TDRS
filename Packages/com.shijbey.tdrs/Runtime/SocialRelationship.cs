@@ -41,7 +41,7 @@ namespace TDRS
 			if (StatSchema == null)
 			{
 				Debug.LogError(
-					$"{gameObject.name} is missing stat schema for TDRSEntity component."
+					$"{gameObject.name} is missing stat schema for SocialRelationship component."
 				);
 			}
 		}

@@ -6,7 +6,7 @@ namespace TDRS
 {
 	/// <summary>
 	/// A user-facing Unity component for associating a GameObject with as node within
-	/// the TDRS Manager's social graph.
+	/// the social engines's social network
 	/// </summary>
 	public class SocialAgent : SocialEntity
 	{
@@ -56,7 +56,7 @@ namespace TDRS
 			if (StatSchema == null)
 			{
 				Debug.LogError(
-					$"{gameObject.name} is missing stat schema for TDRSEntity component."
+					$"{gameObject.name} is missing stat schema for SocialAgent component."
 				);
 			}
 
