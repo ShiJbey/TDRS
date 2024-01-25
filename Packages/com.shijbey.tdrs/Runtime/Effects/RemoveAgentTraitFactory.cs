@@ -5,7 +5,7 @@ namespace TDRS
 	/// </summary>
 	public class RemoveAgentTraitFactory : EffectFactory
 	{
-		public override string EffectName => "AddAgentTrait";
+		public override string EffectName => "RemoveAgentTrait";
 
 		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{

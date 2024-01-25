@@ -20,7 +20,7 @@ public class MockSimulationTicker : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (Input.GetKeyUp((KeyCode)TickButtonCode.Tab))
+		if (Input.GetKeyUp((KeyCode)m_tickButton))
 		{
 			m_socialEngine.Tick();
 		}

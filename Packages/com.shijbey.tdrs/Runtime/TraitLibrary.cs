@@ -21,6 +21,12 @@ namespace TDRS
 		protected List<TextAsset> m_definitionFiles;
 
 		/// <summary>
+		/// ScriptableObject trait definitions
+		/// </summary>
+		[SerializeField]
+		protected List<TraitSO> m_definitions;
+
+		/// <summary>
 		/// Repository of definition data for traits
 		/// </summary>
 		protected Dictionary<string, TraitDefinition> m_traitDefinitions;
@@ -86,6 +92,12 @@ namespace TDRS
 				{
 					AddTraitDefinition(TraitDefinition.FromYaml(node));
 				}
+			}
+
+			// Load scriptable object traits
+			for (int i = 0; i < m_definitions.Count; i++)
+			{
+				AddTraitDefinition(m_definitions[i].GetTraitDefinition());
 			}
 		}
 

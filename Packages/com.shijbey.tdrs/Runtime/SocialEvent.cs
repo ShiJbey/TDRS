@@ -9,7 +9,7 @@ namespace TDRS
 	/// <summary>
 	/// Definition information for creating SocialEvent instances
 	/// </summary>
-	public class SocialEventType
+	public class SocialEvent
 	{
 		#region Fields
 
@@ -32,12 +32,25 @@ namespace TDRS
 
 		#region Constructors
 
-		public SocialEventType()
+		public SocialEvent()
 		{
 			m_name = "";
 			m_roles = new string[0];
 			m_descriptionTemplate = "";
 			m_responses = new SocialEventResponse[0];
+		}
+
+		public SocialEvent(
+			string name,
+			string[] roles,
+			string description,
+			SocialEventResponse[] responses
+		)
+		{
+			m_name = name;
+			m_roles = roles;
+			m_descriptionTemplate = description;
+			m_responses = responses;
 		}
 
 		#endregion
@@ -58,9 +71,9 @@ namespace TDRS
 		/// </summary>
 		/// <param name="yamlNode"></param>
 		/// <returns></returns>
-		public static SocialEventType FromYaml(YamlNode yamlNode)
+		public static SocialEvent FromYaml(YamlNode yamlNode)
 		{
-			SocialEventType eventType = new SocialEventType() { };
+			SocialEvent eventType = new SocialEvent() { };
 
 			// Set the event and role names
 
@@ -118,6 +131,12 @@ namespace TDRS
 		{
 			m_query = null;
 			m_effects = new string[0];
+		}
+
+		public SocialEventResponse(DBQuery precondition, string[] effects)
+		{
+			m_query = precondition;
+			m_effects = effects;
 		}
 
 		#endregion

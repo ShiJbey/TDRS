@@ -25,7 +25,11 @@ namespace TDRS
 		public DBQuery Query => m_query;
 		public string[] Effects => m_effects;
 		public string DescriptionTemplate => m_descriptionTemplate;
-		public TraitDefinition Source => m_source;
+		public TraitDefinition Source
+		{
+			get { return m_source; }
+			set { m_source = value; }
+		}
 
 		#endregion
 
@@ -36,6 +40,14 @@ namespace TDRS
 			m_query = null;
 			m_effects = new string[0];
 			m_descriptionTemplate = "";
+			m_source = null;
+		}
+
+		public SocialRule(DBQuery precondition, string[] effects, string description)
+		{
+			m_query = precondition;
+			m_effects = effects;
+			m_descriptionTemplate = description;
 			m_source = null;
 		}
 

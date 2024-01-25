@@ -122,7 +122,7 @@ namespace TDRS
 		{
 			string statName = nameAndValue.Item1;
 			float value = nameAndValue.Item2;
-			Engine.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.stat.{statName}!{value}");
+			Engine.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.stats.{statName}!{value}");
 			if (OnStatChange != null) OnStatChange.Invoke(statName, value);
 		}
 

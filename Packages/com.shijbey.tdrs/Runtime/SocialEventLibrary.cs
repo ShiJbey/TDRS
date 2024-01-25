@@ -21,9 +21,15 @@ namespace TDRS
 		protected List<TextAsset> m_definitionFiles;
 
 		/// <summary>
+		/// Social events defined using ScriptableObjects
+		/// </summary>
+		[SerializeField]
+		protected List<SocialEventSO> m_definitions;
+
+		/// <summary>
 		/// Event definitions sorted by name and cardinality.
 		/// </summary>
-		protected Dictionary<string, SocialEventType> m_eventTypes;
+		protected Dictionary<string, SocialEvent> m_eventTypes;
 
 		#endregion
 
@@ -31,7 +37,7 @@ namespace TDRS
 
 		private void Awake()
 		{
-			m_eventTypes = new Dictionary<string, SocialEventType>();
+			m_eventTypes = new Dictionary<string, SocialEvent>();
 		}
 
 		#endregion
@@ -59,7 +65,7 @@ namespace TDRS
 					{
 						var eventKeyNode = eventSpecNode.GetChild("event");
 
-						var eventType = SocialEventType.FromYaml(eventSpecNode);
+						var eventType = SocialEvent.FromYaml(eventSpecNode);
 
 						m_eventTypes[eventType.ToString()] = eventType;
 					}
@@ -70,6 +76,14 @@ namespace TDRS
 					}
 				}
 			}
+
+			// Load social events from scriptable objects
+			for (int i = 0; i < m_definitions.Count; i++)
+			{
+				var socialEvent = m_definitions[i].GetSocialEvent();
+
+				m_eventTypes[socialEvent.ToString()] = socialEvent;
+			}
 		}
 
 		/// <summary>
@@ -77,7 +91,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="eventName"></param>
 		/// <returns></returns>
-		public SocialEventType GetEventType(string eventName)
+		public SocialEvent GetEventType(string eventName)
 		{
 			return m_eventTypes[eventName];
 		}

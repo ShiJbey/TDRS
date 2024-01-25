@@ -25,15 +25,17 @@ namespace TDRS
 	{
 		#region Fields
 
-		protected Queue<SocialRelationship> m_relationshipQueue;
-		protected Dictionary<string, SocialAgent> m_agents;
-		protected Dictionary<(string, string), SocialRelationship> m_relationships;
+		private Queue<SocialRelationship> m_relationshipQueue;
+		private Dictionary<string, SocialAgent> m_agents;
+		private Dictionary<(string, string), SocialRelationship> m_relationships;
 		[SerializeField]
-		protected EffectFactories m_effectFactories;
+		private EffectFactories m_effectFactories;
 		[SerializeField]
-		protected SocialEventLibrary m_socialEventLibrary;
+		private SocialEventLibrary m_socialEventLibrary;
 		[SerializeField]
-		protected TraitLibrary m_traitLibrary;
+		private TraitLibrary m_traitLibrary;
+		[SerializeField]
+		private bool m_dontDestroyOnLoad;
 
 		#endregion
 
@@ -43,7 +45,7 @@ namespace TDRS
 		public TraitLibrary TraitLibrary => m_traitLibrary;
 		public EffectFactories EffectFactories => m_effectFactories;
 		public List<SocialAgent> Agents => m_agents.Values.ToList();
-		public RePraxisDatabase DB { get; protected set; }
+		public RePraxisDatabase DB { get; private set; }
 		public SocialEventLibrary SocialEventLibrary => m_socialEventLibrary;
 
 		#endregion
@@ -67,6 +69,11 @@ namespace TDRS
 				DB = new RePraxisDatabase();
 				m_agents = new Dictionary<string, SocialAgent>();
 				m_relationships = new Dictionary<(string, string), SocialRelationship>();
+
+				if (m_dontDestroyOnLoad)
+				{
+					DontDestroyOnLoad(this);
+				}
 			}
 		}
 

@@ -23,7 +23,7 @@ namespace TDRS
 
 		#endregion
 
-		public EffectBindingContext(SocialEngine socialEngine, SocialEventType eventType, params string[] agents)
+		public EffectBindingContext(SocialEngine socialEngine, SocialEvent eventType, params string[] agents)
 		{
 			m_socialEngine = socialEngine;
 			m_description = eventType.DescriptionTemplate;
