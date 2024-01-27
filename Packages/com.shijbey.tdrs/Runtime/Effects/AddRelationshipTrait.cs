@@ -2,12 +2,12 @@ namespace TDRS
 {
 	public class AddRelationshipTrait : IEffect
 	{
-		protected SocialRelationship m_relationship;
+		protected RelationshipEdge m_relationship;
 		protected string m_traitID;
 		protected int m_duration;
 
 		public AddRelationshipTrait(
-			SocialRelationship relationship,
+			RelationshipEdge relationship,
 			string traitID,
 			int duration
 		)

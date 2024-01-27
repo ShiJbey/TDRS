@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d194bac1067f48d1b57523c8558c611, type: 3}
-  m_Name: DefaultRelationshipStats
+  m_Script: {fileID: 11500000, guid: e0b77af52522043aa8a648789ace171e, type: 3}
+  m_Name: Character_to_Character
   m_EditorClassIdentifier: 
+  ownerAgentType: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
+  targetAgentType: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
   stats:
   - statName: Friendship
     baseValue: 0
@@ -23,3 +25,4 @@ MonoBehaviour:
     maxValue: 50
     minValue: -50
     isDiscrete: 1
+  traits: []

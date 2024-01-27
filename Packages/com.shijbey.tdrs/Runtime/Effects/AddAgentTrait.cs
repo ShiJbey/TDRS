@@ -2,12 +2,12 @@ namespace TDRS
 {
 	public class AddAgentTrait : IEffect
 	{
-		protected SocialAgent m_agent;
+		protected AgentNode m_agent;
 		protected string m_traitID;
 		protected int m_duration;
 
 		public AddAgentTrait(
-			SocialAgent agent,
+			AgentNode agent,
 			string traitID,
 			int duration
 		)

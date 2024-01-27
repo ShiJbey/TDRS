@@ -2,11 +2,11 @@ namespace TDRS
 {
 	public class RemoveRelationshipTrait : IEffect
 	{
-		protected SocialRelationship m_relationship;
+		protected RelationshipEdge m_relationship;
 		protected string m_traitID;
 
 		public RemoveRelationshipTrait(
-			SocialRelationship relationship,
+			RelationshipEdge relationship,
 			string traitID
 		)
 		{

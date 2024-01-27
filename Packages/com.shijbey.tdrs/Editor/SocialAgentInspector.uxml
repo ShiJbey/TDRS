@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <uie:PropertyField name="UID" binding-path="m_UID" label="UID" style="height: 26px; width: 351px;" />
-    <uie:PropertyField name="StatSchema" binding-path="m_statSchema" />
+    <uie:PropertyField name="Config" binding-path="m_agentConfig" />
     <ui:VisualElement style="flex-grow: 1; padding-bottom: 16px; padding-top: 12px;">
         <ui:Label tabindex="-1" text="Traits" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 12px; border-bottom-width: 2px; border-bottom-color: rgb(0, 0, 0);" />
         <ui:MultiColumnListView virtualization-method="DynamicHeight" name="Traits" show-alternating-row-backgrounds="ContentOnly" style="flex-direction: column; -unity-text-align: upper-center;">

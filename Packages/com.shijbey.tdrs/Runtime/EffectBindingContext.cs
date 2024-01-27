@@ -17,11 +17,24 @@ namespace TDRS
 
 		#region Properties
 
+		/// <summary>
+		/// A text description of the effect
+		/// </summary>
 		public string Description => m_description;
+
+		/// <summary>
+		/// A reference to the game's social engine
+		/// </summary>
 		public SocialEngine Engine => m_socialEngine;
+
+		/// <summary>
+		/// Variable names mapped to agent ID's
+		/// </summary>
 		public Dictionary<string, string> Bindings => m_variableBindings;
 
 		#endregion
+
+		#region Constructors
 
 		public EffectBindingContext(SocialEngine socialEngine, SocialEvent eventType, params string[] agents)
 		{
@@ -40,7 +53,7 @@ namespace TDRS
 
 		}
 
-		public EffectBindingContext(SocialAgent agent, string descriptionTemplate)
+		public EffectBindingContext(AgentNode agent, string descriptionTemplate)
 		{
 			m_socialEngine = agent.Engine;
 			m_description = descriptionTemplate;
@@ -57,14 +70,14 @@ namespace TDRS
 			}
 		}
 
-		public EffectBindingContext(SocialRelationship agent, string descriptionTemplate)
+		public EffectBindingContext(RelationshipEdge relationship, string descriptionTemplate)
 		{
-			m_socialEngine = agent.Engine;
+			m_socialEngine = relationship.Engine;
 			m_description = descriptionTemplate;
 			m_variableBindings = new Dictionary<string, string>()
 			{
-				{ "?owner", agent.Owner.UID },
-				{ "?target", agent.Target.UID },
+				{ "?owner", relationship.Owner.UID },
+				{ "?target", relationship.Target.UID },
 			};
 
 			foreach (var pair in m_variableBindings)
@@ -100,6 +113,15 @@ namespace TDRS
 			}
 		}
 
+		#endregion
+
+		#region Public Methods
+
+		/// <summary>
+		/// Create a copy of the current context and overwrite it's bindings.
+		/// </summary>
+		/// <param name="bindings"></param>
+		/// <returns></returns>
 		public EffectBindingContext WithBindings(Dictionary<string, string> bindings)
 		{
 			var updatedCtx = new EffectBindingContext(this);
@@ -111,5 +133,7 @@ namespace TDRS
 
 			return updatedCtx;
 		}
+
+		#endregion
 	}
 }

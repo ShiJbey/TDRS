@@ -2,14 +2,14 @@ namespace TDRS
 {
 	public class IncreaseRelationshipStat : IEffect
 	{
-		protected SocialRelationship m_relationship;
+		protected RelationshipEdge m_relationship;
 		protected string m_statName;
 		protected float m_value;
 		protected int m_duration;
 		protected string m_reason;
 
 		public IncreaseRelationshipStat(
-			SocialRelationship relationship,
+			RelationshipEdge relationship,
 			string statName,
 			float value,
 			int duration,

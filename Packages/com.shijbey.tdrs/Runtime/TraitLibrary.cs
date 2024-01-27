@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using YamlDotNet.RepresentationModel;
 using System;
@@ -107,7 +106,7 @@ namespace TDRS
 		/// <param name="traitID"></param>
 		/// <param name="target"></param>
 		/// <returns></returns>
-		public Trait CreateInstance(string traitID, SocialEntity target)
+		public Trait CreateInstance(string traitID, AgentNode target)
 		{
 			// Check that a definition even exists for this trait
 			if (!HasTraitDefinition(traitID))
@@ -121,34 +120,72 @@ namespace TDRS
 
 			// Create a new binding context to create the effects
 
-			EffectBindingContext ctx;
-
-			if (
-				traitDefinition.TraitType == TraitType.Agent
-				&& target is SocialAgent
-			)
-			{
-				ctx = new EffectBindingContext(
-					target as SocialAgent,
-					traitDefinition.DescriptionTemplate
-				);
-			}
-			else if (
-				traitDefinition.TraitType == TraitType.Relationship
-				&& target is SocialRelationship
-			)
-			{
-				ctx = new EffectBindingContext(
-					target as SocialRelationship,
-					traitDefinition.DescriptionTemplate
-				);
-			}
-			else
+			if (traitDefinition.TraitType != TraitType.Agent)
 			{
 				throw new ArgumentException(
-					$"Trait ({traitID}) and target ({target.name}) are not of same type."
+					$"Trait ({traitID}) and target  are not of same type."
 				);
 			}
+
+			EffectBindingContext ctx = new EffectBindingContext(
+				target,
+				traitDefinition.DescriptionTemplate
+			);
+
+
+			// Instantiate the effects
+			List<IEffect> effects = new List<IEffect>();
+			foreach (var effectEntry in traitDefinition.Effects)
+			{
+				try
+				{
+					var effect = ctx.Engine.EffectFactories.CreateInstance(ctx, effectEntry);
+					effects.Add(effect);
+				}
+				catch (ArgumentException ex)
+				{
+					throw new ArgumentException(
+						$"Error encountered while instantiating effects for '{traitID}' trait: "
+						+ ex.Message
+					);
+				}
+			}
+
+			return new Trait(traitDefinition, effects.ToArray(), ctx.Description);
+		}
+
+
+		/// <summary>
+		/// Instantiate all the traits within the traits definition dictionary
+		/// </summary>
+		/// <param name="traitID"></param>
+		/// <param name="target"></param>
+		/// <returns></returns>
+		public Trait CreateInstance(string traitID, RelationshipEdge target)
+		{
+			// Check that a definition even exists for this trait
+			if (!HasTraitDefinition(traitID))
+			{
+				throw new KeyNotFoundException(
+					$"TraitDefinition not found with ID: {traitID}"
+				);
+			}
+
+			var traitDefinition = GetTraitDefinition(traitID);
+
+			// Create a new binding context to create the effects
+
+			if (traitDefinition.TraitType != TraitType.Relationship)
+			{
+				throw new ArgumentException(
+					$"Trait ({traitID}) and target are not of same type."
+				);
+			}
+
+			EffectBindingContext ctx = new EffectBindingContext(
+				target,
+				traitDefinition.DescriptionTemplate
+			);
 
 			// Instantiate the effects
 			List<IEffect> effects = new List<IEffect>();

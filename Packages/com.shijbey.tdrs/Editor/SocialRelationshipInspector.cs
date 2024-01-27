@@ -37,9 +37,9 @@ public class SocialRelationshipInspector : Editor
 		m_traitListView = root.Q<MultiColumnListView>(name: "Traits");
 
 
-		if (m_relationship.Traits != null)
+		if (m_relationship.Edge != null)
 		{
-			m_traitsList = m_relationship.Traits.Traits;
+			m_traitsList = m_relationship.Edge.Traits.Traits;
 		}
 
 		m_traitListView.itemsSource = m_traitsList;
@@ -84,10 +84,10 @@ public class SocialRelationshipInspector : Editor
 
 		m_statsListView = root.Q<MultiColumnListView>(name: "Stats");
 
-		if (m_relationship.Stats != null && m_relationship.Stats.Modifiers != null)
+		if (m_relationship.Edge != null)
 		{
-			m_statsList = m_relationship.Stats.Stats.ToList();
-			m_statModifiers = m_relationship.Stats.Modifiers.ToList();
+			m_statsList = m_relationship.Edge.Stats.Stats.ToList();
+			m_statModifiers = m_relationship.Edge.Stats.Modifiers.ToList();
 		}
 
 		m_statsListView.itemsSource = m_statsList;
@@ -190,9 +190,9 @@ public class SocialRelationshipInspector : Editor
 
 	private void UpdateGUI()
 	{
-		m_traitsList = m_relationship.Traits.Traits;
-		m_statsList = m_relationship.Stats.Stats.ToList();
-		m_statModifiers = m_relationship.Stats.Modifiers.ToList();
+		m_traitsList = m_relationship.Edge.Traits.Traits;
+		m_statsList = m_relationship.Edge.Stats.Stats.ToList();
+		m_statModifiers = m_relationship.Edge.Stats.Modifiers.ToList();
 
 		m_traitListView.itemsSource = m_traitsList;
 		m_statModifiersView.itemsSource = m_statModifiers;

@@ -37,9 +37,9 @@ public class SocialAgentInspector : Editor
 		m_traitListView = root.Q<MultiColumnListView>(name: "Traits");
 
 
-		if (m_agent.Traits != null)
+		if (m_agent.Node != null)
 		{
-			m_traitsList = m_agent.Traits.Traits;
+			m_traitsList = m_agent.Node.Traits.Traits;
 		}
 
 		m_traitListView.itemsSource = m_traitsList;
@@ -84,10 +84,10 @@ public class SocialAgentInspector : Editor
 
 		m_statsListView = root.Q<MultiColumnListView>(name: "Stats");
 
-		if (m_agent.Stats != null && m_agent.Stats.Modifiers != null)
+		if (m_agent.Node != null)
 		{
-			m_statsList = m_agent.Stats.Stats.ToList();
-			m_statModifiers = m_agent.Stats.Modifiers.ToList();
+			m_statsList = m_agent.Node.Stats.Stats.ToList();
+			m_statModifiers = m_agent.Node.Stats.Modifiers.ToList();
 		}
 
 		m_statsListView.itemsSource = m_statsList;
@@ -190,9 +190,9 @@ public class SocialAgentInspector : Editor
 
 	private void UpdateGUI()
 	{
-		m_traitsList = m_agent.Traits.Traits;
-		m_statsList = m_agent.Stats.Stats.ToList();
-		m_statModifiers = m_agent.Stats.Modifiers.ToList();
+		m_traitsList = m_agent.Node.Traits.Traits;
+		m_statsList = m_agent.Node.Stats.Stats.ToList();
+		m_statModifiers = m_agent.Node.Stats.Modifiers.ToList();
 
 		m_traitListView.itemsSource = m_traitsList;
 		m_statModifiersView.itemsSource = m_statModifiers;

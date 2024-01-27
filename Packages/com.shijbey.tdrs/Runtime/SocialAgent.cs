@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace TDRS
 {
@@ -8,12 +9,23 @@ namespace TDRS
 	/// A user-facing Unity component for associating a GameObject with as node within
 	/// the social engines's social network
 	/// </summary>
-	public class SocialAgent : SocialEntity
+	public class SocialAgent : MonoBehaviour
 	{
 		#region Fields
 
 		[SerializeField]
-		protected string m_UID;
+		private string m_UID;
+
+		[SerializeField]
+		private AgentConfigSO m_agentConfig;
+
+		[SerializeField]
+		private List<StatInitializer> m_baseStats;
+
+		[SerializeField]
+		private List<string> m_baseTraits;
+
+		private AgentNode m_agentNode;
 
 		#endregion
 
@@ -25,246 +37,173 @@ namespace TDRS
 		public string UID => m_UID;
 
 		/// <summary>
-		/// All social rules affecting this entity
+		/// A reference to the config settings for this agent
 		/// </summary>
-		public SocialRuleManager SocialRules { get; protected set; }
+		public AgentConfigSO Config => m_agentConfig;
 
 		/// <summary>
-		/// Relationships directed toward this entity
+		/// A reference to this agent's corresponding node within the social engine.
 		/// </summary>
-		public Dictionary<SocialAgent, SocialRelationship> IncomingRelationships
-		{
-			get; protected set;
-		}
+		public AgentNode Node => m_agentNode;
 
 		/// <summary>
-		/// Relationships from this entity directed toward other entities
+		/// A reference to the manager that owns this entity
 		/// </summary>
-		public Dictionary<SocialAgent, SocialRelationship> OutgoingRelationships
-		{
-			get; protected set;
-		}
+		public SocialEngine Engine { get; protected set; }
+
+		/// <summary>
+		/// Initial values for this entity's stats.
+		/// </summary>
+		public List<StatInitializer> BaseStats => m_baseStats;
+
+		/// <summary>
+		/// IDs of traits to add when initializing the entity.
+		/// </summary>
+		public List<string> BaseTraits => m_baseTraits;
+
+		#endregion
+
+		#region Events
+
+		/// <summary>
+		/// Event invoked when a trait is added to the entity
+		/// </summary>
+		public TraitAddedEvent OnTraitAdded;
+
+		/// <summary>
+		/// Event invoked when a trait is removed from the entity
+		/// </summary>
+		public TraitRemovedEvent OnTraitRemoved;
+
+		/// <summary>
+		/// Event invoked when a stat value changes on the entity
+		/// </summary>
+		public StatChangeEvent OnStatChange;
+
+		/// <summary>
+		/// Event invoked when an entity is ticked;
+		/// </summary>
+		public TickEvent OnTick;
 
 		#endregion
 
 		#region Unity Messages
 
-		protected override void Awake()
+		protected void Start()
 		{
-			base.Awake();
+			Engine = FindObjectOfType<SocialEngine>();
 
-			if (StatSchema == null)
+			if (Engine == null)
 			{
-				Debug.LogError(
-					$"{gameObject.name} is missing stat schema for SocialAgent component."
-				);
+				Debug.LogError("Cannot find GameObject with SocialEngine component in scene.");
 			}
 
-			SocialRules = new SocialRuleManager();
-			IncomingRelationships = new Dictionary<SocialAgent, SocialRelationship>();
-			OutgoingRelationships = new Dictionary<SocialAgent, SocialRelationship>();
+			m_agentNode = Engine.RegisterAgent(this);
+
+			// add event listeners
+			m_agentNode.OnTick += HandleOnTick;
+			m_agentNode.Traits.OnTraitAdded += HandleTraitAdded;
+			m_agentNode.Traits.OnTraitRemoved += HandleTraitRemoved;
+			m_agentNode.Stats.OnValueChanged += HandleStatChange;
 		}
 
-		protected void OnEnable()
+		private void OnDisable()
 		{
-			Stats.OnValueChanged += HandleStatChanged;
-		}
-
-		protected void OnDisable()
-		{
-			Stats.OnValueChanged -= HandleStatChanged;
-		}
-
-		protected override void Start()
-		{
-			base.Start();
-			Engine.RegisterAgent(this);
+			if (m_agentNode != null)
+			{
+				m_agentNode.OnTick -= HandleOnTick;
+				m_agentNode.Traits.OnTraitAdded -= HandleTraitAdded;
+				m_agentNode.Traits.OnTraitRemoved -= HandleTraitRemoved;
+				m_agentNode.Stats.OnValueChanged -= HandleStatChange;
+			}
 		}
 
 		#endregion
 
 		#region Public Methods
 
-		public override void AddTrait(string traitID, int duration = -1)
+		/// <summary>
+		/// Add a trait to the agent
+		/// </summary>
+		/// <param name="traitID"></param>
+		/// <param name="duration"></param>
+		public void AddTrait(string traitID, int duration = -1)
 		{
-			if (Traits.HasTrait(traitID)) return;
-
-			Trait trait = Engine.TraitLibrary.CreateInstance(traitID, this);
-			Traits.AddTrait(trait, duration);
-			Engine.DB.Insert($"{UID}.traits.{traitID}");
-
-			// Apply the trait's effects on the owner
-			foreach (var effect in trait.Effects)
+			if (m_agentNode == null)
 			{
-				effect.Apply();
+				Debug.LogError($"Cannot add {traitID} trait. Agent missing node reference.");
+				return;
 			}
 
-			// Add the social rules for this trait
-			foreach (var socialRule in trait.SocialRuleDefinitions)
-			{
-				SocialRules.AddSocialRuleDefinition(socialRule);
-
-				// Try to apply the social rule to existing outgoing relationships
-				foreach (var (other, relationship) in OutgoingRelationships)
-				{
-					if (SocialRules.HasSocialRuleInstance(socialRule, UID, other.UID))
-					{
-						continue;
-					}
-
-					if (socialRule.Query != null)
-					{
-						var results = socialRule.Query.Run(
-							Engine.DB,
-							new Dictionary<string, string>()
-							{
-								{"?owner", UID},
-								{"?other", other.UID}
-							}
-						);
-
-						if (!results.Success) continue;
-
-						foreach (var result in results.Bindings)
-						{
-							var ctx = new EffectBindingContext(
-								Engine,
-								socialRule.DescriptionTemplate,
-								// Here we limit the scope of available variables to only ?owner and ?other
-								new Dictionary<string, string>(){
-									{"?owner", result["?owner"]},
-									{"?other", result["?other"]}
-								}
-							);
-
-							var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-							if (ruleInstance != null)
-							{
-								SocialRules.AddSocialRuleInstance(ruleInstance);
-							}
-						}
-					}
-					else
-					{
-						var ctx = new EffectBindingContext(
-							Engine,
-							socialRule.DescriptionTemplate,
-							new Dictionary<string, string>()
-							{
-								{"?owner", UID},
-								{"?other", other.UID}
-							}
-						);
-
-						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-						if (ruleInstance != null)
-						{
-							SocialRules.AddSocialRuleInstance(ruleInstance);
-						}
-					}
-				}
-
-				// Try to apply the social rule to existing incoming relationships
-				foreach (var (other, relationship) in IncomingRelationships)
-				{
-					if (SocialRules.HasSocialRuleInstance(socialRule, other.UID, UID))
-					{
-						continue;
-					}
-
-					if (socialRule.Query != null)
-					{
-						var results = socialRule.Query.Run(
-							Engine.DB,
-							new Dictionary<string, string>()
-							{
-								{"?owner", UID},
-								{"?other", other.UID}
-							}
-						);
-
-						if (!results.Success) continue;
-
-						foreach (var result in results.Bindings)
-						{
-							var ctx = new EffectBindingContext(
-								Engine,
-								socialRule.DescriptionTemplate,
-								// Here we limit the scope of available variables to only ?owner and ?other
-								new Dictionary<string, string>(){
-									{"?owner", result["?owner"]},
-									{"?other", result["?other"]}
-								}
-							);
-
-							var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-							if (ruleInstance != null)
-							{
-								SocialRules.AddSocialRuleInstance(ruleInstance);
-							}
-						}
-					}
-					else
-					{
-						var ctx = new EffectBindingContext(
-							Engine,
-							socialRule.DescriptionTemplate,
-							new Dictionary<string, string>()
-							{
-								{"?owner", UID},
-								{"?other", other.UID}
-							}
-						);
-
-						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-						if (ruleInstance != null)
-						{
-							SocialRules.AddSocialRuleInstance(ruleInstance);
-						}
-					}
-				}
-			}
-
-			// Propagate on the event to a Unity event
-			if (OnTraitAdded != null) OnTraitAdded.Invoke(traitID);
+			m_agentNode.AddTrait(traitID, duration);
 		}
 
-		public override void RemoveTrait(string traitID)
+		/// <summary>
+		/// Remove a trait from the Agent
+		/// </summary>
+		/// <param name="traitID"></param>
+		public void RemoveTrait(string traitID)
 		{
-			var trait = Traits.GetTrait(traitID);
-			Traits.RemoveTrait(trait);
-			Engine.DB.Delete($"{UID}.traits.{traitID}");
-
-			// Undo the effects of the trait on the owner
-			foreach (var effect in trait.Effects)
+			if (m_agentNode == null)
 			{
-				effect.Remove();
+				Debug.LogError($"Cannot remove {traitID} trait. Agent missing node reference.");
+				return;
 			}
 
-			// Remove all the social rules
-			foreach (var socialRule in trait.SocialRuleDefinitions)
-			{
-				SocialRules.RemoveSocialRuleDefinition(socialRule);
-			}
-
-			if (OnTraitRemoved != null) OnTraitRemoved.Invoke(traitID);
+			m_agentNode.RemoveTrait(traitID);
 		}
 
 		#endregion
 
-		#region Event Handlers
+		#region Private Methods
 
-		private void HandleStatChanged(object stats, (string, float) nameAndValue)
+		private void HandleOnTick(object sender, EventArgs args)
 		{
-			string statName = nameAndValue.Item1;
-			float value = nameAndValue.Item2;
-			Engine.DB.Insert($"{UID}.stats.{statName}!{value}");
-			if (OnStatChange != null) OnStatChange.Invoke(statName, value);
+			OnTick?.Invoke();
 		}
+
+		private void HandleStatChange(object sender, (string, float) args)
+		{
+			OnStatChange?.Invoke(args.Item1, args.Item2);
+		}
+
+		private void HandleTraitAdded(object sender, string trait)
+		{
+			OnTraitAdded?.Invoke(trait);
+		}
+
+		private void HandleTraitRemoved(object sender, string trait)
+		{
+			OnTraitRemoved?.Invoke(trait);
+		}
+
+		#endregion
+
+		#region Custom Event Classes
+
+		/// <summary>
+		/// Event dispatched when an entity is ticked
+		/// </summary>
+		[System.Serializable]
+		public class TickEvent : UnityEvent { }
+
+		/// <summary>
+		/// Event dispatched when a trait is added to a social entity
+		/// </summary>
+		[System.Serializable]
+		public class TraitAddedEvent : UnityEvent<string> { }
+
+		/// <summary>
+		/// Event dispatched when a trait is removed from a social entity
+		/// </summary>
+		[System.Serializable]
+		public class TraitRemovedEvent : UnityEvent<string> { }
+
+		/// <summary>
+		/// Event dispatched when a social entity has a stat that is changed
+		/// </summary>
+		[System.Serializable]
+		public class StatChangeEvent : UnityEvent<string, float> { }
 
 		#endregion
 	}

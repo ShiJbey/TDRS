@@ -230,7 +230,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7f135ecf2f643018e127458354937d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_statSchema: {fileID: 11400000, guid: 027098b6150c24bb5b11161846cb21ff, type: 2}
+  m_owner: {fileID: 816287690}
+  m_target: {fileID: 756568541}
   m_baseStats: []
   m_baseTraits: []
   OnTraitAdded:
@@ -245,8 +246,6 @@ MonoBehaviour:
   OnTick:
     m_PersistentCalls:
       m_Calls: []
-  m_owner: {fileID: 816287690}
-  m_target: {fileID: 756568541}
 --- !u!1 &518976125
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,7 +290,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7f135ecf2f643018e127458354937d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_statSchema: {fileID: 11400000, guid: 027098b6150c24bb5b11161846cb21ff, type: 2}
+  m_owner: {fileID: 816287690}
+  m_target: {fileID: 904270041}
   m_baseStats: []
   m_baseTraits:
   - lovers
@@ -307,8 +307,6 @@ MonoBehaviour:
   OnTick:
     m_PersistentCalls:
       m_Calls: []
-  m_owner: {fileID: 816287690}
-  m_target: {fileID: 904270041}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -456,7 +454,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7f135ecf2f643018e127458354937d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_statSchema: {fileID: 11400000, guid: 027098b6150c24bb5b11161846cb21ff, type: 2}
+  m_owner: {fileID: 904270041}
+  m_target: {fileID: 816287690}
   m_baseStats: []
   m_baseTraits:
   - lovers
@@ -473,8 +472,6 @@ MonoBehaviour:
   OnTick:
     m_PersistentCalls:
       m_Calls: []
-  m_owner: {fileID: 904270041}
-  m_target: {fileID: 816287690}
 --- !u!1 &691849015
 GameObject:
   m_ObjectHideFlags: 0
@@ -519,7 +516,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7f135ecf2f643018e127458354937d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_statSchema: {fileID: 11400000, guid: 027098b6150c24bb5b11161846cb21ff, type: 2}
+  m_owner: {fileID: 904270041}
+  m_target: {fileID: 756568541}
   m_baseStats: []
   m_baseTraits:
   - family
@@ -535,8 +533,6 @@ MonoBehaviour:
   OnTick:
     m_PersistentCalls:
       m_Calls: []
-  m_owner: {fileID: 904270041}
-  m_target: {fileID: 756568541}
 --- !u!1 &756568540
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,7 +562,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1165db2bee8ed4e828113077a4c2cd1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_statSchema: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
+  m_UID: jamal
+  m_agentConfig: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
   m_baseStats: []
   m_baseTraits:
   - anti-social
@@ -583,7 +580,6 @@ MonoBehaviour:
   OnTick:
     m_PersistentCalls:
       m_Calls: []
-  m_UID: jamal
 --- !u!4 &756568542
 Transform:
   m_ObjectHideFlags: 0
@@ -647,7 +643,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1165db2bee8ed4e828113077a4c2cd1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_statSchema: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
+  m_UID: ameera
+  m_agentConfig: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
   m_baseStats: []
   m_baseTraits:
   - jerk
@@ -663,7 +660,6 @@ MonoBehaviour:
   OnTick:
     m_PersistentCalls:
       m_Calls: []
-  m_UID: ameera
 --- !u!1 &904270039
 GameObject:
   m_ObjectHideFlags: 0
@@ -710,7 +706,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1165db2bee8ed4e828113077a4c2cd1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_statSchema: {fileID: 11400000, guid: 3bccb97b083b446bcacc5f0cf8c5f298, type: 2}
+  m_UID: lily
+  m_agentConfig: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
   m_baseStats: []
   m_baseTraits:
   - happy_go_lucky
@@ -726,7 +723,6 @@ MonoBehaviour:
   OnTick:
     m_PersistentCalls:
       m_Calls: []
-  m_UID: lily
 --- !u!1 &1894273935
 GameObject:
   m_ObjectHideFlags: 0
@@ -771,7 +767,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7f135ecf2f643018e127458354937d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_statSchema: {fileID: 11400000, guid: 027098b6150c24bb5b11161846cb21ff, type: 2}
+  m_owner: {fileID: 756568541}
+  m_target: {fileID: 816287690}
   m_baseStats: []
   m_baseTraits: []
   OnTraitAdded:
@@ -786,8 +783,6 @@ MonoBehaviour:
   OnTick:
     m_PersistentCalls:
       m_Calls: []
-  m_owner: {fileID: 756568541}
-  m_target: {fileID: 816287690}
 --- !u!1 &2037686939
 GameObject:
   m_ObjectHideFlags: 0
@@ -832,7 +827,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7f135ecf2f643018e127458354937d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_statSchema: {fileID: 11400000, guid: 027098b6150c24bb5b11161846cb21ff, type: 2}
+  m_owner: {fileID: 756568541}
+  m_target: {fileID: 904270041}
   m_baseStats: []
   m_baseTraits:
   - family
@@ -848,8 +844,6 @@ MonoBehaviour:
   OnTick:
     m_PersistentCalls:
       m_Calls: []
-  m_owner: {fileID: 756568541}
-  m_target: {fileID: 904270041}
 --- !u!1001 &3825947652705815714
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -932,6 +926,78 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_dontDestroyOnLoad
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentConfigAssets.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_relationshipTypes.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentConfigAssets.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.data[0].agentType
+      value: character
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_relationshipConfigAssets.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_relationshipConfigAssets.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 13889b32cedde4ff2a7dc05e530b79be, type: 2}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.data[0].stats.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_relationshipTypes.Array.data[0].ownerAgentType
+      value: character => character
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_relationshipTypes.Array.data[0].targetAgentType
+      value: character
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.data[0].stats.Array.data[0].maxValue
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.data[0].stats.Array.data[0].minValue
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.data[0].stats.Array.data[0].statName
+      value: Confidence
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.data[0].stats.Array.data[1].maxValue
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.data[0].stats.Array.data[1].minValue
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.data[0].stats.Array.data[1].statName
+      value: Sociability
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.data[0].stats.Array.data[0].isDiscrete
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentTypes.Array.data[0].stats.Array.data[1].isDiscrete
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7378574934789867301, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}

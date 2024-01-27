@@ -2,14 +2,14 @@ namespace TDRS
 {
 	public class IncreaseAgentStat : IEffect
 	{
-		protected SocialAgent m_agent;
+		protected AgentNode m_agent;
 		protected string m_statName;
 		protected float m_value;
 		protected int m_duration;
 		protected string m_reason;
 
 		public IncreaseAgentStat(
-			SocialAgent agent,
+			AgentNode agent,
 			string statName,
 			float value,
 			int duration,

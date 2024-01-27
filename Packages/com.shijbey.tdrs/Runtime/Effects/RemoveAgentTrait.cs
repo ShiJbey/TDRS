@@ -2,11 +2,11 @@ namespace TDRS
 {
 	public class RemoveAgentTrait : IEffect
 	{
-		protected SocialAgent m_agent;
+		protected AgentNode m_agent;
 		protected string m_traitID;
 
 		public RemoveAgentTrait(
-			SocialAgent agent,
+			AgentNode agent,
 			string traitID
 		)
 		{
