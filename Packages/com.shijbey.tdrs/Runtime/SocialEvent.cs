@@ -27,6 +27,7 @@ namespace TDRS
 		public string DescriptionTemplate => m_descriptionTemplate;
 		public SocialEventResponse[] Responses => m_responses;
 		public int Cardinality => m_roles.Length;
+		public string Symbol => $"{m_name}/{Cardinality}";
 
 		#endregion
 
@@ -59,7 +60,7 @@ namespace TDRS
 
 		public override string ToString()
 		{
-			return $"{m_name}/{Cardinality}";
+			return Symbol;
 		}
 
 		#endregion

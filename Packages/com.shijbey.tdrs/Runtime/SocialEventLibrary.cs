@@ -1,43 +1,26 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using TDRS.Helpers;
-using UnityEngine;
-using YamlDotNet.RepresentationModel;
 
 namespace TDRS
 {
 	/// <summary>
-	/// Manages the collection of event definitions
+	/// Manages the collection of social event definitions.
 	/// </summary>
-	public class SocialEventLibrary : MonoBehaviour
+	public class SocialEventLibrary
 	{
 		#region Fields
 
 		/// <summary>
-		/// A list of text files containing social event definitions.
-		/// </summary>
-		[SerializeField]
-		protected List<TextAsset> m_definitionFiles;
-
-		/// <summary>
-		/// Social events defined using ScriptableObjects
-		/// </summary>
-		[SerializeField]
-		protected List<SocialEventSO> m_definitions;
-
-		/// <summary>
 		/// Event definitions sorted by name and cardinality.
 		/// </summary>
-		protected Dictionary<string, SocialEvent> m_eventTypes;
+		protected Dictionary<string, SocialEvent> m_events;
 
 		#endregion
 
-		#region Unity Messages
+		#region Constructors
 
-		private void Awake()
+		public SocialEventLibrary()
 		{
-			m_eventTypes = new Dictionary<string, SocialEvent>();
+			m_events = new Dictionary<string, SocialEvent>();
 		}
 
 		#endregion
@@ -45,55 +28,22 @@ namespace TDRS
 		#region Public Methods
 
 		/// <summary>
-		/// Load social event definitions from text assets provided in the inspector.
+		/// Add a social event to the library.
 		/// </summary>
-		public void LoadEventDefinitions()
+		/// <param name="socialEvent"></param>
+		public void AddSocialEvent(SocialEvent socialEvent)
 		{
-			foreach (var textAsset in m_definitionFiles)
-			{
-				var input = new StringReader(textAsset.text);
-
-				var yaml = new YamlStream();
-				yaml.Load(input);
-
-				var root = (YamlSequenceNode)yaml.Documents[0].RootNode;
-				for (int i = 0; i < root.Children.Count; i++)
-				{
-					var eventSpecNode = root.Children[i];
-
-					try
-					{
-						var eventKeyNode = eventSpecNode.GetChild("event");
-
-						var eventType = SocialEvent.FromYaml(eventSpecNode);
-
-						m_eventTypes[eventType.ToString()] = eventType;
-					}
-					catch (KeyNotFoundException)
-					{
-						Debug.LogError(
-							$"Missing 'event' key in entry {i + 1} of {textAsset.name}");
-					}
-				}
-			}
-
-			// Load social events from scriptable objects
-			for (int i = 0; i < m_definitions.Count; i++)
-			{
-				var socialEvent = m_definitions[i].GetSocialEvent();
-
-				m_eventTypes[socialEvent.ToString()] = socialEvent;
-			}
+			m_events[socialEvent.Symbol] = socialEvent;
 		}
 
 		/// <summary>
-		/// Get an event type by name (eventName/#)
+		/// Get an event type by symbol (i.e., "eventName/#")
 		/// </summary>
-		/// <param name="eventName"></param>
+		/// <param name="symbol"></param>
 		/// <returns></returns>
-		public SocialEvent GetEventType(string eventName)
+		public SocialEvent GetSocialEvent(string symbol)
 		{
-			return m_eventTypes[eventName];
+			return m_events[symbol];
 		}
 
 		#endregion

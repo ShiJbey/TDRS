@@ -14,7 +14,7 @@ namespace TDRS
 		/// <summary>
 		/// A reference to the manager that owns this entity
 		/// </summary>
-		public SocialEngine Engine { get; }
+		public SocialEngineState EngineState { get; }
 
 		/// <summary>
 		/// Reference to the owner of the relationship
@@ -49,9 +49,9 @@ namespace TDRS
 
 		#region Constructors
 
-		public RelationshipEdge(SocialEngine engine, AgentNode owner, AgentNode target)
+		public RelationshipEdge(SocialEngineState engineState, AgentNode owner, AgentNode target)
 		{
-			Engine = engine;
+			EngineState = engineState;
 			Owner = owner;
 			Target = target;
 			Traits = new TraitManager();
@@ -72,9 +72,9 @@ namespace TDRS
 		{
 			if (Traits.HasTrait(traitID)) return;
 
-			Trait trait = Engine.TraitLibrary.CreateInstance(traitID, this);
+			Trait trait = EngineState.TraitLibrary.CreateInstance(traitID, this);
 			Traits.AddTrait(trait, duration);
-			Engine.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
+			EngineState.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
 
 			// Apply the trait's effects on the owner
 			foreach (var effect in trait.Effects)
@@ -99,7 +99,7 @@ namespace TDRS
 
 			var trait = Traits.GetTrait(traitID);
 			Traits.RemoveTrait(trait);
-			Engine.DB.Delete($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
+			EngineState.DB.Delete($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
 
 			// Undo the effects of the trait on the owner
 			foreach (var effect in trait.Effects)
@@ -184,7 +184,7 @@ namespace TDRS
 		{
 			string statName = nameAndValue.Item1;
 			float value = nameAndValue.Item2;
-			Engine.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.stats.{statName}!{value}");
+			EngineState.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.stats.{statName}!{value}");
 		}
 
 		#endregion

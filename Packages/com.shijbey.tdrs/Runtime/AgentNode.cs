@@ -25,7 +25,7 @@ namespace TDRS
 		/// <summary>
 		/// A reference to the manager that owns this entity
 		/// </summary>
-		public SocialEngine Engine { get; }
+		public SocialEngineState EngineState { get; }
 
 		/// <summary>
 		/// The collection of traits associated with this entity
@@ -65,11 +65,11 @@ namespace TDRS
 
 		#region Constructors
 
-		public AgentNode(SocialEngine engine, string uid, string nodeType)
+		public AgentNode(SocialEngineState engineState, string uid, string nodeType)
 		{
 			UID = uid;
 			NodeType = nodeType;
-			Engine = engine;
+			EngineState = engineState;
 			Traits = new TraitManager();
 			Stats = new StatManager();
 			SocialRules = new SocialRuleManager();
@@ -92,9 +92,9 @@ namespace TDRS
 		{
 			if (Traits.HasTrait(traitID)) return;
 
-			Trait trait = Engine.TraitLibrary.CreateInstance(traitID, this);
+			Trait trait = EngineState.TraitLibrary.CreateInstance(traitID, this);
 			Traits.AddTrait(trait, duration);
-			Engine.DB.Insert($"{UID}.traits.{traitID}");
+			EngineState.DB.Insert($"{UID}.traits.{traitID}");
 
 			// Apply the trait's effects on the owner
 			foreach (var effect in trait.Effects)
@@ -118,7 +118,7 @@ namespace TDRS
 					if (socialRule.Query != null)
 					{
 						var results = socialRule.Query.Run(
-							Engine.DB,
+							EngineState.DB,
 							new Dictionary<string, string>()
 							{
 								{"?owner", UID},
@@ -131,7 +131,7 @@ namespace TDRS
 						foreach (var result in results.Bindings)
 						{
 							var ctx = new EffectBindingContext(
-								Engine,
+								EngineState,
 								socialRule.DescriptionTemplate,
 								// Here we limit the scope of available variables to only ?owner and ?other
 								new Dictionary<string, string>(){
@@ -151,7 +151,7 @@ namespace TDRS
 					else
 					{
 						var ctx = new EffectBindingContext(
-							Engine,
+							EngineState,
 							socialRule.DescriptionTemplate,
 							new Dictionary<string, string>()
 							{
@@ -180,7 +180,7 @@ namespace TDRS
 					if (socialRule.Query != null)
 					{
 						var results = socialRule.Query.Run(
-							Engine.DB,
+							EngineState.DB,
 							new Dictionary<string, string>()
 							{
 								{"?owner", UID},
@@ -193,7 +193,7 @@ namespace TDRS
 						foreach (var result in results.Bindings)
 						{
 							var ctx = new EffectBindingContext(
-								Engine,
+								EngineState,
 								socialRule.DescriptionTemplate,
 								// Here we limit the scope of available variables to only ?owner and ?other
 								new Dictionary<string, string>(){
@@ -213,7 +213,7 @@ namespace TDRS
 					else
 					{
 						var ctx = new EffectBindingContext(
-							Engine,
+							EngineState,
 							socialRule.DescriptionTemplate,
 							new Dictionary<string, string>()
 							{
@@ -241,7 +241,7 @@ namespace TDRS
 		{
 			var trait = Traits.GetTrait(traitID);
 			Traits.RemoveTrait(trait);
-			Engine.DB.Delete($"{UID}.traits.{traitID}");
+			EngineState.DB.Delete($"{UID}.traits.{traitID}");
 
 			// Undo the effects of the trait on the owner
 			foreach (var effect in trait.Effects)
@@ -326,7 +326,7 @@ namespace TDRS
 		{
 			string statName = nameAndValue.Item1;
 			float value = nameAndValue.Item2;
-			Engine.DB.Insert($"{UID}.stats.{statName}!{value}");
+			EngineState.DB.Insert($"{UID}.stats.{statName}!{value}");
 		}
 
 		#endregion

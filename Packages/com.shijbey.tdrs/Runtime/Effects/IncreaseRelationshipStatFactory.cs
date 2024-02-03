@@ -1,13 +1,13 @@
 namespace TDRS
 {
 	/// <summary>
-	/// MonoBehaviour that constructs IncreaseRelationshipStat effect instances
+	/// Constructs IncreaseRelationshipStat effect instances
 	/// </summary>
-	public class IncreaseRelationshipStatFactory : EffectFactory
+	public class IncreaseRelationshipStatFactory : IEffectFactory
 	{
-		public override string EffectName => "IncreaseRelationshipStat";
+		public string EffectName => "IncreaseRelationshipStat";
 
-		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length < 4)
 			{
@@ -23,7 +23,7 @@ namespace TDRS
 			string relationshipTargetVar = args[1];
 			string statName = args[2];
 
-			if (!ctx.Engine.HasRelationship(
+			if (!ctx.State.HasRelationship(
 					ctx.Bindings[relationshipOwnerVar],
 					ctx.Bindings[relationshipTargetVar]
 					)
@@ -56,7 +56,7 @@ namespace TDRS
 			}
 
 			return new IncreaseRelationshipStat(
-				ctx.Engine.GetRelationship(
+				ctx.State.GetRelationship(
 					ctx.Bindings[relationshipOwnerVar],
 					ctx.Bindings[relationshipTargetVar]
 				),

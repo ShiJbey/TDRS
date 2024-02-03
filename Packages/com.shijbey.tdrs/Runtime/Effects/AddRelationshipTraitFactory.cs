@@ -1,13 +1,13 @@
 namespace TDRS
 {
 	/// <summary>
-	/// MonoBehaviour that constructs AddRelationshipTrait effect instances
+	/// Constructs AddRelationshipTrait effect instances
 	/// </summary>
-	public class AddRelationshipTraitFactory : EffectFactory
+	public class AddRelationshipTraitFactory : IEffectFactory
 	{
-		public override string EffectName => "AddRelationshipTrait";
+		public string EffectName => "AddRelationshipTrait";
 
-		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length < 3)
 			{
@@ -24,7 +24,7 @@ namespace TDRS
 			string traitID = args[2];
 			int duration = -1;
 
-			if (!ctx.Engine.HasRelationship(
+			if (!ctx.State.HasRelationship(
 					ctx.Bindings[relationshipOwnerVar],
 					ctx.Bindings[relationshipTargetVar]
 					)
@@ -49,7 +49,7 @@ namespace TDRS
 			}
 
 			return new AddRelationshipTrait(
-				ctx.Engine.GetRelationship(
+				ctx.State.GetRelationship(
 					ctx.Bindings[relationshipOwnerVar],
 					ctx.Bindings[relationshipTargetVar]
 				),

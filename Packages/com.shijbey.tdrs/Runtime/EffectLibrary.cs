@@ -1,28 +1,27 @@
 using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace TDRS
 {
 	/// <summary>
 	/// Manages references to effect factories used to create social events and traits
 	/// </summary>
-	public class EffectFactories : MonoBehaviour
+	public class EffectLibrary
 	{
 		#region Fields
 
 		/// <summary>
 		/// Lookup table of factories by effect name
 		/// </summary>
-		protected Dictionary<string, IEffectFactory> m_factoryLookup;
+		protected Dictionary<string, IEffectFactory> m_factories;
 
 		#endregion
 
-		#region Unity Messages
+		#region Constructors
 
-		private void Awake()
+		public EffectLibrary()
 		{
-			m_factoryLookup = new Dictionary<string, IEffectFactory>();
+			m_factories = new Dictionary<string, IEffectFactory>();
 		}
 
 		#endregion
@@ -34,9 +33,9 @@ namespace TDRS
 		/// </summary>
 		/// <param name="effectName"></param>
 		/// <param name="factory"></param>
-		public void AddEffectFactory(string effectName, IEffectFactory factory)
+		public void AddEffectFactory(IEffectFactory factory)
 		{
-			m_factoryLookup[effectName] = factory;
+			m_factories[factory.EffectName] = factory;
 		}
 
 		/// <summary>
@@ -46,19 +45,7 @@ namespace TDRS
 		/// <returns></returns>
 		public IEffectFactory GetEffectFactory(string effectName)
 		{
-			return m_factoryLookup[effectName];
-		}
-
-		/// <summary>
-		/// Add the various factory instances on the same gameobject
-		/// </summary>
-		public void RegisterFactories()
-		{
-			var effectFactories = GetComponents<EffectFactory>();
-			foreach (var factory in effectFactories)
-			{
-				AddEffectFactory(factory.EffectName, factory);
-			}
+			return m_factories[effectName];
 		}
 
 		/// <summary>

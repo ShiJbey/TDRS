@@ -22,7 +22,7 @@ public class MockSimulationTicker : MonoBehaviour
 	{
 		if (Input.GetKeyUp((KeyCode)m_tickButton))
 		{
-			m_socialEngine.Tick();
+			m_socialEngine.State.Tick();
 		}
 	}
 }

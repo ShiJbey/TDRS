@@ -7,7 +7,7 @@ namespace TDRS
 {
 	/// <summary>
 	/// A user-facing Unity component for associating a GameObject with as node within
-	/// the social engines's social network
+	/// the social engine's social network
 	/// </summary>
 	public class SocialAgent : MonoBehaviour
 	{
@@ -24,8 +24,6 @@ namespace TDRS
 
 		[SerializeField]
 		private List<string> m_baseTraits;
-
-		private AgentNode m_agentNode;
 
 		#endregion
 
@@ -44,12 +42,7 @@ namespace TDRS
 		/// <summary>
 		/// A reference to this agent's corresponding node within the social engine.
 		/// </summary>
-		public AgentNode Node => m_agentNode;
-
-		/// <summary>
-		/// A reference to the manager that owns this entity
-		/// </summary>
-		public SocialEngine Engine { get; protected set; }
+		public AgentNode Node { get; private set; }
 
 		/// <summary>
 		/// Initial values for this entity's stats.
@@ -89,32 +82,25 @@ namespace TDRS
 
 		#region Unity Messages
 
-		protected void Start()
+		private void OnEnable()
 		{
-			Engine = FindObjectOfType<SocialEngine>();
-
-			if (Engine == null)
+			if (Node != null)
 			{
-				Debug.LogError("Cannot find GameObject with SocialEngine component in scene.");
+				Node.OnTick += HandleOnTick;
+				Node.Traits.OnTraitAdded += HandleTraitAdded;
+				Node.Traits.OnTraitRemoved += HandleTraitRemoved;
+				Node.Stats.OnValueChanged += HandleStatChange;
 			}
-
-			m_agentNode = Engine.RegisterAgent(this);
-
-			// add event listeners
-			m_agentNode.OnTick += HandleOnTick;
-			m_agentNode.Traits.OnTraitAdded += HandleTraitAdded;
-			m_agentNode.Traits.OnTraitRemoved += HandleTraitRemoved;
-			m_agentNode.Stats.OnValueChanged += HandleStatChange;
 		}
 
 		private void OnDisable()
 		{
-			if (m_agentNode != null)
+			if (Node != null)
 			{
-				m_agentNode.OnTick -= HandleOnTick;
-				m_agentNode.Traits.OnTraitAdded -= HandleTraitAdded;
-				m_agentNode.Traits.OnTraitRemoved -= HandleTraitRemoved;
-				m_agentNode.Stats.OnValueChanged -= HandleStatChange;
+				Node.OnTick -= HandleOnTick;
+				Node.Traits.OnTraitAdded -= HandleTraitAdded;
+				Node.Traits.OnTraitRemoved -= HandleTraitRemoved;
+				Node.Stats.OnValueChanged -= HandleStatChange;
 			}
 		}
 
@@ -123,34 +109,19 @@ namespace TDRS
 		#region Public Methods
 
 		/// <summary>
-		/// Add a trait to the agent
+		/// Set the agent's node reference.
 		/// </summary>
-		/// <param name="traitID"></param>
-		/// <param name="duration"></param>
-		public void AddTrait(string traitID, int duration = -1)
+		/// <param name="node"></param>
+		/// <exception cref="Exception">If node is already set.</exception>
+		public void SetNode(AgentNode node)
 		{
-			if (m_agentNode == null)
-			{
-				Debug.LogError($"Cannot add {traitID} trait. Agent missing node reference.");
-				return;
-			}
+			if (Node != null) throw new Exception($"Node already assigned for: {UID}");
 
-			m_agentNode.AddTrait(traitID, duration);
-		}
-
-		/// <summary>
-		/// Remove a trait from the Agent
-		/// </summary>
-		/// <param name="traitID"></param>
-		public void RemoveTrait(string traitID)
-		{
-			if (m_agentNode == null)
-			{
-				Debug.LogError($"Cannot remove {traitID} trait. Agent missing node reference.");
-				return;
-			}
-
-			m_agentNode.RemoveTrait(traitID);
+			Node = node;
+			Node.OnTick += HandleOnTick;
+			Node.Traits.OnTraitAdded += HandleTraitAdded;
+			Node.Traits.OnTraitRemoved += HandleTraitRemoved;
+			Node.Stats.OnValueChanged += HandleStatChange;
 		}
 
 		#endregion

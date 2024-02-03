@@ -1,13 +1,13 @@
 namespace TDRS
 {
 	/// <summary>
-	/// MonoBehaviour that constructs RemoveRelationshipTrait effect instances
+	/// Constructs RemoveRelationshipTrait effect instances
 	/// </summary>
-	public class RemoveRelationshipTraitFactory : EffectFactory
+	public class RemoveRelationshipTraitFactory : IEffectFactory
 	{
-		public override string EffectName => "RemoveRelationshipTrait";
+		public string EffectName => "RemoveRelationshipTrait";
 
-		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length != 3)
 			{
@@ -23,7 +23,7 @@ namespace TDRS
 			string relationshipTargetVar = args[1];
 			string traitID = args[2];
 
-			if (!ctx.Engine.HasRelationship(
+			if (!ctx.State.HasRelationship(
 					ctx.Bindings[relationshipOwnerVar],
 					ctx.Bindings[relationshipTargetVar]
 					)
@@ -37,7 +37,7 @@ namespace TDRS
 			}
 
 			return new RemoveRelationshipTrait(
-				ctx.Engine.GetRelationship(
+				ctx.State.GetRelationship(
 					ctx.Bindings[relationshipOwnerVar],
 					ctx.Bindings[relationshipTargetVar]
 				),

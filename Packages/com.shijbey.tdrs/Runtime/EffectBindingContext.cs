@@ -10,7 +10,7 @@ namespace TDRS
 		#region Fields
 
 		protected string m_description;
-		protected SocialEngine m_socialEngine;
+		protected SocialEngineState m_socialEngineState;
 		protected Dictionary<string, string> m_variableBindings;
 
 		#endregion
@@ -25,7 +25,7 @@ namespace TDRS
 		/// <summary>
 		/// A reference to the game's social engine
 		/// </summary>
-		public SocialEngine Engine => m_socialEngine;
+		public SocialEngineState State => m_socialEngineState;
 
 		/// <summary>
 		/// Variable names mapped to agent ID's
@@ -36,9 +36,9 @@ namespace TDRS
 
 		#region Constructors
 
-		public EffectBindingContext(SocialEngine socialEngine, SocialEvent eventType, params string[] agents)
+		public EffectBindingContext(SocialEngineState socialEngineState, SocialEvent eventType, params string[] agents)
 		{
-			m_socialEngine = socialEngine;
+			m_socialEngineState = socialEngineState;
 			m_description = eventType.DescriptionTemplate;
 			m_variableBindings = new Dictionary<string, string>();
 
@@ -55,7 +55,7 @@ namespace TDRS
 
 		public EffectBindingContext(AgentNode agent, string descriptionTemplate)
 		{
-			m_socialEngine = agent.Engine;
+			m_socialEngineState = agent.EngineState;
 			m_description = descriptionTemplate;
 			m_variableBindings = new Dictionary<string, string>()
 			{
@@ -72,7 +72,7 @@ namespace TDRS
 
 		public EffectBindingContext(RelationshipEdge relationship, string descriptionTemplate)
 		{
-			m_socialEngine = relationship.Engine;
+			m_socialEngineState = relationship.EngineState;
 			m_description = descriptionTemplate;
 			m_variableBindings = new Dictionary<string, string>()
 			{
@@ -90,18 +90,18 @@ namespace TDRS
 
 		public EffectBindingContext(EffectBindingContext ctx)
 		{
-			m_socialEngine = ctx.m_socialEngine;
+			m_socialEngineState = ctx.m_socialEngineState;
 			m_description = ctx.m_description;
 			m_variableBindings = new Dictionary<string, string>(ctx.m_variableBindings);
 		}
 
 		public EffectBindingContext(
-			SocialEngine engine,
+			SocialEngineState engineState,
 			string descriptionTemplate,
 			Dictionary<string, string> bindings
 		)
 		{
-			m_socialEngine = engine;
+			m_socialEngineState = engineState;
 			m_description = descriptionTemplate;
 			m_variableBindings = new Dictionary<string, string>(bindings);
 

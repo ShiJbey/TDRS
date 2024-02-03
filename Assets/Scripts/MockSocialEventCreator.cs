@@ -22,7 +22,7 @@ public class MockSocialEventCreator : MonoBehaviour
 	{
 		if (Input.GetKeyUp(KeyCode.Space))
 		{
-			m_socialEngine.DispatchEvent(m_eventType, m_agents.Select(a => a.UID).ToArray());
+			m_socialEngine.State.DispatchEvent(m_eventType, m_agents.Select(a => a.UID).ToArray());
 		}
 	}
 }

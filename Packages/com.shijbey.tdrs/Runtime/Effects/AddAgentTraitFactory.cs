@@ -1,13 +1,13 @@
 namespace TDRS
 {
 	/// <summary>
-	/// MonoBehavior that construct AddAgentTrait effect instances
+	/// Constructs AddAgentTrait effect instances
 	/// </summary>
-	public class AddAgentTraitFactory : EffectFactory
+	public class AddAgentTraitFactory : IEffectFactory
 	{
-		public override string EffectName => "AddAgentTrait";
+		public string EffectName => "AddAgentTrait";
 
-		public override IEffect CreateInstance(
+		public IEffect CreateInstance(
 			EffectBindingContext ctx,
 			params string[] args
 		)
@@ -26,7 +26,7 @@ namespace TDRS
 			string traitID = args[1];
 			int duration = -1;
 
-			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar]))
+			if (!ctx.State.HasAgent(ctx.Bindings[agentVar]))
 			{
 				throw new System.ArgumentException(
 					$"No Agent found with ID: {ctx.Bindings[agentVar]}"
@@ -46,7 +46,7 @@ namespace TDRS
 
 
 			return new AddAgentTrait(
-				ctx.Engine.GetAgent(ctx.Bindings[agentVar]),
+				ctx.State.GetAgent(ctx.Bindings[agentVar]),
 				traitID,
 				duration
 			);

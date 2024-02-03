@@ -1,13 +1,13 @@
 namespace TDRS
 {
 	/// <summary>
-	/// MonoBehaviour that constructs DecreaseAgentStat effect instances
+	/// Constructs DecreaseAgentStat effect instances
 	/// </summary>
-	public class DecreaseAgentStatFactory : EffectFactory
+	public class DecreaseAgentStatFactory : IEffectFactory
 	{
-		public override string EffectName => "DecreaseAgentStat";
+		public string EffectName => "DecreaseAgentStat";
 
-		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length < 3)
 			{
@@ -22,7 +22,7 @@ namespace TDRS
 			string agentVar = args[0];
 			string statName = args[1];
 
-			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar]))
+			if (!ctx.State.HasAgent(ctx.Bindings[agentVar]))
 			{
 				throw new System.ArgumentException(
 					$"No Agent found with ID: {ctx.Bindings[agentVar]}"
@@ -49,7 +49,7 @@ namespace TDRS
 			}
 
 			return new DecreaseAgentStat(
-				ctx.Engine.GetAgent(
+				ctx.State.GetAgent(
 					ctx.Bindings[agentVar]
 				),
 				statName,

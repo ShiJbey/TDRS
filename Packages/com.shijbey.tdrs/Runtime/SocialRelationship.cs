@@ -25,8 +25,6 @@ namespace TDRS
 		[SerializeField]
 		private List<string> m_baseTraits;
 
-		private RelationshipEdge m_relationshipEdge;
-
 		#endregion
 
 		#region Events
@@ -65,12 +63,7 @@ namespace TDRS
 		/// </summary>
 		public SocialAgent Target => m_target;
 
-		public RelationshipEdge Edge => m_relationshipEdge;
-
-		/// <summary>
-		/// A reference to the manager that owns this entity
-		/// </summary>
-		public SocialEngine Engine { get; protected set; }
+		public RelationshipEdge Edge { get; private set; }
 
 		/// <summary>
 		/// Initial values for this entity's stats.
@@ -86,36 +79,50 @@ namespace TDRS
 
 		#region Unity Lifecycle Methods
 
-		protected void Start()
+		private void OnEnable()
 		{
-			Engine = FindObjectOfType<SocialEngine>();
-
-			if (Engine == null)
+			if (Edge != null)
 			{
-				Debug.LogError("Cannot find GameObject with SocialEngine component in scene.");
+				Edge.OnTick += HandleOnTick;
+				Edge.Traits.OnTraitAdded += HandleTraitAdded;
+				Edge.Traits.OnTraitRemoved += HandleTraitRemoved;
+				Edge.Stats.OnValueChanged += HandleStatChange;
 			}
+		}
 
-			m_relationshipEdge = Engine.RegisterRelationship(this);
-
-			// add event listeners
-			m_relationshipEdge.OnTick += HandleOnTick;
-			m_relationshipEdge.Traits.OnTraitAdded += HandleTraitAdded;
-			m_relationshipEdge.Traits.OnTraitRemoved += HandleTraitRemoved;
-			m_relationshipEdge.Stats.OnValueChanged += HandleStatChange;
+		private void OnDisable()
+		{
+			if (Edge != null)
+			{
+				Edge.OnTick -= HandleOnTick;
+				Edge.Traits.OnTraitAdded -= HandleTraitAdded;
+				Edge.Traits.OnTraitRemoved -= HandleTraitRemoved;
+				Edge.Stats.OnValueChanged -= HandleStatChange;
+			}
 		}
 
 		#endregion
 
 		#region Public Methods
 
-		public void AddTrait(string traitID, int duration = -1)
+		/// <summary>
+		/// Set the relationship's edge reference.
+		/// </summary>
+		/// <param name="edge"></param>
+		/// <exception cref="Exception">If edge is already set.</exception>
+		public void SetEdge(RelationshipEdge edge)
 		{
-			m_relationshipEdge.AddTrait(traitID, duration);
-		}
+			if (Edge != null)
+			{
+				throw new Exception(
+					$"Node already assigned for: ({Owner.UID},{Target.UID})");
+			}
 
-		public void RemoveTrait(string traitID)
-		{
-			m_relationshipEdge.RemoveTrait(traitID);
+			Edge = edge;
+			Edge.OnTick += HandleOnTick;
+			Edge.Traits.OnTraitAdded += HandleTraitAdded;
+			Edge.Traits.OnTraitRemoved += HandleTraitRemoved;
+			Edge.Stats.OnValueChanged += HandleStatChange;
 		}
 
 		#endregion

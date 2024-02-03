@@ -1,13 +1,13 @@
 namespace TDRS
 {
 	/// <summary>
-	/// MonoBehaviour that constructs RemoveAgentTrait effect instances
+	/// Constructs RemoveAgentTrait effect instances
 	/// </summary>
-	public class RemoveAgentTraitFactory : EffectFactory
+	public class RemoveAgentTraitFactory : IEffectFactory
 	{
-		public override string EffectName => "RemoveAgentTrait";
+		public string EffectName => "RemoveAgentTrait";
 
-		public override IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
 		{
 			if (args.Length != 2)
 			{
@@ -22,7 +22,7 @@ namespace TDRS
 			string agentVar = args[0];
 			string traitID = args[1];
 
-			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar]))
+			if (!ctx.State.HasAgent(ctx.Bindings[agentVar]))
 			{
 				throw new System.ArgumentException(
 					$"No Agent found with ID: {ctx.Bindings[agentVar]}"
@@ -30,7 +30,7 @@ namespace TDRS
 			}
 
 			return new RemoveAgentTrait(
-				ctx.Engine.GetAgent(
+				ctx.State.GetAgent(
 					ctx.Bindings[agentVar]
 				),
 				traitID
