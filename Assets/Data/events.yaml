@@ -1,4 +1,4 @@
-# Unity-TDRS Sample Social Events
+# TDRS Sample Social Events
 
 - event: betrayal ?betrayer ?victim
   description: "[betrayer] betrayed [victim]."

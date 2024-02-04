@@ -1,7 +1,6 @@
 using UnityEngine;
 using RePraxis;
 using UnityEngine.Events;
-using TDRS.StatSystem;
 
 namespace TDRS
 {

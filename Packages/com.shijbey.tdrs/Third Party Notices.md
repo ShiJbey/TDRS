@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-Unity-TDRS was made possible thanks to the following projects:
+TDRS was made possible thanks to the following projects:
 
 ## [YAMLDotNet](https://github.com/aaubry/YamlDotNet/tree/master)
 

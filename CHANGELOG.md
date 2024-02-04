@@ -24,5 +24,5 @@ The format is based on <https://common-changelog.org/>, and this project adheres
 
 _Initial release._
 
-[1.0.0]: https://github.com/ShiJbey/Unity-TDRS/releases/tag/v1.0.0
-[1.1.0]: https://github.com/ShiJbey/Unity-TDRS/releases/tag/v1.1.0
+[1.0.0]: https://github.com/ShiJbey/TDRS/releases/tag/v1.0.0
+[1.1.0]: https://github.com/ShiJbey/TDRS/releases/tag/v1.1.0
