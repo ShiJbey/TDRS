@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb6d4b3e307a24f49b4aa35ee0f77d44, type: 3}
+  m_Name: Betrayal
+  m_EditorClassIdentifier: 
+  m_eventName: betrayal
+  m_roles:
+  - ?betrayer
+  - ?victim
+  m_description: '[betrayer] betrayed [victim]'
+  m_responses:
+  - precondition: 
+    effects:
+    - DecreaseRelationshipStat ?victim ?betrayer Friendship 10 5
+    - RemoveRelationshipTrait ?victim ?betrayer friend
+  - precondition: '?victim.relationships.?victim_friend.traits.friend
+
+      neq
+      ?victim_friend ?betrayer'
+    effects:
+    - DecreaseRelationshipStat ?victim_friend ?betrayer Friendship 5 6
+  - precondition: '?victim.relationships.?victim_family.traits.family
+
+      neq
+      ?victim_family ?betrayer'
+    effects:
+    - AddRelationshipTrait ?victim_family ?betrayer angry_at 10

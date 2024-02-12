@@ -78,3 +78,5 @@ crashlytics-build.properties
 
 **/.DS_Store
 dist/
+
+Packages/com.unity.asset-store-tools

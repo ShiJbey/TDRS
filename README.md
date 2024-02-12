@@ -1,9 +1,11 @@
 # Trait-Driven Relationship System (TDRS) for Unity
 
 ![Static Badge](https://img.shields.io/badge/Unity-2022.3-black)
-![Static Badge](https://img.shields.io/badge/Version-1.0.0-green)
+![Static Badge](https://img.shields.io/badge/Version-2.0.0-green)
 
-**TDRS** is a toolkit for modeling dynamic character relationships for life sims, dating sims, visual novels, and adventure games in Unity. It enables game developers to track relationships between social entities (NPCs, players, factions, etc.). Designers can create and tag relationships and characters with various traits that modify how characters feel about each other. Also, they can dispatch various event types that change relationships and build interpersonal histories between characters. Game designers can leverage this package for NPC decision-making, customizing dialogue, and adding a semblance of social intelligence.
+**TDRS** (Trait-Driven Relationship System) is a Unity package for modeling dynamic character relationships in RPGs, simulation games, visual novels, and adventure games. Designers can model character personalities, emotions, affinities, and relationship statuses. They can also define various social events that NPCs can respond to, given their relationships with the party(s) involved. TDRS aims to empower designers to create engaging, relationship-driven gameplay where the immediate and second-order effects of various social interactions drive NPC decision-making and narrative progression.
+
+Designers can model NPC personalities, emotions, relationship statuses, and interpersonal affinities using combinations of numerical stats and traits. Traits are the driving force of TDRS, as its name implies. They are tags of information attached to NPCs and relationships that provide additional semantic information and may apply various effects or social rules that change how a character treats another.
 
 ## Features
 
@@ -19,7 +21,7 @@ This project does not contain code for autonomous character decision-making or t
 
 ## Project contents
 
-This repository contains a Unity project with TDRS added as an embedded package. The package-specific code can be found in the `Packages/TDRS` directory. All other data found in the `Assets` folder belong to the samples and are not included in the final package distribution.
+This repository contains a Unity project with TDRS added as an embedded package. The package-specific code can be found in the `Packages/TDRS` directory. All other data found in the `Assets` folder belong to the samples.
 
 ## Installation instructions
 
@@ -47,9 +49,3 @@ To add TDRS to your Unity project, you must download the latest version of the p
 ## Documentation and Workflows
 
 You can learn more about TDRS and how to get started by visiting the [Wiki](https://github.com/ShiJbey/TDRS/wiki). There are pages to walk you through common tasks and workflows.
-
-## Frequently asked questions
-
-### How do I persist data between scenes?
-
-TDRS does not offer a particular solution for persisting social data between scenes. This task is left to the discretion of the user. If you have ideas for a solution, please create a GitHub issue explaining your approach.

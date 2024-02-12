@@ -100,7 +100,7 @@ namespace TDRS
 				// Create instances of each of the effects associated with this rule
 				foreach (var effectString in socialRule.Effects)
 				{
-					var effect = ctx.State.EffectLibrary.CreateInstance(ctx, effectString);
+					var effect = ctx.Engine.EffectLibrary.CreateInstance(ctx, effectString);
 					effects.Add(effect);
 				}
 			}

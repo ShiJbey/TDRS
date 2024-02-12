@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using TDRS.Helpers;
 using UnityEngine;
 using YamlDotNet.RepresentationModel;
 
@@ -11,27 +10,33 @@ namespace TDRS
 	/// </summary>
 	public class SocialEventFileLoader : MonoBehaviour
 	{
+		/// <summary>
+		/// A list of file paths relative to the StreamingAssets directory
+		/// </summary>
 		[SerializeField]
-		private TextAsset[] m_socialEvents;
+		[Tooltip("Loaded from StreamingAssets directory")]
+		private string[] m_filePaths;
 
 		private void OnEnable()
 		{
-			SocialEngine.OnLoadSocialEvents += LoadSocialEvents;
+			SocialEngineController.OnLoadSocialEvents += LoadSocialEvents;
 		}
 
 		private void OnDisable()
 		{
-			SocialEngine.OnLoadSocialEvents -= LoadSocialEvents;
+			SocialEngineController.OnLoadSocialEvents -= LoadSocialEvents;
 		}
 
 		/// <summary>
 		/// Load social event definitions from text assets provided in the inspector.
 		/// </summary>
-		private void LoadSocialEvents(SocialEngineState state)
+		private void LoadSocialEvents(SocialEngine state)
 		{
-			foreach (var textAsset in m_socialEvents)
+			foreach (var path in m_filePaths)
 			{
-				var input = new StringReader(textAsset.text);
+				string filePath = Path.Combine(Application.streamingAssetsPath, path);
+
+				var input = new StringReader(File.ReadAllText(filePath));
 
 				var yaml = new YamlStream();
 				yaml.Load(input);
@@ -43,8 +48,6 @@ namespace TDRS
 
 					try
 					{
-						var eventKeyNode = eventSpecNode.GetChild("event");
-
 						var eventType = SocialEvent.FromYaml(eventSpecNode);
 
 						state.SocialEventLibrary.AddSocialEvent(eventType);
@@ -52,7 +55,7 @@ namespace TDRS
 					catch (KeyNotFoundException)
 					{
 						Debug.LogError(
-							$"Missing 'event' key in entry {i + 1} of {textAsset.name}");
+							$"Missing 'event' key in entry {i + 1} of {path}");
 					}
 				}
 			}

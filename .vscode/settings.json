@@ -53,6 +53,6 @@
         "UserSettings/": true,
         "Logs/": true
     },
-    "cSpell.words": ["TDRS"],
+    "cSpell.words": ["Kryzarel", "TDRS"],
     "dotnet.defaultSolution": "Unity-TDRS.sln"
 }

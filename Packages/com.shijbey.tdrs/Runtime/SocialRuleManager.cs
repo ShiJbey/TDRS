@@ -49,13 +49,13 @@ namespace TDRS
 		/// Add a rule to the entities collection of active rules.
 		/// </summary>
 		/// <param name="rule"></param>
-		public virtual void AddSocialRuleDefinition(SocialRule rule)
+		public virtual void AddSocialRule(SocialRule rule)
 		{
 			m_rules.Add(rule);
 			if (OnRuleAdded != null) OnRuleAdded.Invoke(this, rule);
 		}
 
-		public void RemoveSocialRuleDefinition(SocialRule rule)
+		public void RemoveSocialRule(SocialRule rule)
 		{
 			if (m_rules.Remove(rule))
 			{
@@ -125,7 +125,7 @@ namespace TDRS
 				if (rule.Source == source)
 				{
 					// Get all the entities relationships and check them for the rule
-					RemoveSocialRuleDefinition(rule);
+					RemoveSocialRule(rule);
 				}
 			}
 		}
