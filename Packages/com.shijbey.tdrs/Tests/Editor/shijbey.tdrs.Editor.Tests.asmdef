@@ -4,8 +4,7 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "com.shijbey.tdrs",
-        "YamlDotNet"
+        "com.shijbey.tdrs"
     ],
     "includePlatforms": [
         "Editor"
@@ -14,7 +13,9 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "RePraxis.dll",
+        "YamlDotNet.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

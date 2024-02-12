@@ -1,7 +1,7 @@
 using System.IO;
 using NUnit.Framework;
-using TDRS.Helpers;
 using YamlDotNet.RepresentationModel;
+using TDRS.Helpers;
 
 namespace TDRS.Tests
 {

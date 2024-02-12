@@ -41,6 +41,8 @@ To add TDRS to your Unity project, you must download the latest version of the p
 ## Dependencies
 
 - Unity version 2022.3 or more recent
+- YamlDotNet 15.1.1 or higher
+- RePraxis version 1.1.0 or higher
 
 ## Limitations
 
