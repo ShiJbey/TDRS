@@ -7,9 +7,13 @@ namespace TDRS
 	{
 		#region Properties
 
-		public EffectBindingContext Context { get; protected set; }
+		public IEffectable Target { get; }
 
-		public virtual object Source { get; set; }
+		public EffectContext Context { get; protected set; }
+
+		public IEffectSource Source => Context.Source;
+
+		public bool IsPersistent { get; }
 
 		public bool HasDuration { get; protected set; }
 
@@ -23,22 +27,27 @@ namespace TDRS
 			}
 		}
 
+		public bool IsActive { get; set; }
+
 		public abstract string Description { get; }
 
-		public virtual string Cause => Context.Description;
+		public virtual string Cause => Context.CauseDescription;
 
 		#endregion
 
 		#region Constructors
 
 		public Effect(
-			EffectBindingContext ctx,
+			IEffectable target,
+			EffectContext ctx,
 			int duration
 		)
 		{
+			Target = target;
 			Context = ctx;
-			HasDuration = duration == -1;
+			HasDuration = duration > 0;
 			RemainingDuration = duration;
+			IsActive = false;
 		}
 
 		#endregion

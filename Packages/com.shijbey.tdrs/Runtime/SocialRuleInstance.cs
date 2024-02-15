@@ -1,117 +1,66 @@
-using System;
 using System.Collections.Generic;
 
 namespace TDRS
 {
 	/// <summary>
-	/// A record of the application of a social rule definition. It maintains what bindings were
+	/// A record of the application of a social rule. It maintains what bindings were
 	/// involved in the social rule and the instances of the effects that were applied
 	/// </summary>
-	public class SocialRuleInstance
+	public class SocialRuleInstance : EffectGroup
 	{
-		#region Fields
-
-		protected Dictionary<string, string> m_bindings;
-		protected IEffect[] m_effects;
-		protected SocialRule m_source;
-		protected string m_owner;
-		protected string m_other;
-
-		#endregion
-
 		#region Properties
 
 		/// <summary>
-		/// The bindings used to instantiate the associated effects.
+		/// The rule that this is an instance of.
 		/// </summary>
-		public Dictionary<string, string> Bindings => m_bindings;
-		/// <summary>
-		/// The instantiated effects created from the bindings.
-		/// </summary>
-		public IEffect[] Effects => m_effects;
-		/// <summary>
-		/// The social rule responsible for this instance.
-		/// </summary>
-		public SocialRule Source => m_source;
+		public SocialRule Rule { get; }
+
 		/// <summary>
 		/// The UID of the owner of the relationship this was instanced for.
 		/// </summary>
-		public string Owner => m_owner;
+		public string Owner { get; }
+
 		/// <summary>
 		/// The UID of the other character the rule was instanced for.
 		/// </summary>
-		public string Other => m_other;
+		public string Other { get; }
 
 		#endregion
 
 		#region Constructors
 
 		public SocialRuleInstance(
-			Dictionary<string, string> bindings,
-			IEffect[] effects,
-			SocialRule source
-		)
+			EffectContext ctx,
+			SocialRule rule,
+			List<IEffect> effects
+		) : base(ctx, -1)
 		{
-			m_bindings = bindings;
-			m_effects = effects;
-			m_source = source;
-			m_owner = m_bindings["?owner"];
-			m_other = m_bindings["?other"];
-		}
-
-		#endregion
-
-		#region Public Methods
-
-		/// <summary>
-		/// Apply the effects associated with the rule instance
-		/// </summary>
-		public void Apply()
-		{
-			foreach (var effect in m_effects)
-			{
-				effect.Apply();
-			}
-		}
-
-		/// <summary>
-		/// Undo the effects associated with the rule instance
-		/// </summary>
-		public void Remove()
-		{
-			foreach (var effect in m_effects)
-			{
-				effect.Remove();
-			}
+			Rule = rule;
+			Owner = Context.Bindings["?owner"].ToString();
+			Other = Context.Bindings["?other"].ToString();
+			Effects = effects;
 		}
 
 		#endregion
 
 		#region Static Methods
 
-		public static SocialRuleInstance TryInstantiateRule(
-			SocialRule socialRule,
-			EffectBindingContext ctx
-		)
+		/// <summary>
+		/// Attempt to create an instance of a social rule given a context.
+		/// </summary>
+		/// <param name="socialRule"></param>
+		/// <param name="ctx"></param>
+		/// <returns></returns>
+		public static SocialRuleInstance Instantiate(SocialRule socialRule, EffectContext ctx)
 		{
 			List<IEffect> effects = new List<IEffect>();
-			try
+
+			foreach (var entry in socialRule.Effects)
 			{
-				// Create instances of each of the effects associated with this rule
-				foreach (var effectString in socialRule.Effects)
-				{
-					var effect = ctx.Engine.EffectLibrary.CreateInstance(ctx, effectString);
-					effects.Add(effect);
-				}
-			}
-			catch (ArgumentException)
-			{
-				return null;
+				effects.Add(ctx.Engine.EffectLibrary.CreateInstance(ctx, entry));
 			}
 
-			var ruleInstance = new SocialRuleInstance(
-				ctx.Bindings, effects.ToArray(), socialRule
-			);
+			var ruleInstance = new SocialRuleInstance(ctx, socialRule, effects);
 
 			return ruleInstance;
 		}

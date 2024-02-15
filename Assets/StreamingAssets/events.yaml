@@ -6,14 +6,14 @@
     - effects:
         - DecreaseRelationshipStat ?victim ?betrayer Friendship 10 5
         - RemoveRelationshipTrait ?victim ?betrayer friend
-    - precondition: |
-        ?victim.relationships.?victim_friend.traits.friend
-        neq ?victim_friend ?betrayer
+    - preconditions:
+        - ?victim.relationships.?victim_friend.traits.friend
+        - neq ?victim_friend ?betrayer
       effects:
         - DecreaseRelationshipStat ?victim_friend ?betrayer Friendship 5 6
-    - precondition: |
-        ?victim.relationships.?victim_family.traits.family
-        neq ?victim_family ?betrayer
+    - preconditions:
+        - ?victim.relationships.?victim_family.traits.family
+        - neq ?victim_family ?betrayer
       effects:
         - AddRelationshipTrait ?victim_family ?betrayer angry_at 10
 
@@ -39,8 +39,8 @@
         - RemoveRelationshipTrait ?character_b ?character_a dating
         - AddRelationshipTrait ?character_a ?character_b ex-partner
         - AddRelationshipTrait ?character_b ?character_a ex-partner
-    - precondition: |
-        ?character_b.relationships.?other.traits.rival
-        neq ?other ?character_a
+    - preconditions:
+        - ?character_b.relationships.?other.traits.rival
+        - neq ?other ?character_a
       effects:
         - IncreaseAgentStat ?other confidence 5

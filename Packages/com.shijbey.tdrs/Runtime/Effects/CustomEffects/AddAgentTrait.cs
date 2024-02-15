@@ -18,11 +18,11 @@ namespace TDRS
 		#region Constructors
 
 		public AddAgentTrait(
-			EffectBindingContext ctx,
+			EffectContext ctx,
 			Agent agent,
 			string traitID,
 			int duration
-		) : base(ctx, duration)
+		) : base(agent, ctx, duration)
 		{
 			m_agent = agent;
 			m_traitID = traitID;
@@ -35,15 +35,13 @@ namespace TDRS
 		public override void Apply()
 		{
 			m_agent.AddTrait(m_traitID);
+			m_agent.Effects.AddEffect(this);
 		}
 
 		public override void Remove()
 		{
-			// Trait additions with durations are not permanent
-			if (HasDuration)
-			{
-				m_agent.RemoveTrait(m_traitID);
-			}
+			m_agent.RemoveTrait(m_traitID);
+			m_agent.Effects.RemoveEffect(this);
 		}
 
 		#endregion

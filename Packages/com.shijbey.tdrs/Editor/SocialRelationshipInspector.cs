@@ -12,7 +12,7 @@ namespace TDRS
 		public VisualTreeAsset m_UXml;
 
 		private VisualElement m_root;
-		private List<Trait> m_traitsList;
+		private List<TraitInstance> m_traitsList;
 		private List<KeyValuePair<string, Stat>> m_statsList;
 		private RelationshipController m_relationship;
 		private MultiColumnListView m_traitListView;
@@ -32,7 +32,7 @@ namespace TDRS
 
 		private void CreateTraitGUI(VisualElement root)
 		{
-			m_traitsList = new List<Trait>();
+			m_traitsList = new List<TraitInstance>();
 			m_traitListView = root.Q<MultiColumnListView>(name: "Traits");
 
 
@@ -49,7 +49,6 @@ namespace TDRS
 
 			cols["trait"].makeCell = () => new Label();
 			cols["description"].makeCell = () => new TextElement() { };
-			cols["cooldown"].makeCell = () => new TextElement();
 
 			// Set bindCell
 

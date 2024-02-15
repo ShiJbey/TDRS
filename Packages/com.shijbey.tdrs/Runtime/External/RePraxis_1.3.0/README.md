@@ -100,7 +100,7 @@ if ( result.Success )
     // Print the results
     Console.WriteLine(result.ToPrettyString());
 
-    foreach (Dictionary<string, string> binding in result.Bindings)
+    foreach (Dictionary<string, object> binding in result.Bindings)
     {
         // Do something
     }
@@ -112,7 +112,7 @@ if ( result.Success )
 result = new DBQuery()
     .Where( "astrid.relationships.?other.reputation!?r" )
     .Where( "gte ?r 10" )
-    .Run( db, new Dictionary<string, string>() { { "?other", "lee" } } );
+    .Run( db, new Dictionary<string, object>() { { "?other", "lee" } } );
 ```
 
 More examples are available under the `tests` directory.
@@ -212,7 +212,7 @@ If the not-statement is preceded by other queries or initial bindings are provid
 // is not true. So, the query passes.
 var result = new DBQuery()
     .Where( "not astrid.relationships.?other.reputation!30" )
-    .Run( db, new Dictionary<string, string>()
+    .Run( db, new Dictionary<string, object>()
     {
         {"?other", "britt"}
     } );

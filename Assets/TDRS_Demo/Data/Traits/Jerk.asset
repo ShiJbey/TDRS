@@ -18,13 +18,16 @@ MonoBehaviour:
   m_description: '[owner] is a jerk'
   m_effects: []
   m_socialRules:
-  - precondition: not ?other.traits.jerk
+  - precondition: 'not ?other.traits.jerk
+
+      ?other.relationships.?owner'
     effects:
     - DecreaseRelationshipStat ?other ?owner Friendship 10
     description: 
-  - precondition: ?other.traits.jerk
+  - precondition: '?other.traits.jerk
+
+      ?owner.relationships.?other'
     effects:
     - IncreaseRelationshipStat ?owner ?other Friendship 10
     description: Jerks like other jerks
   m_conflictingTraits: []
-  m_duration: -1

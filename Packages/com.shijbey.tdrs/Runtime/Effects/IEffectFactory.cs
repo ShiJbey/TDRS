@@ -16,7 +16,7 @@ namespace TDRS
 		/// <param name="args"></param>
 		/// <returns></returns>
 		public IEffect CreateInstance(
-			EffectBindingContext context, params string[] args
+			EffectContext context, params string[] args
 		);
 	}
 }

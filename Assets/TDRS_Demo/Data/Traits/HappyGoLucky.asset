@@ -19,10 +19,9 @@ MonoBehaviour:
   m_effects:
   - IncreaseAgentStat ?owner Sociability 10
   m_socialRules:
-  - precondition: 
+  - precondition: ?owner.relationship.?other
     effects:
     - IncreaseRelationshipStat ?owner ?other Friendship 3
     description: 
   m_conflictingTraits:
   - jerk
-  m_duration: -1

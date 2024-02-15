@@ -13,7 +13,7 @@ namespace TDRS
 		/// <summary>
 		/// Traits currently applied to the entity
 		/// </summary>
-		protected Dictionary<string, Trait> m_traits;
+		protected Dictionary<string, TraitInstance> m_traits;
 
 		#endregion
 
@@ -54,7 +54,7 @@ namespace TDRS
 		/// <summary>
 		/// All traits within the collection.
 		/// </summary>
-		public IEnumerable<Trait> Traits => m_traits.Values;
+		public IEnumerable<TraitInstance> Traits => m_traits.Values;
 
 		#endregion
 
@@ -62,7 +62,7 @@ namespace TDRS
 
 		public TraitManager()
 		{
-			m_traits = new Dictionary<string, Trait>();
+			m_traits = new Dictionary<string, TraitInstance>();
 		}
 
 		#endregion
@@ -74,15 +74,15 @@ namespace TDRS
 		/// </remarks>
 		/// <param name="trait"></param>
 		/// <returns></returns>
-		public bool AddTrait(Trait trait)
+		public bool AddTrait(TraitInstance traitInstance)
 		{
-			if (m_traits.ContainsKey(trait.TraitID)) return false;
+			if (m_traits.ContainsKey(traitInstance.TraitID)) return false;
 
-			if (HasConflictingTrait(trait)) return false;
+			if (HasConflictingTrait(traitInstance.Definition)) return false;
 
-			m_traits[trait.TraitID] = trait;
+			m_traits[traitInstance.TraitID] = traitInstance;
 
-			OnTraitAdded?.Invoke(this, new OnTraitAddedArgs(trait));
+			OnTraitAdded?.Invoke(this, new OnTraitAddedArgs(traitInstance.Definition));
 
 			return true;
 		}
@@ -96,11 +96,11 @@ namespace TDRS
 		{
 			if (!m_traits.ContainsKey(traitID)) return false;
 
-			var trait = GetTrait(traitID);
+			var traitInstance = GetTrait(traitID);
 
 			m_traits.Remove(traitID);
 
-			OnTraitRemoved?.Invoke(this, new OnTraitRemovedArgs(trait));
+			OnTraitRemoved?.Invoke(this, new OnTraitRemovedArgs(traitInstance.Definition));
 
 			return true;
 		}
@@ -163,7 +163,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="traitID"></param>
 		/// <returns></returns>
-		public Trait GetTrait(string traitID)
+		public TraitInstance GetTrait(string traitID)
 		{
 			return m_traits[traitID];
 		}

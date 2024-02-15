@@ -54,7 +54,7 @@ namespace TDRS
 		/// <param name="ctx"></param>
 		/// <param name="eventString"></param>
 		/// <returns></returns>
-		public IEffect CreateInstance(EffectBindingContext ctx, string effectSting)
+		public IEffect CreateInstance(EffectContext ctx, string effectSting)
 		{
 			List<string> effectParts = effectSting
 					.Split(" ").Select(s => s.Trim()).ToList();

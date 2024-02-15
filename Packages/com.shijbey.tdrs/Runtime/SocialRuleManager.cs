@@ -1,35 +1,27 @@
-using System;
 using System.Collections.Generic;
 
 namespace TDRS
 {
 	/// <summary>
-	/// A collection of social rules
+	/// Manages all the social rules associated with an agent.
 	/// </summary>
 	public class SocialRuleManager
 	{
 		#region Fields
 
 		/// <summary>
-		/// Social rules to check when a character gains a new incoming or outgoing relationship.
+		/// All the social rule sources added to the manager.
 		/// </summary>
-		protected List<SocialRule> m_rules;
-
-		protected List<SocialRuleInstance> m_ruleInstances;
+		protected List<ISocialRuleSource> m_sources;
 
 		#endregion
 
 		#region Properties
 
-		public IList<SocialRule> Rules => m_rules;
-		public IList<SocialRuleInstance> SocialRuleInstances => m_ruleInstances;
-
-		#endregion
-
-		#region Events
-
-		public event EventHandler<SocialRule> OnRuleAdded;
-		public event EventHandler<SocialRule> OnRuleRemoved;
+		/// <summary>
+		/// All the social rule sources added to the manager.
+		/// </summary>
+		public IEnumerable<ISocialRuleSource> Sources => m_sources;
 
 		#endregion
 
@@ -37,8 +29,7 @@ namespace TDRS
 
 		public SocialRuleManager()
 		{
-			m_rules = new List<SocialRule>();
-			m_ruleInstances = new List<SocialRuleInstance>();
+			m_sources = new List<ISocialRuleSource>();
 		}
 
 		#endregion
@@ -46,88 +37,22 @@ namespace TDRS
 		#region Public Methods
 
 		/// <summary>
-		/// Add a rule to the entities collection of active rules.
+		/// Add a source to the manager.
 		/// </summary>
-		/// <param name="rule"></param>
-		public virtual void AddSocialRule(SocialRule rule)
+		/// <param name="source"></param>
+		public void AddSource(ISocialRuleSource source)
 		{
-			m_rules.Add(rule);
-			if (OnRuleAdded != null) OnRuleAdded.Invoke(this, rule);
-		}
-
-		public void RemoveSocialRule(SocialRule rule)
-		{
-			if (m_rules.Remove(rule))
-			{
-				RemoveAllInstancesOfRule(rule);
-				if (OnRuleRemoved != null) OnRuleRemoved.Invoke(this, rule);
-			}
-		}
-
-		public bool HasSocialRuleInstance(SocialRule rule, string owner, string other)
-		{
-			foreach (var instance in m_ruleInstances)
-			{
-				if (instance.Source == rule && instance.Owner == owner && instance.Other == other)
-				{
-					return true;
-				}
-			}
-
-			return false;
+			m_sources.Add(source);
 		}
 
 		/// <summary>
-		/// Add a social rule instance to the collection
-		/// </summary>
-		/// <param name="instance"></param>
-		/// <param name="source"></param>
-		public void AddSocialRuleInstance(SocialRuleInstance instance)
-		{
-			m_ruleInstances.Add(instance);
-			instance.Apply();
-		}
-
-		/// <summary>
-		/// Remove all social rule instances from a given source
+		/// Remove a source from the manager.
 		/// </summary>
 		/// <param name="source"></param>
-		private void RemoveAllInstancesOfRule(SocialRule rule)
+		/// <returns></returns>
+		public bool RemoveSource(ISocialRuleSource source)
 		{
-			// Loop backward through the social rules instances and remove all that have the
-			// given source
-			for (int i = m_ruleInstances.Count - 1; i > 0; i--)
-			{
-				var ruleInstance = m_ruleInstances[i];
-
-				if (ruleInstance.Source == rule)
-				{
-					// Remove the rule
-					m_ruleInstances.RemoveAt(i);
-
-					// Undo all its effects
-					ruleInstance.Remove();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Removes all social rules that have the given source
-		/// </summary>
-		/// <param name="source"></param>
-		public void RemoveAllSocialRulesFromSource(object source)
-		{
-			// Loop backward through the social rules and remove all that have the given source
-			for (int i = m_rules.Count - 1; i > 0; i--)
-			{
-				var rule = m_rules[i];
-
-				if (rule.Source == source)
-				{
-					// Get all the entities relationships and check them for the rule
-					RemoveSocialRule(rule);
-				}
-			}
+			return m_sources.Remove(source);
 		}
 
 		#endregion

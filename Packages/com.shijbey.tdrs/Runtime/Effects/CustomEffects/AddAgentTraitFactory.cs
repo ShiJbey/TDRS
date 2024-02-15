@@ -8,7 +8,7 @@ namespace TDRS
 		public string EffectName => "AddAgentTrait";
 
 		public IEffect CreateInstance(
-			EffectBindingContext ctx,
+			EffectContext ctx,
 			params string[] args
 		)
 		{
@@ -26,7 +26,7 @@ namespace TDRS
 			string traitID = args[1];
 			int duration = -1;
 
-			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar]))
+			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar].ToString()))
 			{
 				throw new System.ArgumentException(
 					$"No Agent found with ID: {ctx.Bindings[agentVar]}"
@@ -47,7 +47,7 @@ namespace TDRS
 
 			return new AddAgentTrait(
 				ctx,
-				ctx.Engine.GetAgent(ctx.Bindings[agentVar]),
+				ctx.Engine.GetAgent(ctx.Bindings[agentVar].ToString()),
 				traitID,
 				duration
 			);

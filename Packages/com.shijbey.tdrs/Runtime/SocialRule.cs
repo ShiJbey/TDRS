@@ -1,35 +1,32 @@
-using System;
-using System.Linq;
-using YamlDotNet.RepresentationModel;
-using RePraxis;
-using TDRS.Helpers;
-
 namespace TDRS
 {
 	/// <summary>
-	/// Data used to instantiate social rules when instantiating traits
+	/// Defines effects to apply to a relationship based on a precondition query.
 	/// </summary>
 	public class SocialRule
 	{
-		#region Fields
-
-		protected DBQuery m_query;
-		protected string[] m_effects;
-		protected string m_descriptionTemplate;
-		protected object m_source;
-
-		#endregion
-
 		#region Properties
 
-		public DBQuery Query => m_query;
-		public string[] Effects => m_effects;
-		public string DescriptionTemplate => m_descriptionTemplate;
-		public object Source
-		{
-			get { return m_source; }
-			set { m_source = value; }
-		}
+		/// <summary>
+		/// A query to run against the social engine's database that needs to pass for the effects
+		/// to trigger.
+		/// </summary>
+		public string[] Preconditions { get; set; }
+
+		/// <summary>
+		/// Effects to apply if the precondition passes.
+		/// </summary>
+		public string[] Effects { get; set; }
+
+		/// <summary>
+		/// A template description to be filled when creating instances of this social rule.
+		/// </summary>
+		public string DescriptionTemplate { get; set; }
+
+		/// <summary>
+		/// The object responsible for defining this social rules.
+		/// </summary>
+		public Trait Source { get; set; }
 
 		#endregion
 
@@ -37,18 +34,10 @@ namespace TDRS
 
 		public SocialRule()
 		{
-			m_query = null;
-			m_effects = new string[0];
-			m_descriptionTemplate = "";
-			m_source = null;
-		}
-
-		public SocialRule(DBQuery precondition, string[] effects, string description)
-		{
-			m_query = precondition;
-			m_effects = effects;
-			m_descriptionTemplate = description;
-			m_source = null;
+			Preconditions = new string[0];
+			Effects = new string[0];
+			DescriptionTemplate = "";
+			Source = null;
 		}
 
 		#endregion

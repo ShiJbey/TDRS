@@ -1,5 +1,3 @@
-using System;
-
 namespace TDRS
 {
 	/// <summary>
@@ -9,9 +7,19 @@ namespace TDRS
 	public interface IEffect
 	{
 		/// <summary>
+		/// The target of this effect.
+		/// </summary>
+		public IEffectable Target { get; }
+
+		/// <summary>
 		/// The object responsible for creating the effect.
 		/// </summary>
-		public object Source { get; set; }
+		public IEffectSource Source { get; }
+
+		/// <summary>
+		/// Should this effect be tracked in the effect manager, or is it a one off thing.
+		/// </summary>
+		public bool IsPersistent { get; }
 
 		/// <summary>
 		/// Does this effect have a duration.
@@ -27,6 +35,8 @@ namespace TDRS
 		/// Should this effect still be active.
 		/// </summary>
 		public bool IsValid { get; }
+
+		public bool IsActive { get; set; }
 
 		/// <summary>
 		/// A text description of this effect.

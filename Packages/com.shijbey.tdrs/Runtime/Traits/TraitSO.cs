@@ -25,7 +25,7 @@ namespace TDRS
 		private string m_description;
 
 		[SerializeField]
-		private string[] m_effects;
+		private List<string> m_effects;
 
 		[SerializeField]
 		private SocialRuleEntry[] m_socialRules;
@@ -52,25 +52,27 @@ namespace TDRS
 
 			HashSet<string> conflictingTraitIDs = new HashSet<string>(m_conflictingTraits);
 
-			SocialRule[] socialRules = new SocialRule[m_socialRules.Length];
+			List<SocialRule> socialRules = new List<SocialRule>();
 
 			for (int i = 0; i < m_socialRules.Length; i++)
 			{
 				SocialRuleEntry entry = m_socialRules[i];
 
-				RePraxis.DBQuery precondition = null;
+				string[] precondition = new string[0];
 
 				if (entry.precondition != "")
 				{
-					precondition = new RePraxis.DBQuery(entry.precondition.Split("\n")
+					precondition = entry.precondition.Split("\n")
 						.Where(clause => clause != "")
-						.ToArray());
+						.ToArray();
 				}
 
-				socialRules[i] = new SocialRule(
-					precondition,
-					entry.effects,
-					entry.description
+				socialRules.Add(new SocialRule()
+				{
+					Preconditions = precondition,
+					Effects = entry.effects,
+					DescriptionTemplate = entry.description
+				}
 				);
 			}
 
@@ -78,17 +80,14 @@ namespace TDRS
 			var definition = new Trait(
 				m_traitID,
 				m_traitType,
-				m_displayName,
-				m_description,
-				m_effects,
-				socialRules,
-				conflictingTraitIDs
-			);
-
-			for (int i = 0; i < socialRules.Length; i++)
+				m_displayName
+			)
 			{
-				socialRules[i].Source = definition;
-			}
+				Description = m_description,
+				Effects = m_effects,
+				SocialRules = socialRules,
+				ConflictingTraits = conflictingTraitIDs
+			};
 
 			return definition;
 		}

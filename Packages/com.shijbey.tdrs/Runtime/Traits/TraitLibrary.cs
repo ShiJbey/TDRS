@@ -23,5 +23,18 @@ namespace TDRS
 		}
 
 		#endregion
+
+		#region Public Methods
+
+		/// <summary>
+		/// Add a trait to the library
+		/// </summary>
+		/// <param name="trait"></param>
+		public void AddTrait(Trait trait)
+		{
+			Traits[trait.TraitID] = trait;
+		}
+
+		#endregion
 	}
 }

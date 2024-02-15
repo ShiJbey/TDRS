@@ -53,6 +53,6 @@
         "UserSettings/": true,
         "Logs/": true
     },
-    "cSpell.words": ["Kryzarel", "TDRS"],
+    "cSpell.words": ["Effectable", "Kryzarel", "TDRS"],
     "dotnet.defaultSolution": "Unity-TDRS.sln"
 }

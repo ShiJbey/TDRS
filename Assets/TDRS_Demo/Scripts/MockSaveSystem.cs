@@ -2,6 +2,8 @@ using System.IO;
 using UnityEngine;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
+using System.Collections.Generic;
+using TDRS.Serialization;
 
 namespace TDRS.Demo
 {
@@ -13,6 +15,11 @@ namespace TDRS.Demo
 	/// </summary>
 	public class MockSaveSystem : MonoBehaviour
 	{
+		public class IngredientList
+		{
+			public List<string> ingredients;
+		}
+
 		public const string SAVE_PATH = "TDRS_demo_save.yaml";
 
 		[SerializeField]
@@ -28,12 +35,14 @@ namespace TDRS.Demo
 
 			if (Input.GetKeyUp(m_saveButton))
 			{
-				YamlExporter jsonExporter = new YamlExporter();
-				string json = jsonExporter.ToYaml(SocialEngineController.Instance.State);
+				string json = SerializedSocialEngine.Serialize(
+					SocialEngineController.Instance.State);
+
+				Debug.Log(json);
 
 				YamlMappingNode node = new YamlMappingNode()
 				{
-					{"ingredients", new YamlSequenceNode() { "Apples", "Pizza", "Pie" } }
+					{"ingredients", new YamlSequenceNode() { "sugar", "water", "purple" } }
 				};
 
 				YamlDocument doc = new YamlDocument(node);
@@ -45,6 +54,13 @@ namespace TDRS.Demo
 				Debug.Log(serializer.Serialize(node));
 
 				Debug.Log(serializer.Serialize(doc));
+
+				var ingredients = new IngredientList()
+				{
+					ingredients = new List<string>() { "sugar", "water", "purple" }
+				};
+
+				Debug.Log(serializer.Serialize(ingredients));
 
 				// string filePath = Path.Combine(Application.persistentDataPath, SAVE_PATH);
 

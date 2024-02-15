@@ -18,10 +18,10 @@ namespace TDRS
 		#region Constructors
 
 		public RemoveAgentTrait(
-			EffectBindingContext ctx,
+			EffectContext ctx,
 			Agent agent,
 			string traitID
-		) : base(ctx, -1)
+		) : base(agent, ctx, -1)
 		{
 			m_agent = agent;
 			m_traitID = traitID;

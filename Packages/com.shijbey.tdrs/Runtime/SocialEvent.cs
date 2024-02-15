@@ -2,7 +2,6 @@ using YamlDotNet.RepresentationModel;
 using TDRS.Helpers;
 using System.Linq;
 using System.Collections.Generic;
-using RePraxis;
 
 namespace TDRS
 {
@@ -112,17 +111,10 @@ namespace TDRS
 
 	public class SocialEventResponse
 	{
-		#region Fields
-
-		protected DBQuery m_query;
-		protected string[] m_effects;
-
-		#endregion
-
 		#region Properties
 
-		public DBQuery Query => m_query;
-		public string[] Effects => m_effects;
+		public string[] Preconditions { get; set; }
+		public string[] Effects { get; set; }
 
 		#endregion
 
@@ -130,14 +122,8 @@ namespace TDRS
 
 		public SocialEventResponse()
 		{
-			m_query = null;
-			m_effects = new string[0];
-		}
-
-		public SocialEventResponse(DBQuery precondition, string[] effects)
-		{
-			m_query = precondition;
-			m_effects = effects;
+			Preconditions = new string[0];
+			Effects = new string[0];
 		}
 
 		#endregion
@@ -151,35 +137,33 @@ namespace TDRS
 		/// <returns></returns>
 		public static SocialEventResponse FromYaml(YamlNode node)
 		{
-			var response = new SocialEventResponse();
+			string[] precondition = new string[0];
+			List<string> effects = new List<string>();
 
 			// Try to set the query
 
-			if (node.TryGetChild("precondition", out var preconditionNode))
+			if (node.TryGetChild("preconditions", out var preconditionNode))
 			{
-				response.m_query = new DBQuery(
-					preconditionNode.GetValue()
-						.Split("\n")
-						.Where(clause => clause != "")
-						.ToArray()
-				);
+				precondition = (preconditionNode as YamlSequenceNode).Children
+						.Select(child => child.GetValue())
+						.ToArray();
 			}
 
 			// Try to set the effects
 
 			if (node.TryGetChild("effects", out var effectsNode))
 			{
-				List<string> effects = new List<string>();
-
 				foreach (var effect in (effectsNode as YamlSequenceNode).Children)
 				{
 					effects.Add(effect.GetValue());
 				}
-
-				response.m_effects = effects.ToArray();
 			}
 
-			return response;
+			return new SocialEventResponse()
+			{
+				Preconditions = precondition,
+				Effects = effects.ToArray()
+			};
 		}
 
 		#endregion

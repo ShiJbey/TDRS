@@ -24,11 +24,11 @@ namespace TDRS
 		#region Constructors
 
 		public AddRelationshipTrait(
-			EffectBindingContext ctx,
+			EffectContext ctx,
 			Relationship relationship,
 			string traitID,
 			int duration
-		) : base(ctx, duration)
+		) : base(relationship, ctx, duration)
 		{
 			m_relationship = relationship;
 			m_traitID = traitID;
@@ -41,15 +41,13 @@ namespace TDRS
 		public override void Apply()
 		{
 			m_relationship.AddTrait(m_traitID);
+			m_relationship.Effects.AddEffect(this);
 		}
 
 		public override void Remove()
 		{
-			// Trait additions with durations are not permanent
-			if (HasDuration)
-			{
-				m_relationship.RemoveTrait(m_traitID);
-			}
+			m_relationship.RemoveTrait(m_traitID);
+			m_relationship.Effects.RemoveEffect(this);
 		}
 
 		#endregion

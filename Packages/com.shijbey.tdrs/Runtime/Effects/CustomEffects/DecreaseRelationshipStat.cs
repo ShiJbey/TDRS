@@ -36,12 +36,12 @@ namespace TDRS
 		#region Constructors
 
 		public DecreaseRelationshipStat(
-			EffectBindingContext ctx,
+			EffectContext ctx,
 			Relationship relationship,
 			string statName,
 			float value,
 			int duration
-		) : base(ctx, duration)
+		) : base(relationship, ctx, duration)
 		{
 			m_relationship = relationship;
 			m_statName = statName;
@@ -61,11 +61,13 @@ namespace TDRS
 					this
 				)
 			);
+			m_relationship.Effects.AddEffect(this);
 		}
 
 		public override void Remove()
 		{
 			m_relationship.Stats.GetStat(m_statName).RemoveModifiersFromSource(this);
+			m_relationship.Effects.RemoveEffect(this);
 		}
 
 		#endregion

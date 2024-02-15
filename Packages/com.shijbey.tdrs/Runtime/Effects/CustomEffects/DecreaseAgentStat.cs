@@ -28,12 +28,12 @@ namespace TDRS
 		#region Constructors
 
 		public DecreaseAgentStat(
-			EffectBindingContext ctx,
+			EffectContext ctx,
 			Agent agent,
 			string statName,
 			float value,
 			int duration
-		) : base(ctx, duration)
+		) : base(agent, ctx, duration)
 		{
 			m_agent = agent;
 			m_statName = statName;
@@ -53,11 +53,13 @@ namespace TDRS
 					this
 				)
 			);
+			m_agent.Effects.AddEffect(this);
 		}
 
 		public override void Remove()
 		{
 			m_agent.Stats.GetStat(m_statName).RemoveModifiersFromSource(this);
+			m_agent.Effects.RemoveEffect(this);
 		}
 
 		#endregion

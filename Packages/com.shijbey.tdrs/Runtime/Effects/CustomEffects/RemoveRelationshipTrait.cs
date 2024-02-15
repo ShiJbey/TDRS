@@ -18,10 +18,10 @@ namespace TDRS
 		#region Constructors
 
 		public RemoveRelationshipTrait(
-			EffectBindingContext ctx,
+			EffectContext ctx,
 			Relationship relationship,
 			string traitID
-		) : base(ctx, -1)
+		) : base(relationship, ctx, -1)
 		{
 			m_relationship = relationship;
 			m_traitID = traitID;

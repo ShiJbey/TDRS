@@ -13,14 +13,16 @@
   description: "[owner] is a jerk"
   effects:
     - IncreaseAgentStat ?owner Confidence 5
-  socialRules:
-    - precondition: |
-        not ?other.traits.jerk
+  SocialRules:
+    - preconditions:
+        - ?other.relationships.?owner
+        - not ?other.traits.jerk
       effects:
         - DecreaseRelationshipStat ?other ?owner Friendship 10
       description: "[owner] is a jerk"
-    - precondition: |
-        ?other.traits.jerk
+    - preconditions:
+        - ?owner.relationships.?other
+        - ?other.traits.jerk
       effects:
         - IncreaseRelationshipStat ?owner ?other Friendship 10
       description: "Jerks like other jerks"
@@ -34,7 +36,9 @@
   effects:
     - IncreaseAgentStat ?owner Sociability 10
   socialRules:
-    - effects:
+    - preconditions:
+        - ?owner.relationship.?other
+      effects:
         - IncreaseRelationshipStat ?owner ?other Friendship 3
 
 - traitID: lovers
@@ -60,4 +64,3 @@
   description: "[owner] is angry at [target]"
   effects:
     - DecreaseRelationshipStat ?owner ?target Friendship 10
-  duration: 10

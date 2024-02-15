@@ -101,6 +101,16 @@ namespace TDRS
 
 		#region Public Methods
 
+		public void AddAgentConfig(AgentConfig config)
+		{
+			AgentConfigs[config.agentType] = config;
+		}
+
+		public void AddRelationshipConfig(RelationshipConfig config)
+		{
+			RelationshipConfigs[(config.ownerAgentType, config.targetAgentType)] = config;
+		}
+
 		public Agent AddAgent(string agentType, string uid)
 		{
 			if (!AgentConfigs.ContainsKey(agentType))
@@ -157,7 +167,7 @@ namespace TDRS
 
 			DB.Insert($"{owner.UID}.relationships.{target.UID}");
 
-			// Set stats
+			// Set initial stats from schema
 			foreach (var entry in config.stats)
 			{
 				relationship.Stats.AddStat(
@@ -174,129 +184,76 @@ namespace TDRS
 				relationship.AddTrait(traitID);
 			}
 
+
+			relationship.Owner.ReevaluateRelationships();
+			relationship.Target.ReevaluateRelationships();
 			// Apply social rules from the owner
-			foreach (var socialRule in owner.SocialRules.Rules)
-			{
-				if (owner.SocialRules.HasSocialRuleInstance(socialRule, owner.UID, target.UID))
-				{
-					continue;
-				}
+			// foreach (var entry in owner.SocialRules.Sources)
+			// {
+			// 	if (relationship.SocialRules.HasSocialRule(entry)) continue;
 
-				if (socialRule.Query != null)
-				{
-					var results = socialRule.Query.Run(
-						DB,
-						new Dictionary<string, string>()
-						{
-							{"?owner", owner.UID},
-							{"?other", target.UID}
-						}
-					);
+			// 	var results = new DBQuery(entry.Preconditions).Run(
+			// 		DB,
+			// 		new Dictionary<string, object>()
+			// 		{
+			// 			{"?owner", owner.UID},
+			// 			{"?other", target.UID}
+			// 		}
+			// 	);
 
-					if (!results.Success) continue;
+			// 	if (!results.Success) continue;
 
-					foreach (var result in results.Bindings)
-					{
-						var ctx = new EffectBindingContext(
-							this,
-							socialRule.DescriptionTemplate,
-							// Here we limit the scope of available variables to only ?owner and ?other
-							new Dictionary<string, string>(){
-								{"?owner", result["?owner"]},
-								{"?other", result["?other"]}
-							}
-						);
+			// 	var ctx = new EffectContext(
+			// 		this,
+			// 		entry.DescriptionTemplate,
+			// 		// Here we limit the scope of available variables to only ?owner and ?other
+			// 		new Dictionary<string, object>(){
+			// 			{"?owner", owner.UID},
+			// 			{"?other", target.UID}
+			// 		},
+			// 		entry.Source
+			// 	);
 
-						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+			// 	var ruleInstance = SocialRuleInstance.InstantiateRule(entry, ctx);
 
-						if (ruleInstance != null)
-						{
-							owner.SocialRules.AddSocialRuleInstance(ruleInstance);
-						}
-					}
-				}
-				else
-				{
-					var ctx = new EffectBindingContext(
-						this,
-						socialRule.DescriptionTemplate,
-						new Dictionary<string, string>()
-						{
-							{"?owner", owner.UID},
-							{"?other", target.UID}
-						}
-					);
+			// 	relationship.SocialRules.AddSocialRule(entry, entry.Source);
 
-					var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+			// 	relationship.Effects.AddEffect(ruleInstance);
+			// }
 
-					if (ruleInstance != null)
-					{
-						owner.SocialRules.AddSocialRuleInstance(ruleInstance);
-					}
-				}
-			}
+			// // Apply social rules from the target
+			// foreach (var entry in target.SocialRules.IncomingRules)
+			// {
+			// 	if (relationship.SocialRules.HasSocialRule(entry)) continue;
 
-			// Apply social rules from the target
-			foreach (var socialRule in target.SocialRules.Rules)
-			{
-				if (target.SocialRules.HasSocialRuleInstance(socialRule, target.UID, owner.UID))
-				{
-					continue;
-				}
+			// 	var results = new DBQuery(entry.Preconditions).Run(
+			// 		DB,
+			// 		new Dictionary<string, object>()
+			// 		{
+			// 			{"?owner", target.UID},
+			// 			{"?other", owner.UID}
+			// 		}
+			// 	);
 
-				if (socialRule.Query != null)
-				{
-					var results = socialRule.Query.Run(
-						DB,
-						new Dictionary<string, string>()
-						{
-							{"?owner", target.UID},
-							{"?other", owner.UID}
-						}
-					);
+			// 	if (!results.Success) continue;
 
-					if (!results.Success) continue;
+			// 	var ctx = new EffectContext(
+			// 		this,
+			// 		entry.DescriptionTemplate,
+			// 		// Here we limit the scope of available variables to only ?owner and ?other
+			// 		new Dictionary<string, object>(){
+			// 			{"?owner", target.UID},
+			// 			{"?other", owner.UID}
+			// 		},
+			// 		null
+			// 	);
 
-					foreach (var result in results.Bindings)
-					{
-						var ctx = new EffectBindingContext(
-							this,
-							socialRule.DescriptionTemplate,
-							// Here we limit the scope of available variables to only ?owner and ?other
-							new Dictionary<string, string>(){
-								{"?owner", result["?owner"]},
-								{"?other", result["?other"]}
-							}
-						);
+			// 	var ruleInstance = SocialRuleInstance.InstantiateRule(entry, ctx);
 
-						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
+			// 	relationship.SocialRules.AddSocialRule(entry, entry.Source);
 
-						if (ruleInstance != null)
-						{
-							target.SocialRules.AddSocialRuleInstance(ruleInstance);
-						}
-					}
-				}
-				else
-				{
-					var ctx = new EffectBindingContext(
-						this,
-						socialRule.DescriptionTemplate,
-						new Dictionary<string, string>()
-						{
-							{"?owner", target.UID},
-							{"?other", owner.UID}
-						}
-					);
-
-					var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-					if (ruleInstance != null)
-					{
-						target.SocialRules.AddSocialRuleInstance(ruleInstance);
-					}
-				}
-			}
+			// 	relationship.Effects.AddEffect(ruleInstance);
+			// }
 
 			OnNewRelationship?.Invoke(
 				this, new OnNewRelationshipArgs() { relationship = relationship });
@@ -435,8 +392,7 @@ namespace TDRS
 			Relationship relationship = GetRelationship(ownerID, targetID);
 
 			// Remove all the traits from the relationship
-			List<Trait> traitsList = relationship.Traits.Traits.ToList();
-			foreach (var trait in traitsList)
+			foreach (var trait in relationship.Traits.Traits)
 			{
 				relationship.RemoveTrait(trait.TraitID);
 			}
@@ -479,49 +435,36 @@ namespace TDRS
 			// Get the event type definition from the library
 			var eventType = SocialEventLibrary.GetSocialEvent($"{eventName}/{agents.Length}");
 
+			var bindings = new Dictionary<string, object>();
+			for (int i = 0; i < eventType.Roles.Length; i++)
+			{
+				string role = eventType.Roles[i];
+				string agentID = agents[i];
+				bindings[role] = agentID;
+			}
+
 			// Create the base context for the events
-			var ctx = new EffectBindingContext(this, eventType, agents);
+			var ctx = new EffectContext(this, eventType.DescriptionTemplate, bindings, null);
 
 			// Iterate through the responses
 			foreach (var response in eventType.Responses)
 			{
-				if (response.Query != null)
+				DBQuery preconditionQuery = new DBQuery(response.Preconditions);
+
+				var results = preconditionQuery.Run(ctx.Engine.DB, ctx.Bindings);
+
+				// Skip this response because the query failed
+				if (!results.Success) continue;
+
+				// Create a new context for each binding result
+				foreach (var bindingSet in results.Bindings)
 				{
-					var results = response.Query.Run(ctx.Engine.DB, ctx.Bindings);
+					var scopedCtx = ctx.WithBindings(bindingSet);
 
-					// Skip this response because the query failed
-					if (!results.Success) continue;
-
-					// Create a new context for each binding result
-					foreach (var bindingSet in results.Bindings)
-					{
-						var scopedCtx = ctx.WithBindings(bindingSet);
-
-						try
-						{
-							var effects = response.Effects
-							.Select(s => EffectLibrary.CreateInstance(scopedCtx, s));
-
-							foreach (var effect in effects)
-							{
-								effect.Apply();
-							}
-						}
-						catch (System.ArgumentException ex)
-						{
-							throw new System.ArgumentException(
-								$"Error encountered while instantiating effects for '{eventName}' event: "
-								+ ex.Message
-							);
-						}
-					}
-				}
-				else
-				{
 					try
 					{
 						var effects = response.Effects
-						.Select(s => EffectLibrary.CreateInstance(ctx, s));
+						.Select(s => EffectLibrary.CreateInstance(scopedCtx, s));
 
 						foreach (var effect in effects)
 						{
@@ -536,6 +479,7 @@ namespace TDRS
 						);
 					}
 				}
+
 			}
 		}
 
@@ -552,12 +496,12 @@ namespace TDRS
 
 		#region Static Methods
 
-		public static SocialEngine CreateState()
+		public static SocialEngine Instantiate()
 		{
-			return CreateState(null);
+			return Instantiate(null);
 		}
 
-		public static SocialEngine CreateState(RePraxisDatabase db)
+		public static SocialEngine Instantiate(RePraxisDatabase db)
 		{
 			var state = new SocialEngine();
 

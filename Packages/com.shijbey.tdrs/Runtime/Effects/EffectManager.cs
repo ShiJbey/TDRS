@@ -13,6 +13,12 @@ namespace TDRS
 
 		#endregion
 
+		#region Properties
+
+		public IList<IEffect> Effects => m_effects;
+
+		#endregion
+
 		#region Constructors
 
 		public EffectManager()
@@ -27,48 +33,27 @@ namespace TDRS
 		public void AddEffect(IEffect effect)
 		{
 			m_effects.Add(effect);
-			effect.Apply();
 		}
 
 		public bool RemoveEffect(IEffect effect)
 		{
-			if (m_effects.Remove(effect))
-			{
-				effect.Remove();
-				return true;
-			}
-
-			return false;
-		}
-
-		public bool RemoveAllFromSource(object source)
-		{
-			var removed_any_effect = false;
-
-			for (int i = m_effects.Count - 1; i >= 0; i--)
-			{
-				if (m_effects[i].Source == source)
-				{
-					m_effects[i].Remove();
-					m_effects.RemoveAt(i);
-					removed_any_effect = true;
-				}
-			}
-
-			return removed_any_effect;
+			return m_effects.Remove(effect);
 		}
 
 		public void TickEffects()
 		{
-			for (int i = m_effects.Count - 1; i >= 0; i--)
+			List<IEffect> effectList = new List<IEffect>(Effects);
+
+			// Loop backward incase an effect needs to be removed.
+			foreach (Effect effect in effectList)
 			{
-				var effect = m_effects[i];
 				effect.Tick();
 
 				if (!effect.IsValid)
 				{
 					effect.Remove();
-					m_effects.RemoveAt(i);
+					effect.IsActive = false;
+					RemoveEffect(effect);
 				}
 			}
 		}

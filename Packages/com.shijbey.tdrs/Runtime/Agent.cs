@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using RePraxis;
 
 namespace TDRS
 {
 	/// <summary>
 	/// An entity within a social graph that is connected to other agents via relationships.
 	/// </summary>
-	public class Agent
+	public class Agent : IEffectable
 	{
 		#region Properties
 
@@ -92,11 +93,14 @@ namespace TDRS
 		/// </summary>
 		/// <param name="traitID"></param>
 		/// <param name="duration"></param>
-		public void AddTrait(string traitID)
+		/// <returns></returns>
+		public bool AddTrait(string traitID)
 		{
-			if (Traits.HasTrait(traitID)) return;
-
 			Trait trait = Engine.TraitLibrary.Traits[traitID];
+
+			if (Traits.HasTrait(trait)) return false;
+
+			if (Traits.HasConflictingTrait(trait)) return false;
 
 			if (trait.TraitType != TraitType.Agent)
 			{
@@ -105,159 +109,29 @@ namespace TDRS
 				);
 			}
 
-			Traits.AddTrait(trait);
+			EffectContext ctx = new EffectContext(
+				Engine,
+				trait.Description,
+				new Dictionary<string, object>()
+				{
+					{ "?owner", UID }
+				},
+				trait
+			);
+
+			TraitInstance traitInstance = TraitInstance.CreateInstance(Engine, trait, ctx, this);
+
 			Engine.DB.Insert($"{UID}.traits.{traitID}");
 
+			Traits.AddTrait(traitInstance);
 
-			EffectBindingContext ctx = new EffectBindingContext(this, trait.Description);
+			SocialRules.AddSource(traitInstance);
 
-			// Instantiate and apply trait effects
-			foreach (var effectEntry in trait.Effects)
-			{
-				try
-				{
-					var effect = Engine.EffectLibrary.CreateInstance(ctx, effectEntry);
-					effect.Source = trait;
-					Effects.AddEffect(effect);
-				}
-				catch (ArgumentException ex)
-				{
-					throw new ArgumentException(
-						$"Error encountered while instantiating effects for '{traitID}' trait: "
-						+ ex.Message
-					);
-				}
-			}
+			traitInstance.Apply();
 
-			// // Add the social rules for this trait
-			// foreach (var socialRule in trait.SocialRuleDefinitions)
-			// {
-			// 	SocialRules.AddSocialRuleDefinition(socialRule);
+			ReevaluateRelationships();
 
-			// 	// Try to apply the social rule to existing outgoing relationships
-			// 	foreach (var (other, relationship) in OutgoingRelationships)
-			// 	{
-			// 		if (SocialRules.HasSocialRuleInstance(socialRule, UID, other.UID))
-			// 		{
-			// 			continue;
-			// 		}
-
-			// 		if (socialRule.Query != null)
-			// 		{
-			// 			var results = socialRule.Query.Run(
-			// 				Engine.DB,
-			// 				new Dictionary<string, string>()
-			// 				{
-			// 					{"?owner", UID},
-			// 					{"?other", other.UID}
-			// 				}
-			// 			);
-
-			// 			if (!results.Success) continue;
-
-			// 			foreach (var result in results.Bindings)
-			// 			{
-			// 				var ctx = new EffectBindingContext(
-			// 					Engine,
-			// 					socialRule.DescriptionTemplate,
-			// 					// Here we limit the scope of available variables to only ?owner and ?other
-			// 					new Dictionary<string, string>(){
-			// 						{"?owner", result["?owner"]},
-			// 						{"?other", result["?other"]}
-			// 					}
-			// 				);
-
-			// 				var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-			// 				if (ruleInstance != null)
-			// 				{
-			// 					SocialRules.AddSocialRuleInstance(ruleInstance);
-			// 				}
-			// 			}
-			// 		}
-			// 		else
-			// 		{
-			// 			var ctx = new EffectBindingContext(
-			// 				Engine,
-			// 				socialRule.DescriptionTemplate,
-			// 				new Dictionary<string, string>()
-			// 				{
-			// 					{"?owner", UID},
-			// 					{"?other", other.UID}
-			// 				}
-			// 			);
-
-			// 			var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-			// 			if (ruleInstance != null)
-			// 			{
-			// 				SocialRules.AddSocialRuleInstance(ruleInstance);
-			// 			}
-			// 		}
-			// 	}
-
-			// 	// Try to apply the social rule to existing incoming relationships
-			// 	foreach (var (other, relationship) in IncomingRelationships)
-			// 	{
-			// 		if (SocialRules.HasSocialRuleInstance(socialRule, other.UID, UID))
-			// 		{
-			// 			continue;
-			// 		}
-
-			// 		if (socialRule.Query != null)
-			// 		{
-			// 			var results = socialRule.Query.Run(
-			// 				Engine.DB,
-			// 				new Dictionary<string, string>()
-			// 				{
-			// 					{"?owner", UID},
-			// 					{"?other", other.UID}
-			// 				}
-			// 			);
-
-			// 			if (!results.Success) continue;
-
-			// 			foreach (var result in results.Bindings)
-			// 			{
-			// 				var ctx = new EffectBindingContext(
-			// 					Engine,
-			// 					socialRule.DescriptionTemplate,
-			// 					// Here we limit the scope of available variables to only ?owner and ?other
-			// 					new Dictionary<string, string>(){
-			// 						{"?owner", result["?owner"]},
-			// 						{"?other", result["?other"]}
-			// 					}
-			// 				);
-
-			// 				var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-			// 				if (ruleInstance != null)
-			// 				{
-			// 					SocialRules.AddSocialRuleInstance(ruleInstance);
-			// 				}
-			// 			}
-			// 		}
-			// 		else
-			// 		{
-			// 			var ctx = new EffectBindingContext(
-			// 				Engine,
-			// 				socialRule.DescriptionTemplate,
-			// 				new Dictionary<string, string>()
-			// 				{
-			// 					{"?owner", UID},
-			// 					{"?other", other.UID}
-			// 				}
-			// 			);
-
-			// 			var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-			// 			if (ruleInstance != null)
-			// 			{
-			// 				SocialRules.AddSocialRuleInstance(ruleInstance);
-			// 			}
-			// 		}
-			// 	}
-			// }
+			return true;
 		}
 
 		/// <summary>
@@ -269,12 +143,17 @@ namespace TDRS
 		{
 			if (!Traits.HasTrait(traitID)) return false;
 
-			var trait = Traits.GetTrait(traitID);
-			Traits.RemoveTrait(trait);
+			var traitInstance = Traits.GetTrait(traitID);
+
+			Traits.RemoveTrait(traitID);
+
 			Engine.DB.Delete($"{UID}.traits.{traitID}");
 
-			Effects.RemoveAllFromSource(trait);
-			SocialRules.RemoveAllSocialRulesFromSource(trait);
+			SocialRules.RemoveSource(traitInstance);
+
+			traitInstance.Remove();
+
+			ReevaluateRelationships();
 
 			return true;
 		}
@@ -285,7 +164,146 @@ namespace TDRS
 		public void Tick()
 		{
 			Effects.TickEffects();
+
+			List<TraitInstance> traitInstanceList = new List<TraitInstance>(Traits.Traits);
+
+			foreach (var traitInstance in traitInstanceList)
+			{
+				if (!Traits.HasTrait(traitInstance.TraitID)) continue;
+				traitInstance.TickSocialRuleInstances();
+			}
+
 			OnTick?.Invoke(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Check and recalculate social rule effects.
+		/// </summary>
+		public void ReevaluateRelationships()
+		{
+			foreach (var socialRuleSource in SocialRules.Sources)
+			{
+				foreach (var socialRule in socialRuleSource.SocialRules)
+				{
+					// Try to apply the social rule to existing outgoing relationships
+					foreach (var (other, relationship) in OutgoingRelationships)
+					{
+						if (
+							socialRuleSource.HasSocialRuleInstance(
+								socialRule,
+								UID,
+								other.UID
+							)
+						)
+						{
+							var instance = socialRuleSource.GetSocialRuleInstance(
+								socialRule, UID, other.UID
+							);
+
+							var isValid = new DBQuery(socialRule.Preconditions).Run(
+								Engine.DB,
+								instance.Context.Bindings
+							).Success;
+
+							if (!isValid)
+							{
+								instance.Remove();
+								socialRuleSource.RemoveSocialRuleInstance(instance);
+							}
+
+							continue;
+						}
+
+						var results = new DBQuery(socialRule.Preconditions).Run(
+								Engine.DB,
+								new Dictionary<string, object>()
+								{
+									{"?owner", UID},
+									{"?other", other.UID}
+								}
+							);
+
+						if (!results.Success) continue;
+
+						EffectContext ctx = new EffectContext(
+							Engine,
+							socialRule.DescriptionTemplate,
+							new Dictionary<string, object>(){
+								{"?owner", UID},
+								{"?other", other.UID}
+							},
+							socialRule.Source
+						);
+
+						var ruleInstance = SocialRuleInstance.Instantiate(socialRule, ctx);
+
+						socialRuleSource.AddSocialRuleInstance(ruleInstance);
+
+						ruleInstance.Apply();
+					}
+
+					foreach (var (other, relationship) in IncomingRelationships)
+					{
+						if (
+							socialRuleSource.HasSocialRuleInstance(
+								socialRule,
+								UID,
+								other.UID
+							)
+						)
+						{
+							var instance = socialRuleSource.GetSocialRuleInstance(
+								socialRule, UID, other.UID
+							);
+
+							var isValid = new DBQuery(socialRule.Preconditions).Run(
+								Engine.DB,
+								instance.Context.Bindings
+							).Success;
+
+							if (!isValid)
+							{
+								instance.Remove();
+								socialRuleSource.RemoveSocialRuleInstance(instance);
+							}
+
+							continue;
+						}
+
+						var results = new DBQuery(socialRule.Preconditions).Run(
+							Engine.DB,
+							new Dictionary<string, object>()
+							{
+								{"?owner", UID},
+								{"?other", other.UID}
+							}
+						);
+
+						if (!results.Success) continue;
+
+						EffectContext ctx = new EffectContext(
+							Engine,
+							socialRule.DescriptionTemplate,
+							new Dictionary<string, object>(){
+								{"?owner", UID},
+								{"?other", other.UID}
+							},
+							socialRule.Source
+						);
+
+						var ruleInstance = SocialRuleInstance.Instantiate(socialRule, ctx);
+
+						socialRuleSource.AddSocialRuleInstance(ruleInstance);
+
+						ruleInstance.Apply();
+					}
+				}
+			}
+		}
+
+		public override string ToString()
+		{
+			return $"Agent({UID})";
 		}
 
 		#endregion

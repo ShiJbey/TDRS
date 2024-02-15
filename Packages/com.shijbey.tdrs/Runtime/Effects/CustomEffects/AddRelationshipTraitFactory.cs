@@ -7,7 +7,7 @@ namespace TDRS
 	{
 		public string EffectName => "AddRelationshipTrait";
 
-		public IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public IEffect CreateInstance(EffectContext ctx, params string[] args)
 		{
 			if (args.Length < 3)
 			{
@@ -25,14 +25,14 @@ namespace TDRS
 			int duration = -1;
 
 			if (!ctx.Engine.HasRelationship(
-					ctx.Bindings[relationshipOwnerVar],
-					ctx.Bindings[relationshipTargetVar]
+					ctx.Bindings[relationshipOwnerVar].ToString(),
+					ctx.Bindings[relationshipTargetVar].ToString()
 					)
 				)
 			{
 				throw new System.ArgumentException(
 					"No relationship found from "
-					+ $"{ctx.Bindings[relationshipOwnerVar]} to"
+					+ $"{ctx.Bindings[relationshipOwnerVar]} to "
 					+ $"{ctx.Bindings[relationshipTargetVar]}."
 				);
 			}
@@ -51,8 +51,8 @@ namespace TDRS
 			return new AddRelationshipTrait(
 				ctx,
 				ctx.Engine.GetRelationship(
-					ctx.Bindings[relationshipOwnerVar],
-					ctx.Bindings[relationshipTargetVar]
+					ctx.Bindings[relationshipOwnerVar].ToString(),
+					ctx.Bindings[relationshipTargetVar].ToString()
 				),
 				traitID,
 				duration

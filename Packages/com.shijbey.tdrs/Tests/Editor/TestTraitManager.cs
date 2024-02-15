@@ -1,10 +1,64 @@
-using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace TDRS.Tests
 {
 	public class TestTraitManager
 	{
+		private Trait _humanTrait;
+		private Trait _vampirismTrait;
+		private TraitInstance _humanTraitInstance;
+		private TraitInstance _vampirismTraitInstance;
+		private SocialEngine _engine;
+		private Agent _agent;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_engine = SocialEngine.Instantiate();
+
+			_engine.AddAgentConfig(
+				new AgentConfig()
+				{
+					agentType = "character",
+					traits = new string[0],
+					stats = new StatSchema[0],
+				}
+			);
+
+			_agent = _engine.AddAgent("character", "perry");
+
+			_humanTrait = new Trait(
+				traitID: "human",
+				traitType: TraitType.Agent,
+				displayName: "Human"
+			);
+
+			_humanTraitInstance = new TraitInstance(
+				_agent,
+				_humanTrait,
+				"",
+				new List<IEffect>()
+			);
+
+			_vampirismTrait = new Trait(
+					"vampirism",
+					TraitType.Agent,
+					"Vampirism"
+				)
+			{
+				Description = "Acquired a slight taste for blood. Oops.",
+				ConflictingTraits = new HashSet<string>() { "human" }
+			};
+
+			_vampirismTraitInstance = new TraitInstance(
+				_agent,
+				_vampirismTrait,
+				"",
+				new List<IEffect>()
+			);
+		}
+
 		[Test]
 		public void TestAddTrait()
 		{
@@ -12,14 +66,7 @@ namespace TDRS.Tests
 
 			Assert.That(manager.HasTrait("human"), Is.False);
 
-			manager.AddTrait(
-				new Trait(
-					"human",
-					TraitType.Agent,
-					"Human",
-					"Born a plain ole human."
-				)
-			);
+			manager.AddTrait(_humanTraitInstance);
 
 			Assert.That(manager.HasTrait("human"), Is.True);
 		}
@@ -31,28 +78,11 @@ namespace TDRS.Tests
 
 			bool success;
 
-			success = manager.AddTrait(
-				new Trait(
-					"human",
-					TraitType.Agent,
-					"Human",
-					"Born a plain ole human."
-				)
-			);
+			success = manager.AddTrait(_humanTraitInstance);
 
 			Assert.That(success, Is.True);
 
-			success = manager.AddTrait(
-				new Trait(
-					"vampirism",
-					TraitType.Agent,
-					"Vampirism",
-					"Acquired a slight taste for blood. Oops.",
-					new string[0],
-					new SocialRule[0],
-					new string[] { "human" }
-				)
-			);
+			success = manager.AddTrait(_vampirismTraitInstance);
 
 			Assert.That(success, Is.False);
 		}
@@ -64,25 +94,11 @@ namespace TDRS.Tests
 
 			bool success;
 
-			success = manager.AddTrait(
-				new Trait(
-					"human",
-					TraitType.Agent,
-					"Human",
-					"Born a plain ole human."
-				)
-			);
+			success = manager.AddTrait(_humanTraitInstance);
 
 			Assert.That(success, Is.True);
 
-			success = manager.AddTrait(
-				new Trait(
-					"human",
-					TraitType.Agent,
-					"Human",
-					"Born a plain ole human."
-				)
-			);
+			success = manager.AddTrait(_humanTraitInstance);
 
 			Assert.That(success, Is.False);
 		}
@@ -94,14 +110,7 @@ namespace TDRS.Tests
 
 			bool success;
 
-			success = manager.AddTrait(
-				new Trait(
-					"human",
-					TraitType.Agent,
-					"Human",
-					"Born a plain ole human."
-				)
-			);
+			success = manager.AddTrait(_humanTraitInstance);
 
 			Assert.That(success, Is.True);
 
@@ -119,26 +128,9 @@ namespace TDRS.Tests
 		{
 			var manager = new TraitManager();
 
-			manager.AddTrait(
-				new Trait(
-					"human",
-					TraitType.Agent,
-					"Human",
-					"Born a plain ole human."
-				)
-			);
+			manager.AddTrait(_humanTraitInstance);
 
-			var vampirism = new Trait(
-					"vampirism",
-					TraitType.Agent,
-					"Vampirism",
-					"Acquired a slight taste for blood. Oops.",
-					new string[0],
-					new SocialRule[0],
-					new string[] { "human" }
-				);
-
-			Assert.That(manager.HasConflictingTrait(vampirism), Is.True);
+			Assert.That(manager.HasConflictingTrait(_vampirismTrait), Is.True);
 		}
 	}
 }

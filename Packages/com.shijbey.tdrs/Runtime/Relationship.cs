@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace TDRS
 {
 	/// <summary>
 	/// A directed relationship from one agent to another.
 	/// </summary>
-	public class Relationship
+	public class Relationship : IEffectable
 	{
 		#region Properties
 
@@ -76,10 +75,13 @@ namespace TDRS
 		/// <returns></returns>
 		public bool AddTrait(string traitID)
 		{
-			// Fail if relationship already has the trait
-			if (Traits.HasTrait(traitID)) return false;
-
 			Trait trait = Engine.TraitLibrary.Traits[traitID];
+
+			// Fail if relationship already has the trait
+			if (Traits.HasTrait(trait)) return false;
+
+			// Fail if we have a conflicting trait
+			if (Traits.HasConflictingTrait(trait)) return false;
 
 			// Error if trait type is not correct
 			if (trait.TraitType != TraitType.Relationship)
@@ -89,38 +91,31 @@ namespace TDRS
 				);
 			}
 
-			// Fail if we have a conflicting trait
-			if (Traits.HasConflictingTrait(trait)) return false;
+			// Instantiate the effects
+			EffectContext ctx = new EffectContext(
+				Engine,
+				"",
+				new Dictionary<string, object>()
+				{
+					{ "?owner", Owner.UID },
+					{ "?target", Target.UID },
+				},
+				trait
+			);
 
-			Traits.AddTrait(trait);
+			TraitInstance traitInstance = TraitInstance.CreateInstance(Engine, trait, ctx, this);
+
+			Traits.AddTrait(traitInstance);
 
 			// Update the traits listed in RePraxis
 			Engine.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
 
-			// Instantiate the effects
-			EffectBindingContext ctx = new EffectBindingContext(this, "");
-			foreach (var effectEntry in trait.Effects)
-			{
-				try
-				{
-					var effect = ctx.Engine.EffectLibrary.CreateInstance(ctx, effectEntry);
-					effect.Source = trait;
-					Effects.AddEffect(effect);
-				}
-				catch (ArgumentException ex)
-				{
-					throw new ArgumentException(
-						$"Error encountered while instantiating effects for '{traitID}' trait: "
-						+ ex.Message
-					);
-				}
-			}
+			traitInstance.Apply();
 
-			// Instantiate social rules and effects
-			foreach (var socialRule in trait.SocialRules)
-			{
-				Owner.SocialRules.AddSocialRule(socialRule);
-			}
+			Owner.SocialRules.AddSource(traitInstance);
+
+			Owner.ReevaluateRelationships();
+			Target.ReevaluateRelationships();
 
 			return true;
 		}
@@ -134,12 +129,18 @@ namespace TDRS
 		{
 			if (!Traits.HasTrait(traitID)) return false;
 
-			var trait = Traits.GetTrait(traitID);
-			Traits.RemoveTrait(trait);
+			var traitInstance = Traits.GetTrait(traitID);
+
+			Traits.RemoveTrait(traitID);
+
 			Engine.DB.Delete($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
 
-			Effects.RemoveAllFromSource(trait);
-			Owner.SocialRules.RemoveAllSocialRulesFromSource(trait);
+			traitInstance.Remove();
+
+			Owner.SocialRules.RemoveSource(traitInstance);
+
+			Owner.ReevaluateRelationships();
+			Target.ReevaluateRelationships();
 
 			return true;
 		}
@@ -149,8 +150,18 @@ namespace TDRS
 		/// </summary>
 		public virtual void Tick()
 		{
-			Effects.TickEffects();
+			foreach (var traitInstance in Traits.Traits)
+			{
+				Effects.TickEffects();
+				traitInstance.TickSocialRuleInstances();
+			}
+
 			OnTick?.Invoke(this, EventArgs.Empty);
+		}
+
+		public override string ToString()
+		{
+			return $"Relationship({Owner}, {Target})";
 		}
 
 		#endregion

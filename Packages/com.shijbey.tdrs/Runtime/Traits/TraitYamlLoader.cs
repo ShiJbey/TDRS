@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using YamlDotNet.RepresentationModel;
-using RePraxis;
 using TDRS.Helpers;
 
 namespace TDRS
@@ -19,55 +18,44 @@ namespace TDRS
 		/// <returns></returns>
 		public Trait LoadTrait(YamlNode yamlNode)
 		{
-			string traitID = yamlNode.GetChild("traitID").GetValue();
+			Trait trait = new Trait(
+				yamlNode.GetChild("traitID").GetValue(),
+				TraitType.Parse<TraitType>(
+					yamlNode.GetChild("traitType").GetValue(), true),
+				yamlNode.GetChild("displayName").GetValue()
+			);
 
-			TraitType traitType = TraitType.Parse<TraitType>(
-					yamlNode.GetChild("traitType").GetValue(), true);
-
-			string displayName = yamlNode.GetChild("displayName").GetValue();
-
-			string description = yamlNode.GetChild("description").GetValue();
-
-			string[] effects = new string[0];
-
-			SocialRule[] socialRules = new SocialRule[0];
-
-			HashSet<string> conflictingTraits = new HashSet<string>();
+			if (yamlNode.TryGetChild("description", out var descriptionNode))
+			{
+				trait.Description = descriptionNode.GetValue();
+			}
 
 			// Attempt to set the effects
 			if (yamlNode.TryGetChild("effects", out var effectsNode))
 			{
-				effects = (effectsNode as YamlSequenceNode).Children
+				trait.Effects = (effectsNode as YamlSequenceNode).Children
 					.Select(node => node.GetValue())
-					.ToArray();
+					.ToList();
 			}
 
 			// Attempt to set social rules
 			if (yamlNode.TryGetChild("socialRules", out var socialRulesNode))
 			{
-				socialRules = (socialRulesNode as YamlSequenceNode).Children
-					.Select(node => LoadSocialRule(node, description))
-					.ToArray();
+				trait.SocialRules = (socialRulesNode as YamlSequenceNode).Children
+					.Select(node => LoadSocialRule(node, trait.Description))
+					.ToList();
 			}
 
 			// Attempt to set conflicting traits
 			if (yamlNode.TryGetChild("conflictingTraits", out var conflictingTraitsNode))
 			{
-				conflictingTraits = new HashSet<string>(
+				trait.ConflictingTraits = new HashSet<string>(
 					(conflictingTraitsNode as YamlSequenceNode).Children
 						.Select(node => node.GetValue())
 				);
 			}
 
-			return new Trait(
-				traitID,
-				traitType,
-				displayName,
-				description,
-				effects,
-				socialRules,
-				conflictingTraits
-			);
+			return trait;
 		}
 
 		/// <summary>
@@ -131,25 +119,23 @@ namespace TDRS
 			string traitDescription
 		)
 		{
-			string description = traitDescription;
-			string[] effects = new string[0];
-			DBQuery precondition = new DBQuery();
+			SocialRule socialRule = new SocialRule()
+			{
+				DescriptionTemplate = traitDescription
+			};
 
 			// Try to set the query
-			if (yamlNode.TryGetChild("precondition", out var preconditionNode))
+			if (yamlNode.TryGetChild("preconditions", out var preconditionNode))
 			{
-				precondition = new DBQuery(
-					preconditionNode.GetValue()
-						.Split("\n")
-						.Where(clause => clause != "")
-						.ToArray()
-				);
+				socialRule.Preconditions = (preconditionNode as YamlSequenceNode).Children
+					.Select(child => child.GetValue())
+					.ToArray();
 			}
 
 			// Try to set the effects
 			if (yamlNode.TryGetChild("effects", out var effectsNode))
 			{
-				effects = (effectsNode as YamlSequenceNode).Children
+				socialRule.Effects = (effectsNode as YamlSequenceNode).Children
 					.Select(node => node.GetValue())
 					.ToArray();
 			}
@@ -161,10 +147,10 @@ namespace TDRS
 
 			if (yamlNode.TryGetChild("description", out var descriptionNode))
 			{
-				description = descriptionNode.GetValue();
+				socialRule.DescriptionTemplate = descriptionNode.GetValue();
 			}
 
-			return new SocialRule(precondition, effects, description);
+			return socialRule;
 		}
 	}
 }

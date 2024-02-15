@@ -5,44 +5,68 @@ namespace TDRS
 	/// <summary>
 	/// An instance of a trait definition that has been applied to an agent or relationship.
 	/// </summary>
-	public class Trait
+	public class Trait : IEffectSource
 	{
+		#region Fields
+
+		protected List<SocialRule> m_socialRules;
+
+		#endregion
+
 		#region Properties
 
 		/// <summary>
-		/// The unique ID of the trait
+		/// The unique ID of the trait.
 		/// </summary>
 		public string TraitID { get; }
 
 		/// <summary>
-		/// The name of the trait as displayed in GUIs
+		/// The name of the trait as displayed in GUIs.
 		/// </summary>
 		public string DisplayName { get; }
 
 		/// <summary>
-		/// The type of object this trait is applied to
+		/// The type of object this trait is applied to.
 		/// </summary>
 		public TraitType TraitType { get; }
 
 		/// <summary>
-		/// A short textual description of the trait
+		/// A short textual description of the trait.
 		/// </summary>
-		public string Description { get; }
+		public string Description { get; set; }
 
 		/// <summary>
-		/// Configuration data for effects associated for this trait
+		/// Configuration data for effects associated for this trait.
 		/// </summary>
-		public List<string> Effects { get; }
+		public List<string> Effects { get; set; }
 
 		/// <summary>
-		/// IDs of traits that this trait cannot be added with
+		/// IDs of traits that this trait cannot be added with.
 		/// </summary>
-		public HashSet<string> ConflictingTraits { get; }
+		public HashSet<string> ConflictingTraits { get; set; }
 
 		/// <summary>
-		/// Social rules associated with this trait
+		/// Social rules associated with this trait applied to relationships.
 		/// </summary>
-		public List<SocialRule> SocialRules { get; }
+		public List<SocialRule> SocialRules
+		{
+			get
+			{
+				return m_socialRules;
+			}
+
+			set
+			{
+				m_socialRules = value;
+				foreach (var socialRule in m_socialRules)
+				{
+					socialRule.Source = this;
+				}
+			}
+		}
+
+		// From IEffectSource interface
+		public string EffectSourceID => $"trait/{TraitID}";
 
 		#endregion
 
@@ -51,41 +75,16 @@ namespace TDRS
 		public Trait(
 			string traitID,
 			TraitType traitType,
-			string displayName,
-			string description
+			string displayName
 		)
 		{
 			TraitID = traitID;
 			TraitType = traitType;
 			DisplayName = displayName;
-			Description = description;
+			Description = "";
 			Effects = new List<string>();
 			SocialRules = new List<SocialRule>();
 			ConflictingTraits = new HashSet<string>();
-		}
-
-		public Trait(
-			string traitID,
-			TraitType traitType,
-			string displayName,
-			string description,
-			IEnumerable<string> effects,
-			IEnumerable<SocialRule> socialRules,
-			IEnumerable<string> conflictingTraits
-		)
-		{
-			TraitID = traitID;
-			TraitType = traitType;
-			DisplayName = displayName;
-			Description = description;
-			Effects = new List<string>(effects);
-			SocialRules = new List<SocialRule>(socialRules);
-			ConflictingTraits = new HashSet<string>(conflictingTraits);
-
-			foreach (var socialRule in SocialRules)
-			{
-				socialRule.Source = this;
-			}
 		}
 
 		#endregion
@@ -94,7 +93,7 @@ namespace TDRS
 
 		public override string ToString()
 		{
-			return DisplayName;
+			return $"Trait({DisplayName})";
 		}
 
 		#endregion

@@ -7,7 +7,7 @@ namespace TDRS
 	{
 		public string EffectName => "IncreaseAgentStat";
 
-		public IEffect CreateInstance(EffectBindingContext ctx, params string[] args)
+		public IEffect CreateInstance(EffectContext ctx, params string[] args)
 		{
 			if (args.Length < 3)
 			{
@@ -22,7 +22,7 @@ namespace TDRS
 			string agentVar = args[0];
 			string statName = args[1];
 
-			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar]))
+			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar].ToString()))
 			{
 				throw new System.ArgumentException(
 					$"No Agent found with ID: {ctx.Bindings[agentVar]}"
@@ -51,7 +51,7 @@ namespace TDRS
 			return new IncreaseAgentStat(
 				ctx,
 				ctx.Engine.GetAgent(
-					ctx.Bindings[agentVar]
+					ctx.Bindings[agentVar].ToString()
 				),
 				statName,
 				value,

@@ -1,9 +1,6 @@
 using UnityEngine;
 using RePraxis;
 using UnityEngine.Events;
-using YamlDotNet.RepresentationModel;
-using System.IO;
-using TDRS.Helpers;
 
 namespace TDRS
 {
@@ -100,7 +97,7 @@ namespace TDRS
 			else
 			{
 				Instance = this;
-				State = SocialEngine.CreateState(null);
+				State = SocialEngine.Instantiate(null);
 
 				if (m_dontDestroyOnLoad)
 				{

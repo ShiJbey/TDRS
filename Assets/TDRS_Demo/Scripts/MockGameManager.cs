@@ -1,4 +1,5 @@
 using System.IO;
+using TDRS.Serialization;
 using UnityEngine;
 
 namespace TDRS.Demo
@@ -30,7 +31,7 @@ namespace TDRS.Demo
 			if (File.Exists(filePath))
 			{
 				string yamlData = File.ReadAllText(filePath);
-				new YamlImporter().LoadYaml(SocialEngineController.Instance.State, yamlData);
+				SerializedSocialEngine.Deserialize(SocialEngineController.Instance.State, yamlData);
 				Debug.Log($"Loaded save from: {filePath}");
 			}
 
