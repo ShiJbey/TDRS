@@ -16,6 +16,8 @@ namespace TDRS
 
 		#endregion
 
+		public Dictionary<string, SocialEvent> Events => m_events;
+
 		#region Constructors
 
 		public SocialEventLibrary()

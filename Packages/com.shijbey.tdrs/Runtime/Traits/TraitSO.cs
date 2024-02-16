@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using TDRS.Serialization;
 
 namespace TDRS
 {
@@ -25,10 +25,7 @@ namespace TDRS
 		private string m_description;
 
 		[SerializeField]
-		private List<string> m_effects;
-
-		[SerializeField]
-		private SocialRuleEntry[] m_socialRules;
+		private List<StatModifier> m_modifiers;
 
 		[SerializeField]
 		private string[] m_conflictingTraits;
@@ -50,44 +47,26 @@ namespace TDRS
 				throw new ArgumentException($"TraitSO '{name}' is missing a description");
 			}
 
-			HashSet<string> conflictingTraitIDs = new HashSet<string>(m_conflictingTraits);
-
-			List<SocialRule> socialRules = new List<SocialRule>();
-
-			for (int i = 0; i < m_socialRules.Length; i++)
+			var modifiers = new List<StatModifierData>();
+			foreach (var entry in m_modifiers)
 			{
-				SocialRuleEntry entry = m_socialRules[i];
-
-				string[] precondition = new string[0];
-
-				if (entry.precondition != "")
-				{
-					precondition = entry.precondition.Split("\n")
-						.Where(clause => clause != "")
-						.ToArray();
-				}
-
-				socialRules.Add(new SocialRule()
-				{
-					Preconditions = precondition,
-					Effects = entry.effects,
-					DescriptionTemplate = entry.description
-				}
+				modifiers.Add(
+					new StatModifierData(
+						entry.statName,
+						entry.value,
+						entry.modifierType
+					)
 				);
 			}
-
 
 			var definition = new Trait(
 				m_traitID,
 				m_traitType,
-				m_displayName
-			)
-			{
-				Description = m_description,
-				Effects = m_effects,
-				SocialRules = socialRules,
-				ConflictingTraits = conflictingTraitIDs
-			};
+				m_displayName,
+				m_description,
+				modifiers,
+				m_conflictingTraits
+			);
 
 			return definition;
 		}
@@ -99,6 +78,26 @@ namespace TDRS
 			public string precondition;
 			public string[] effects;
 			public string description;
+		}
+
+		[Serializable]
+		public class StatModifier
+		{
+			/// <summary>
+			/// The name of the stat to modify
+			/// </summary>
+			[SerializeField]
+			public string statName;
+
+			/// <summary>
+			/// The modifier value to apply.
+			/// </summary>
+			public float value;
+
+			/// <summary>
+			/// How to mathematically apply the modifier value.
+			/// </summary>
+			public StatModifierType modifierType;
 		}
 	}
 }

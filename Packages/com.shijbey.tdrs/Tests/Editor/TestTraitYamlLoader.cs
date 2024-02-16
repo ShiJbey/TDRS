@@ -16,21 +16,11 @@ traitID: jerk
 traitType: agent
 displayName: Jerk
 description: ""[owner] is a jerk""
-effects:
-  - IncreaseAgentStat ?owner Confidence 5
-socialRules:
-  - precondition: |
-      not ?other.traits.jerk
-    effects:
-      - DecreaseRelationshipStat ?other ?owner Friendship 10
-    description: ""[owner] is a jerk""
-  - precondition: |
-      ?other.traits.jerk
-    effects:
-      - IncreaseRelationshipStat ?owner ?other Friendship 10
-    description: ""Jerks like other jerks""
+modifiers:
+- statName: Confidence
+  value: 5
 conflictingTraits:
-  - friendly";
+- friendly";
 
 			var loader = new TraitYamlLoader();
 
@@ -38,8 +28,7 @@ conflictingTraits:
 
 			Assert.That(trait.DisplayName, Is.EqualTo("Jerk"));
 			Assert.That(trait.Description, Is.EqualTo("[owner] is a jerk"));
-			Assert.That(trait.SocialRules.Count, Is.EqualTo(2));
-			Assert.That(trait.Effects.Count, Is.EqualTo(1));
+			Assert.That(trait.Modifiers.Length, Is.EqualTo(1));
 			Assert.That(trait.ConflictingTraits.Contains("friendly"), Is.True);
 		}
 
@@ -51,19 +40,9 @@ conflictingTraits:
   traitType: agent
   displayName: Jerk
   description: ""[owner] is a jerk""
-  effects:
-    - IncreaseAgentStat ?owner Confidence 5
-  socialRules:
-    - precondition: |
-        not ?other.traits.jerk
-      effects:
-        - DecreaseRelationshipStat ?other ?owner Friendship 10
-      description: ""[owner] is a jerk""
-    - precondition: |
-        ?other.traits.jerk
-      effects:
-        - IncreaseRelationshipStat ?owner ?other Friendship 10
-      description: ""Jerks like other jerks""
+  modifiers:
+    - statName: Confidence
+      value: 5
   conflictingTraits:
     - friendly
 
@@ -71,11 +50,9 @@ conflictingTraits:
   traitType: agent
   displayName: Friendly
   description: ""[owner] is friendly.""
-  effects:
-    - IncreaseAgentStat ?owner Sociability 10
-  socialRules:
-    - effects:
-      - IncreaseRelationshipStat ?owner ?other Friendship 3";
+  modifiers:
+    - statName: Sociability
+      value: 10";
 
 			var loader = new TraitYamlLoader();
 
@@ -85,14 +62,12 @@ conflictingTraits:
 
 			Assert.That(traits[0].DisplayName, Is.EqualTo("Jerk"));
 			Assert.That(traits[0].Description, Is.EqualTo("[owner] is a jerk"));
-			Assert.That(traits[0].SocialRules.Count, Is.EqualTo(2));
-			Assert.That(traits[0].Effects.Count, Is.EqualTo(1));
+			Assert.That(traits[0].Modifiers.Length, Is.EqualTo(1));
 			Assert.That(traits[0].ConflictingTraits.Contains("friendly"), Is.True);
 
 			Assert.That(traits[1].DisplayName, Is.EqualTo("Friendly"));
 			Assert.That(traits[1].Description, Is.EqualTo("[owner] is friendly."));
-			Assert.That(traits[1].SocialRules.Count, Is.EqualTo(1));
-			Assert.That(traits[1].Effects.Count, Is.EqualTo(1));
+			Assert.That(traits[1].Modifiers.Length, Is.EqualTo(1));
 			Assert.That(traits[1].ConflictingTraits.Count, Is.EqualTo(0));
 		}
 	}

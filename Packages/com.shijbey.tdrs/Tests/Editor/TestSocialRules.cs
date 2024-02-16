@@ -3,9 +3,8 @@ using NUnit.Framework;
 
 namespace TDRS.Tests
 {
-	public class TestAgent
+	public class TestSocialRules
 	{
-
 		/// <summary>
 		/// Tolerance threshold for floating point equality assertions.
 		/// </summary>
@@ -117,51 +116,97 @@ namespace TDRS.Tests
 					)
 					}
 			};
+
+			_engine.AddSocialRule(
+				new SocialRule(
+					ruleID: "people_like_attractiveness",
+					description: "Characters like attractive characters",
+					preconditions: new string[]
+					{
+						"?other.traits.attractive"
+					},
+					modifiers: new StatModifierData[]
+					{
+						new StatModifierData(
+							statName: "Romance",
+							value: 12,
+							modifierType: StatModifierType.FLAT
+						)
+					}
+				)
+			);
+
+			_engine.AddSocialRule(
+				new SocialRule(
+					ruleID: "friendly_characters_make_friends",
+					description: "Friendly characters are more friendly",
+					preconditions: new string[]
+					{
+						"?owner.traits.friendly",
+					},
+					modifiers: new StatModifierData[]
+					{
+						new StatModifierData(
+							statName: "Friendship",
+							value: 10,
+							modifierType: StatModifierType.FLAT
+						)
+					}
+				)
+			);
 		}
 
 		[Test]
-		public void TestAddTrait()
+		public void TestOutgoingSocialRule()
 		{
-			Agent perry = _engine.AddAgent("character", "perry");
+			Agent liza = _engine.AddAgent("character", "liza");
 
-			Assert.That(perry.Stats.GetStat("Confidence").Value, Is.EqualTo(0));
+			Agent zim = _engine.AddAgent("character", "zim");
 
-			perry.AddTrait("confident");
+			var liza_to_zim = _engine.AddRelationship(liza, zim);
 
-			Assert.That(perry.Stats.GetStat("Confidence").Value, Is.EqualTo(10));
+			Assert.That(
+				liza_to_zim.Stats.GetStat("Friendship").Value,
+				Is.EqualTo(0).Within(_assertTolerance));
+
+			liza.AddTrait("friendly");
+
+			Assert.That(
+				liza_to_zim.Stats.GetStat("Friendship").Value,
+				Is.EqualTo(10).Within(_assertTolerance));
+
+			liza.RemoveTrait("friendly");
+
+			Assert.That(
+				liza_to_zim.Stats.GetStat("Friendship").Value,
+				Is.EqualTo(0).Within(_assertTolerance));
 		}
 
 		[Test]
-		public void TestTraitWithDuration()
+		public void TestIncomingSocialRule()
 		{
-			Agent perry = _engine.AddAgent("character", "perry");
+			Agent liza = _engine.AddAgent("character", "liza");
 
-			Assert.That(perry.Stats.GetStat("Confidence").Value, Is.EqualTo(0));
+			Agent zim = _engine.AddAgent("character", "zim");
 
-			perry.AddTrait("recently-complimented", 3);
+			var liza_to_zim = _engine.AddRelationship(liza, zim);
 
-			Assert.That(perry.Stats.GetStat("Confidence").Value, Is.EqualTo(20));
+			Assert.That(
+				liza_to_zim.Stats.GetStat("Romance").Value,
+				Is.EqualTo(0).Within(_assertTolerance));
 
-			perry.Tick();
-			perry.Tick();
-			perry.Tick();
-			perry.Tick();
+			zim.AddTrait("attractive");
 
-			Assert.That(perry.Stats.GetStat("Confidence").Value, Is.EqualTo(0));
+			Assert.That(
+				liza_to_zim.Stats.GetStat("Romance").Value,
+				Is.EqualTo(12).Within(_assertTolerance));
+
+			zim.RemoveTrait("attractive");
+
+			Assert.That(
+				liza_to_zim.Stats.GetStat("Romance").Value,
+				Is.EqualTo(0).Within(_assertTolerance));
 		}
 
-		[Test]
-		public void TestRemoveTrait()
-		{
-			Agent perry = _engine.AddAgent("character", "perry");
-
-			perry.AddTrait("confident");
-
-			Assert.That(perry.Stats.GetStat("Confidence").Value, Is.EqualTo(10));
-
-			perry.RemoveTrait("confident");
-
-			Assert.That(perry.Stats.GetStat("Confidence").Value, Is.EqualTo(0));
-		}
 	}
 }

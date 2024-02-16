@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace TDRS.Tests
@@ -7,8 +6,6 @@ namespace TDRS.Tests
 	{
 		private Trait _humanTrait;
 		private Trait _vampirismTrait;
-		private TraitInstance _humanTraitInstance;
-		private TraitInstance _vampirismTraitInstance;
 		private SocialEngine _engine;
 		private Agent _agent;
 
@@ -31,42 +28,30 @@ namespace TDRS.Tests
 			_humanTrait = new Trait(
 				traitID: "human",
 				traitType: TraitType.Agent,
-				displayName: "Human"
-			);
-
-			_humanTraitInstance = new TraitInstance(
-				_agent,
-				_humanTrait,
-				"",
-				new List<IEffect>()
+				displayName: "Human",
+				description: "",
+				modifiers: new StatModifierData[0],
+				conflictingTraits: new string[0]
 			);
 
 			_vampirismTrait = new Trait(
-					"vampirism",
-					TraitType.Agent,
-					"Vampirism"
-				)
-			{
-				Description = "Acquired a slight taste for blood. Oops.",
-				ConflictingTraits = new HashSet<string>() { "human" }
-			};
-
-			_vampirismTraitInstance = new TraitInstance(
-				_agent,
-				_vampirismTrait,
-				"",
-				new List<IEffect>()
+				traitID: "vampirism",
+				traitType: TraitType.Agent,
+				displayName: "Vampirism",
+				description: "Acquired a slight taste for blood. Oops.",
+				modifiers: new StatModifierData[0],
+				conflictingTraits: new string[] { "human" }
 			);
 		}
 
 		[Test]
 		public void TestAddTrait()
 		{
-			var manager = new TraitManager();
+			TraitManager manager = _agent.Traits;
 
 			Assert.That(manager.HasTrait("human"), Is.False);
 
-			manager.AddTrait(_humanTraitInstance);
+			manager.AddTrait(_humanTrait);
 
 			Assert.That(manager.HasTrait("human"), Is.True);
 		}
@@ -74,15 +59,15 @@ namespace TDRS.Tests
 		[Test]
 		public void TestAddConflictingTrait()
 		{
-			var manager = new TraitManager();
+			TraitManager manager = _agent.Traits;
 
 			bool success;
 
-			success = manager.AddTrait(_humanTraitInstance);
+			success = manager.AddTrait(_humanTrait);
 
 			Assert.That(success, Is.True);
 
-			success = manager.AddTrait(_vampirismTraitInstance);
+			success = manager.AddTrait(_vampirismTrait);
 
 			Assert.That(success, Is.False);
 		}
@@ -90,15 +75,15 @@ namespace TDRS.Tests
 		[Test]
 		public void TestAddDuplicateTrait()
 		{
-			var manager = new TraitManager();
+			TraitManager manager = _agent.Traits;
 
 			bool success;
 
-			success = manager.AddTrait(_humanTraitInstance);
+			success = manager.AddTrait(_humanTrait);
 
 			Assert.That(success, Is.True);
 
-			success = manager.AddTrait(_humanTraitInstance);
+			success = manager.AddTrait(_humanTrait);
 
 			Assert.That(success, Is.False);
 		}
@@ -106,11 +91,11 @@ namespace TDRS.Tests
 		[Test]
 		public void TestRemoveTrait()
 		{
-			var manager = new TraitManager();
+			TraitManager manager = _agent.Traits;
 
 			bool success;
 
-			success = manager.AddTrait(_humanTraitInstance);
+			success = manager.AddTrait(_humanTrait);
 
 			Assert.That(success, Is.True);
 
@@ -126,9 +111,9 @@ namespace TDRS.Tests
 		[Test]
 		public void TestHasConflictingTrait()
 		{
-			var manager = new TraitManager();
+			TraitManager manager = _agent.Traits;
 
-			manager.AddTrait(_humanTraitInstance);
+			manager.AddTrait(_humanTrait);
 
 			Assert.That(manager.HasConflictingTrait(_vampirismTrait), Is.True);
 		}

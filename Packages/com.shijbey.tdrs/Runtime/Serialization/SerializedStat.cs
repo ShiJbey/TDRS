@@ -1,20 +1,15 @@
-using System.Collections.Generic;
-
 namespace TDRS.Serialization
 {
 	public class SerializedStat
 	{
-		public string Name { get; set; }
+		public string name { get; set; }
 
-		public float BaseValue { get; set; }
-
-		public List<SerializedModifier> Modifiers { get; set; }
+		public float baseValue { get; set; }
 
 		public SerializedStat()
 		{
-			Name = "";
-			BaseValue = 0f;
-			Modifiers = new List<SerializedModifier>();
+			name = "";
+			baseValue = 0f;
 		}
 	}
 }

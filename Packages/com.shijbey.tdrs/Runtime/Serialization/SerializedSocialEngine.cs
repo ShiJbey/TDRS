@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using RePraxis;
 using YamlDotNet.Serialization;
 
 namespace TDRS.Serialization
@@ -8,19 +10,104 @@ namespace TDRS.Serialization
 	/// </summary>
 	public class SerializedSocialEngine
 	{
-		public List<SerializedAgent> agents;
+		public List<SerializedTrait> traits { get; set; }
 
-		public List<SerializedRelationship> relationships;
+		public List<SerializedSocialEvent> socialEvents { get; set; }
+
+		public List<SerializedSocialRule> socialRules { get; set; }
+
+		public List<SerializedAgent> agents { get; set; }
+
+		public List<SerializedRelationship> relationships { get; set; }
+
+		public List<string> dbEntries { get; set; }
+
+		public List<SerializedAgentSchema> agentSchemas { get; set; }
+
+		public List<SerializedRelationshipSchema> relationshipSchemas { get; set; }
 
 		public SerializedSocialEngine()
 		{
+			traits = new List<SerializedTrait>();
+			socialEvents = new List<SerializedSocialEvent>();
+			socialRules = new List<SerializedSocialRule>();
 			agents = new List<SerializedAgent>();
 			relationships = new List<SerializedRelationship>();
+			dbEntries = new List<string>();
+			agentSchemas = new List<SerializedAgentSchema>();
+			relationshipSchemas = new List<SerializedRelationshipSchema>();
 		}
 
 		public static string Serialize(SocialEngine socialEngine)
 		{
 			var serializedEngine = new SerializedSocialEngine();
+
+			foreach (var trait in socialEngine.TraitLibrary.Traits.Values)
+			{
+				serializedEngine.traits.Add(
+					new SerializedTrait()
+					{
+						traitID = trait.TraitID,
+						traitType = trait.TraitType.ToString(),
+						displayName = trait.DisplayName,
+						description = trait.Description,
+						modifiers = trait.Modifiers
+							.Select(modifier =>
+							{
+								return new SerializedStatModifierData()
+								{
+									statName = modifier.StatName,
+									modifierType = modifier.ModifierType.ToString(),
+									value = modifier.Value
+								};
+							}).ToArray(),
+						conflictingTraits = trait.ConflictingTraits.ToArray()
+					}
+				);
+			}
+
+			foreach (var entry in socialEngine.SocialEventLibrary.Events.Values)
+			{
+				serializedEngine.socialEvents.Add(
+					new SerializedSocialEvent()
+					{
+						name = entry.Name,
+						roles = entry.Roles,
+						description = entry.DescriptionTemplate,
+						responses = entry.Responses
+							.Select(response =>
+							{
+								return new SerializedSocialEventResponse()
+								{
+									preconditions = response.Preconditions,
+									effects = response.Effects
+								};
+							}).ToArray()
+					}
+				);
+			}
+
+			foreach (var entry in socialEngine.SocialRules.Values)
+			{
+				serializedEngine.socialRules.Add(
+					new SerializedSocialRule()
+					{
+						ruleID = entry.RuleID,
+						description = entry.Description,
+						preconditions = entry.Preconditions,
+						modifiers = entry.Modifiers
+							.Select(modifier =>
+							{
+								return new SerializedStatModifierData()
+								{
+									statName = modifier.StatName,
+									modifierType = modifier.ModifierType.ToString(),
+									value = modifier.Value
+								};
+							}).ToArray()
+					}
+				);
+			}
 
 			foreach (Agent agent in socialEngine.Agents)
 			{
@@ -30,30 +117,24 @@ namespace TDRS.Serialization
 					agentType = agent.AgentType
 				};
 
-				foreach (TraitInstance trait in agent.Traits.Traits)
+				foreach (TraitInstance instance in agent.Traits.Traits)
 				{
-					serializedAgent.traits.Add(trait.TraitID);
+					serializedAgent.traits.Add(
+						new SerializedTraitInstance()
+						{
+							traitID = instance.TraitID,
+							duration = instance.Duration
+						}
+					);
 				}
 
 				foreach (var (statName, stat) in agent.Stats.Stats)
 				{
 					var serializedStat = new SerializedStat()
 					{
-						Name = statName,
-						BaseValue = stat.BaseValue,
+						name = statName,
+						baseValue = stat.BaseValue,
 					};
-
-					foreach (var modifier in stat.Modifiers)
-					{
-						serializedStat.Modifiers.Add(
-							new SerializedModifier()
-							{
-								Value = modifier.Value,
-								Order = modifier.Order,
-								ModifierType = (int)modifier.ModifierType
-							}
-						);
-					}
 
 					serializedAgent.stats.Add(serializedStat);
 				}
@@ -67,32 +148,28 @@ namespace TDRS.Serialization
 				{
 					owner = relationship.Owner.UID,
 					target = relationship.Target.UID,
+					activeSocialRules = relationship.ActiveSocialRules
+						.Select(rule => rule.RuleID).ToList()
 				};
 
-				foreach (TraitInstance trait in relationship.Traits.Traits)
+				foreach (TraitInstance instance in relationship.Traits.Traits)
 				{
-					serializedRelationship.traits.Add(trait.TraitID);
+					serializedRelationship.traits.Add(
+						new SerializedTraitInstance()
+						{
+							traitID = instance.TraitID,
+							duration = instance.Duration
+						}
+					);
 				}
 
 				foreach (var (statName, stat) in relationship.Stats.Stats)
 				{
 					var serializedStat = new SerializedStat()
 					{
-						Name = statName,
-						BaseValue = stat.BaseValue,
+						name = statName,
+						baseValue = stat.BaseValue,
 					};
-
-					foreach (var modifier in stat.Modifiers)
-					{
-						serializedStat.Modifiers.Add(
-							new SerializedModifier()
-							{
-								Value = modifier.Value,
-								Order = modifier.Order,
-								ModifierType = (int)modifier.ModifierType
-							}
-						);
-					}
 
 					serializedRelationship.stats.Add(serializedStat);
 				}
@@ -100,6 +177,57 @@ namespace TDRS.Serialization
 				serializedEngine.relationships.Add(serializedRelationship);
 			}
 
+			// Serialize the database
+			serializedEngine.dbEntries = SerializeDatabase(socialEngine.DB);
+
+			foreach (var entry in socialEngine.AgentConfigs.Values)
+			{
+				serializedEngine.agentSchemas.Add(
+					new SerializedAgentSchema()
+					{
+						agentType = entry.agentType,
+						traits = entry.traits,
+						stats = entry.stats
+							.Select(stat =>
+							{
+								return new SerializedStatSchema()
+								{
+									statName = stat.statName,
+									baseValue = stat.baseValue,
+									minValue = stat.minValue,
+									maxValue = stat.maxValue,
+									isDiscrete = stat.isDiscrete
+								};
+							}).ToArray()
+					}
+				);
+			}
+
+			foreach (var entry in socialEngine.RelationshipConfigs.Values)
+			{
+				serializedEngine.relationshipSchemas.Add(
+					new SerializedRelationshipSchema()
+					{
+						ownerType = entry.ownerAgentType,
+						targetType = entry.targetAgentType,
+						traits = entry.traits,
+						stats = entry.stats
+							.Select(stat =>
+							{
+								return new SerializedStatSchema()
+								{
+									statName = stat.statName,
+									baseValue = stat.baseValue,
+									minValue = stat.minValue,
+									maxValue = stat.maxValue,
+									isDiscrete = stat.isDiscrete
+								};
+							}).ToArray()
+					}
+				);
+			}
+
+			// Do the actual serializing
 			var serializer = new SerializerBuilder()
 					.JsonCompatible()
 					.Build();
@@ -107,34 +235,121 @@ namespace TDRS.Serialization
 			return serializer.Serialize(serializedEngine);
 		}
 
-		public static void Deserialize(SocialEngine socialEngine, string dataString)
+		public static SocialEngine Deserialize(string dataString)
+		{
+			return Deserialize(SocialEngine.Instantiate(), dataString);
+		}
+
+		public static SocialEngine Deserialize(SocialEngine socialEngine, string dataString)
 		{
 			var deserializer = new DeserializerBuilder()
 					.Build();
 
 			var serializedEngine = deserializer.Deserialize<SerializedSocialEngine>(dataString);
 
+			foreach (var entry in serializedEngine.traits)
+			{
+				socialEngine.TraitLibrary.AddTrait(
+					entry.ToRuntimeInstance()
+				);
+			}
+
+			foreach (var entry in serializedEngine.socialEvents)
+			{
+				socialEngine.SocialEventLibrary.AddSocialEvent(
+					new SocialEvent(
+						name: entry.name,
+						roles: entry.roles,
+						description: entry.description,
+						responses: entry.responses
+							.Select(response =>
+							{
+								return new SocialEventResponse()
+								{
+									Preconditions = response.preconditions,
+									Effects = response.effects
+								};
+							})
+							.ToArray()
+					)
+				);
+			}
+
+			foreach (var entry in serializedEngine.socialRules)
+			{
+				socialEngine.AddSocialRule(
+					new SocialRule(
+						ruleID: entry.ruleID,
+						description: entry.description,
+						preconditions: entry.preconditions,
+						modifiers: entry.modifiers
+							.Select(modifier =>
+							{
+								return new StatModifierData(
+									statName: modifier.statName,
+									value: modifier.value,
+									modifierType: StatModifierType.Parse<StatModifierType>(
+										modifier.modifierType, true
+									)
+								);
+							})
+							.ToArray()
+					)
+				);
+			}
+
+			foreach (var entry in serializedEngine.agentSchemas)
+			{
+				socialEngine.AddAgentConfig(
+					new AgentConfig(
+						agentType: entry.agentType,
+						stats: entry.stats
+							.Select(stat =>
+							{
+								return new StatSchema(
+									statName: stat.statName,
+									baseValue: stat.baseValue,
+									maxValue: stat.maxValue,
+									minValue: stat.minValue,
+									isDiscrete: stat.isDiscrete
+								);
+							}).ToArray(),
+						traits: entry.traits
+					)
+				);
+			}
+
+			foreach (var entry in serializedEngine.relationshipSchemas)
+			{
+				socialEngine.AddRelationshipConfig(
+					new RelationshipConfig(
+						ownerType: entry.ownerType,
+						targetType: entry.targetType,
+						stats: entry.stats
+							.Select(stat =>
+							{
+								return new StatSchema(
+									statName: stat.statName,
+									baseValue: stat.baseValue,
+									maxValue: stat.maxValue,
+									minValue: stat.minValue,
+									isDiscrete: stat.isDiscrete
+								);
+							}).ToArray(),
+						traits: entry.traits
+					)
+				);
+			}
+
 			foreach (var serializedAgent in serializedEngine.agents)
 			{
 				Agent agent = socialEngine.AddAgent(serializedAgent.agentType, serializedAgent.uid);
 
-				foreach (var traitID in serializedAgent.traits)
+				foreach (var entry in serializedAgent.traits)
 				{
-					Trait trait = socialEngine.TraitLibrary.Traits[traitID];
+					Trait trait = socialEngine.TraitLibrary.Traits[entry.traitID];
 
-					EffectContext ctx = new EffectContext(
-						socialEngine,
-						"",
-						new Dictionary<string, object>()
-						{
-							{ "?owner", agent.UID },
-						},
-						trait
-					);
-
-					TraitInstance instance = TraitInstance.CreateInstance(socialEngine, trait, ctx, agent);
-
-					agent.Traits.AddTrait(instance);
+					agent.Traits.AddTrait(trait, entry.duration);
 				}
 			}
 
@@ -143,26 +358,50 @@ namespace TDRS.Serialization
 				Relationship relationship = socialEngine.AddRelationship(
 					serializedRelationship.owner, serializedRelationship.target);
 
-				foreach (var traitID in serializedRelationship.traits)
+				foreach (var entry in serializedRelationship.traits)
 				{
-					Trait trait = socialEngine.TraitLibrary.Traits[traitID];
+					Trait trait = socialEngine.TraitLibrary.Traits[entry.traitID];
 
-					EffectContext ctx = new EffectContext(
-						socialEngine,
-						"",
-						new Dictionary<string, object>()
-						{
-							{ "?owner", relationship.Owner.UID },
-							{ "?target", relationship.Target.UID },
-						},
-						trait
-					);
-
-					TraitInstance instance = TraitInstance.CreateInstance(socialEngine, trait, ctx, relationship);
-
-					relationship.Traits.AddTrait(instance);
+					relationship.Traits.AddTrait(trait, entry.duration);
 				}
 			}
+
+			foreach (var entry in serializedEngine.dbEntries)
+			{
+				socialEngine.DB.Insert(entry);
+			}
+
+			return socialEngine;
+		}
+
+		private static List<string> SerializeDatabase(RePraxisDatabase db)
+		{
+			var entries = new List<string>();
+
+			var nodeStack = new Stack<INode>(db.Root.Children);
+
+			while (nodeStack.Count > 0)
+			{
+				INode node = nodeStack.Pop();
+
+				IEnumerable<INode> children = node.Children;
+
+				if (children.Count() > 0)
+				{
+					// Add children to the stack
+					foreach (var child in children)
+					{
+						nodeStack.Push(child);
+					}
+				}
+				else
+				{
+					// This is a leaf
+					entries.Add(node.GetPath());
+				}
+			}
+
+			return entries;
 		}
 	}
 }

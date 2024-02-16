@@ -50,6 +50,11 @@ namespace TDRS
 		public EffectLibrary EffectLibrary { get; private set; }
 
 		/// <summary>
+		/// All the social rules registered with the social engine.
+		/// </summary>
+		public Dictionary<string, SocialRule> SocialRules { get; private set; }
+
+		/// <summary>
 		/// The database where queryable relationship information is stored.
 		/// </summary>
 		public RePraxisDatabase DB { get; private set; }
@@ -95,6 +100,7 @@ namespace TDRS
 			DB = new RePraxisDatabase();
 			AgentConfigs = new Dictionary<string, AgentConfig>();
 			RelationshipConfigs = new Dictionary<(string, string), RelationshipConfig>();
+			SocialRules = new Dictionary<string, SocialRule>();
 		}
 
 		#endregion
@@ -109,6 +115,11 @@ namespace TDRS
 		public void AddRelationshipConfig(RelationshipConfig config)
 		{
 			RelationshipConfigs[(config.ownerAgentType, config.targetAgentType)] = config;
+		}
+
+		public void AddSocialRule(SocialRule rule)
+		{
+			SocialRules[rule.RuleID] = rule;
 		}
 
 		public Agent AddAgent(string agentType, string uid)
@@ -184,76 +195,7 @@ namespace TDRS
 				relationship.AddTrait(traitID);
 			}
 
-
-			relationship.Owner.ReevaluateRelationships();
-			relationship.Target.ReevaluateRelationships();
-			// Apply social rules from the owner
-			// foreach (var entry in owner.SocialRules.Sources)
-			// {
-			// 	if (relationship.SocialRules.HasSocialRule(entry)) continue;
-
-			// 	var results = new DBQuery(entry.Preconditions).Run(
-			// 		DB,
-			// 		new Dictionary<string, object>()
-			// 		{
-			// 			{"?owner", owner.UID},
-			// 			{"?other", target.UID}
-			// 		}
-			// 	);
-
-			// 	if (!results.Success) continue;
-
-			// 	var ctx = new EffectContext(
-			// 		this,
-			// 		entry.DescriptionTemplate,
-			// 		// Here we limit the scope of available variables to only ?owner and ?other
-			// 		new Dictionary<string, object>(){
-			// 			{"?owner", owner.UID},
-			// 			{"?other", target.UID}
-			// 		},
-			// 		entry.Source
-			// 	);
-
-			// 	var ruleInstance = SocialRuleInstance.InstantiateRule(entry, ctx);
-
-			// 	relationship.SocialRules.AddSocialRule(entry, entry.Source);
-
-			// 	relationship.Effects.AddEffect(ruleInstance);
-			// }
-
-			// // Apply social rules from the target
-			// foreach (var entry in target.SocialRules.IncomingRules)
-			// {
-			// 	if (relationship.SocialRules.HasSocialRule(entry)) continue;
-
-			// 	var results = new DBQuery(entry.Preconditions).Run(
-			// 		DB,
-			// 		new Dictionary<string, object>()
-			// 		{
-			// 			{"?owner", target.UID},
-			// 			{"?other", owner.UID}
-			// 		}
-			// 	);
-
-			// 	if (!results.Success) continue;
-
-			// 	var ctx = new EffectContext(
-			// 		this,
-			// 		entry.DescriptionTemplate,
-			// 		// Here we limit the scope of available variables to only ?owner and ?other
-			// 		new Dictionary<string, object>(){
-			// 			{"?owner", target.UID},
-			// 			{"?other", owner.UID}
-			// 		},
-			// 		null
-			// 	);
-
-			// 	var ruleInstance = SocialRuleInstance.InstantiateRule(entry, ctx);
-
-			// 	relationship.SocialRules.AddSocialRule(entry, entry.Source);
-
-			// 	relationship.Effects.AddEffect(ruleInstance);
-			// }
+			relationship.ReevaluateSocialRules();
 
 			OnNewRelationship?.Invoke(
 				this, new OnNewRelationshipArgs() { relationship = relationship });
@@ -404,8 +346,6 @@ namespace TDRS
 			m_relationships.Remove((relationship.Owner.UID, relationship.Target.UID));
 
 			DB.Delete($"{relationship.Owner.UID}.relationships.{relationship.Owner.UID}");
-
-			// relationship.Destroy();
 
 			return true;
 		}

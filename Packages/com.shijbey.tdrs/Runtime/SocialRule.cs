@@ -1,43 +1,93 @@
 namespace TDRS
 {
 	/// <summary>
-	/// Defines effects to apply to a relationship based on a precondition query.
+	/// Applies stat changes to a relationship based on a set of preconditions.
 	/// </summary>
 	public class SocialRule
 	{
 		#region Properties
 
 		/// <summary>
-		/// A query to run against the social engine's database that needs to pass for the effects
-		/// to trigger.
+		/// A unique identifier for this social rule.
 		/// </summary>
-		public string[] Preconditions { get; set; }
+		public string RuleID { get; }
 
 		/// <summary>
-		/// Effects to apply if the precondition passes.
+		/// A template description to be filled when recording the rules effects on a relationship.
 		/// </summary>
-		public string[] Effects { get; set; }
+		public string Description { get; }
 
 		/// <summary>
-		/// A template description to be filled when creating instances of this social rule.
+		/// RePraxis query clauses to run against the social engine's database.
 		/// </summary>
-		public string DescriptionTemplate { get; set; }
+		public string[] Preconditions { get; }
 
 		/// <summary>
-		/// The object responsible for defining this social rules.
+		/// Stat modifiers to apply if the preconditions pass.
 		/// </summary>
-		public Trait Source { get; set; }
+		public StatModifierData[] Modifiers { get; }
 
 		#endregion
 
 		#region Constructors
 
-		public SocialRule()
+		public SocialRule(
+			string ruleID,
+			string description,
+			string[] preconditions,
+			StatModifierData[] modifiers
+		)
 		{
-			Preconditions = new string[0];
-			Effects = new string[0];
-			DescriptionTemplate = "";
-			Source = null;
+			RuleID = ruleID;
+			Description = description;
+			Preconditions = preconditions;
+			Modifiers = modifiers;
+
+			// Check that ruleID is not the empty string
+			if (ruleID == "")
+			{
+				throw new System.ArgumentException(
+					"Argument 'ruleID' of SocialRule cannot be empty string");
+			}
+		}
+
+		#endregion
+
+		#region Public Methods
+
+		/// <summary>
+		/// Apply this rule's modifiers to a relationship.
+		/// </summary>
+		/// <param name="relationship"></param>
+		public void ApplyModifiers(Relationship relationship)
+		{
+			foreach (var modifierData in Modifiers)
+			{
+				relationship.Stats.GetStat(modifierData.StatName).AddModifier(
+					new StatModifier(
+						modifierData.Value,
+						modifierData.ModifierType,
+						this
+					)
+				);
+			}
+		}
+
+		/// <summary>
+		/// Remove this rule's modifiers from a relationship.
+		/// </summary>
+		/// <param name="relationship"></param>
+		public void RemoveModifiers(Relationship relationship)
+		{
+			foreach (var modifierData in Modifiers)
+			{
+				relationship.Stats.GetStat(modifierData.StatName).RemoveModifiersFromSource(this);
+			}
+		}
+
+		public override string ToString()
+		{
+			return $"SocialRule({RuleID})";
 		}
 
 		#endregion

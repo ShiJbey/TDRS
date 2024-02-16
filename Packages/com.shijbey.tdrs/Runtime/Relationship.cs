@@ -1,13 +1,23 @@
 using System;
 using System.Collections.Generic;
+using RePraxis;
 
 namespace TDRS
 {
 	/// <summary>
 	/// A directed relationship from one agent to another.
 	/// </summary>
-	public class Relationship : IEffectable
+	public class Relationship : ISocialEntity, IEffectable
 	{
+		#region Fields
+
+		/// <summary>
+		/// Social rules currently applied to this relationship.
+		/// </summary>
+		protected List<SocialRule> m_activeSocialRules;
+
+		#endregion
+
 		#region Properties
 
 		/// <summary>
@@ -40,6 +50,11 @@ namespace TDRS
 		/// </summary>
 		public EffectManager Effects { get; }
 
+		/// <summary>
+		/// Social rules currently applied to this relationship.
+		/// </summary>
+		public IEnumerable<SocialRule> ActiveSocialRules => m_activeSocialRules;
+
 		#endregion
 
 		#region Events
@@ -58,9 +73,10 @@ namespace TDRS
 			Engine = engine;
 			Owner = owner;
 			Target = target;
-			Traits = new TraitManager();
+			Traits = new TraitManager(this);
 			Stats = new StatManager();
 			Effects = new EffectManager();
+			m_activeSocialRules = new List<SocialRule>();
 			Stats.OnValueChanged += HandleStatChanged;
 		}
 
@@ -73,7 +89,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="traitID"></param>
 		/// <returns></returns>
-		public bool AddTrait(string traitID)
+		public bool AddTrait(string traitID, int duration = -1)
 		{
 			Trait trait = Engine.TraitLibrary.Traits[traitID];
 
@@ -91,31 +107,14 @@ namespace TDRS
 				);
 			}
 
-			// Instantiate the effects
-			EffectContext ctx = new EffectContext(
-				Engine,
-				"",
-				new Dictionary<string, object>()
-				{
-					{ "?owner", Owner.UID },
-					{ "?target", Target.UID },
-				},
-				trait
-			);
+			// Add trait and apply effects.
+			Traits.AddTrait(trait, duration);
 
-			TraitInstance traitInstance = TraitInstance.CreateInstance(Engine, trait, ctx, this);
-
-			Traits.AddTrait(traitInstance);
-
-			// Update the traits listed in RePraxis
+			// Update the traits listed in RePraxis database.
 			Engine.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
 
-			traitInstance.Apply();
-
-			Owner.SocialRules.AddSource(traitInstance);
-
-			Owner.ReevaluateRelationships();
-			Target.ReevaluateRelationships();
+			// Reevaluate social rules for this relationship incase any depend on the new trait.
+			ReevaluateSocialRules();
 
 			return true;
 		}
@@ -129,18 +128,12 @@ namespace TDRS
 		{
 			if (!Traits.HasTrait(traitID)) return false;
 
-			var traitInstance = Traits.GetTrait(traitID);
-
 			Traits.RemoveTrait(traitID);
 
 			Engine.DB.Delete($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
 
-			traitInstance.Remove();
-
-			Owner.SocialRules.RemoveSource(traitInstance);
-
-			Owner.ReevaluateRelationships();
-			Target.ReevaluateRelationships();
+			// Reevaluate social rules for this relationship incase any depend on the removed trait.
+			ReevaluateSocialRules();
 
 			return true;
 		}
@@ -148,15 +141,59 @@ namespace TDRS
 		/// <summary>
 		/// Advance the simulation by one simulation tick
 		/// </summary>
-		public virtual void Tick()
+		public void Tick()
 		{
-			foreach (var traitInstance in Traits.Traits)
-			{
-				Effects.TickEffects();
-				traitInstance.TickSocialRuleInstances();
-			}
+			TickTraits();
 
 			OnTick?.Invoke(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Update the traits associated with this relationship.
+		/// </summary>
+		public void TickTraits()
+		{
+			List<TraitInstance> traitInstances = new List<TraitInstance>(Traits.Traits);
+			foreach (var instance in traitInstances)
+			{
+				instance.Tick();
+
+				if (instance.HasDuration && instance.Duration <= 0)
+				{
+					RemoveTrait(instance.TraitID);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Recalculates the stats of this relationship instance by reevaluating social rules.
+		/// </summary>
+		public void ReevaluateSocialRules()
+		{
+			foreach (var rule in m_activeSocialRules)
+			{
+				rule.RemoveModifiers(this);
+			}
+
+			m_activeSocialRules.Clear();
+
+			foreach (var rule in Engine.SocialRules.Values)
+			{
+				var results = new DBQuery(rule.Preconditions).Run(
+					Engine.DB,
+					new Dictionary<string, object>()
+					{
+						{"?owner", Owner.UID},
+						{"?target", Target.UID}
+					}
+				);
+
+				if (!results.Success) continue;
+
+				rule.ApplyModifiers(this);
+
+				m_activeSocialRules.Add(rule);
+			}
 		}
 
 		public override string ToString()

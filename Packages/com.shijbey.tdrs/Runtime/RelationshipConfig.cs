@@ -27,5 +27,21 @@ namespace TDRS
 		/// Default traits added to this agent type when created.
 		/// </summary>
 		public string[] traits;
+
+		public RelationshipConfig()
+		{
+			ownerAgentType = "";
+			targetAgentType = "";
+			stats = new StatSchema[0];
+			traits = new string[0];
+		}
+
+		public RelationshipConfig(string ownerType, string targetType, StatSchema[] stats, string[] traits)
+		{
+			this.ownerAgentType = ownerType;
+			this.targetAgentType = targetType;
+			this.stats = stats;
+			this.traits = traits;
+		}
 	}
 }

@@ -11,7 +11,12 @@ namespace TDRS
 		#region Fields
 
 		/// <summary>
-		/// Traits currently applied to the entity
+		/// The entity the manager is associated with.
+		/// </summary>
+		protected ISocialEntity m_target;
+
+		/// <summary>
+		/// Traits currently applied to the target.
 		/// </summary>
 		protected Dictionary<string, TraitInstance> m_traits;
 
@@ -60,8 +65,9 @@ namespace TDRS
 
 		#region Constructors
 
-		public TraitManager()
+		public TraitManager(ISocialEntity target)
 		{
+			m_target = target;
 			m_traits = new Dictionary<string, TraitInstance>();
 		}
 
@@ -74,15 +80,19 @@ namespace TDRS
 		/// </remarks>
 		/// <param name="trait"></param>
 		/// <returns></returns>
-		public bool AddTrait(TraitInstance traitInstance)
+		public bool AddTrait(Trait trait, int duration = -1)
 		{
-			if (m_traits.ContainsKey(traitInstance.TraitID)) return false;
+			if (m_traits.ContainsKey(trait.TraitID)) return false;
 
-			if (HasConflictingTrait(traitInstance.Definition)) return false;
+			if (HasConflictingTrait(trait)) return false;
 
-			m_traits[traitInstance.TraitID] = traitInstance;
+			var traitInstance = new TraitInstance(m_target, trait, duration);
 
-			OnTraitAdded?.Invoke(this, new OnTraitAddedArgs(traitInstance.Definition));
+			m_traits[trait.TraitID] = traitInstance;
+
+			traitInstance.ApplyModifiers();
+
+			OnTraitAdded?.Invoke(this, new OnTraitAddedArgs(trait));
 
 			return true;
 		}
@@ -100,7 +110,10 @@ namespace TDRS
 
 			m_traits.Remove(traitID);
 
-			OnTraitRemoved?.Invoke(this, new OnTraitRemovedArgs(traitInstance.Definition));
+			traitInstance.RemoveModifiers();
+
+			OnTraitRemoved?.Invoke(
+				this, new OnTraitRemovedArgs(m_target.Engine.TraitLibrary.Traits[traitID]));
 
 			return true;
 		}

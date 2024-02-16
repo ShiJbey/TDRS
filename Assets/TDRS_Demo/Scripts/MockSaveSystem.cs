@@ -1,7 +1,5 @@
 using System.IO;
 using UnityEngine;
-using YamlDotNet.RepresentationModel;
-using YamlDotNet.Serialization;
 using System.Collections.Generic;
 using TDRS.Serialization;
 
@@ -39,28 +37,6 @@ namespace TDRS.Demo
 					SocialEngineController.Instance.State);
 
 				Debug.Log(json);
-
-				YamlMappingNode node = new YamlMappingNode()
-				{
-					{"ingredients", new YamlSequenceNode() { "sugar", "water", "purple" } }
-				};
-
-				YamlDocument doc = new YamlDocument(node);
-
-				var serializer = new SerializerBuilder()
-					.JsonCompatible()
-					.Build();
-
-				Debug.Log(serializer.Serialize(node));
-
-				Debug.Log(serializer.Serialize(doc));
-
-				var ingredients = new IngredientList()
-				{
-					ingredients = new List<string>() { "sugar", "water", "purple" }
-				};
-
-				Debug.Log(serializer.Serialize(ingredients));
 
 				// string filePath = Path.Combine(Application.persistentDataPath, SAVE_PATH);
 

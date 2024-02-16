@@ -7,14 +7,16 @@ namespace TDRS.Serialization
 	/// </summary>
 	public class SerializedAgent
 	{
-		public string uid;
-		public string agentType;
-		public List<string> traits;
-		public List<SerializedStat> stats;
+		public string uid { get; set; }
+		public string agentType { get; set; }
+		public List<SerializedTraitInstance> traits { get; set; }
+		public List<SerializedStat> stats { get; set; }
 
 		public SerializedAgent()
 		{
-			traits = new List<string>();
+			uid = "";
+			agentType = "Agent";
+			traits = new List<SerializedTraitInstance>();
 			stats = new List<SerializedStat>();
 		}
 	}

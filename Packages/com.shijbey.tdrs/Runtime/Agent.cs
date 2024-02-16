@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using RePraxis;
 
 namespace TDRS
 {
 	/// <summary>
 	/// An entity within a social graph that is connected to other agents via relationships.
 	/// </summary>
-	public class Agent : IEffectable
+	public class Agent : ISocialEntity, IEffectable
 	{
 		#region Properties
 
@@ -35,11 +34,6 @@ namespace TDRS
 		/// A collection of stats associated with this agent.
 		/// </summary>
 		public StatManager Stats { get; }
-
-		/// <summary>
-		/// All social rules affecting this agent.
-		/// </summary>
-		public SocialRuleManager SocialRules { get; }
 
 		/// <summary>
 		/// Manages all effects applied to this agent.
@@ -74,9 +68,8 @@ namespace TDRS
 			UID = uid;
 			AgentType = agentType;
 			Engine = engine;
-			Traits = new TraitManager();
+			Traits = new TraitManager(this);
 			Stats = new StatManager();
-			SocialRules = new SocialRuleManager();
 			Effects = new EffectManager();
 			OutgoingRelationships = new Dictionary<Agent, Relationship>();
 			IncomingRelationships = new Dictionary<Agent, Relationship>();
@@ -94,7 +87,7 @@ namespace TDRS
 		/// <param name="traitID"></param>
 		/// <param name="duration"></param>
 		/// <returns></returns>
-		public bool AddTrait(string traitID)
+		public bool AddTrait(string traitID, int duration = -1)
 		{
 			Trait trait = Engine.TraitLibrary.Traits[traitID];
 
@@ -109,25 +102,9 @@ namespace TDRS
 				);
 			}
 
-			EffectContext ctx = new EffectContext(
-				Engine,
-				trait.Description,
-				new Dictionary<string, object>()
-				{
-					{ "?owner", UID }
-				},
-				trait
-			);
-
-			TraitInstance traitInstance = TraitInstance.CreateInstance(Engine, trait, ctx, this);
+			Traits.AddTrait(trait, duration);
 
 			Engine.DB.Insert($"{UID}.traits.{traitID}");
-
-			Traits.AddTrait(traitInstance);
-
-			SocialRules.AddSource(traitInstance);
-
-			traitInstance.Apply();
 
 			ReevaluateRelationships();
 
@@ -143,15 +120,9 @@ namespace TDRS
 		{
 			if (!Traits.HasTrait(traitID)) return false;
 
-			var traitInstance = Traits.GetTrait(traitID);
-
 			Traits.RemoveTrait(traitID);
 
 			Engine.DB.Delete($"{UID}.traits.{traitID}");
-
-			SocialRules.RemoveSource(traitInstance);
-
-			traitInstance.Remove();
 
 			ReevaluateRelationships();
 
@@ -163,142 +134,47 @@ namespace TDRS
 		/// </summary>
 		public void Tick()
 		{
-			Effects.TickEffects();
-
-			List<TraitInstance> traitInstanceList = new List<TraitInstance>(Traits.Traits);
-
-			foreach (var traitInstance in traitInstanceList)
-			{
-				if (!Traits.HasTrait(traitInstance.TraitID)) continue;
-				traitInstance.TickSocialRuleInstances();
-			}
+			TickTraits();
 
 			OnTick?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
-		/// Check and recalculate social rule effects.
+		/// Update the traits associated with this agent.
+		/// </summary>
+		public void TickTraits()
+		{
+			List<TraitInstance> traitInstances = new List<TraitInstance>(Traits.Traits);
+			foreach (var instance in traitInstances)
+			{
+				instance.Tick();
+
+				if (instance.HasDuration && instance.Duration <= 0)
+				{
+					RemoveTrait(instance.TraitID);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Reevaluate relationships against the social rules.
 		/// </summary>
 		public void ReevaluateRelationships()
 		{
-			foreach (var socialRuleSource in SocialRules.Sources)
+			foreach (var (_, relationship) in OutgoingRelationships)
 			{
-				foreach (var socialRule in socialRuleSource.SocialRules)
-				{
-					// Try to apply the social rule to existing outgoing relationships
-					foreach (var (other, relationship) in OutgoingRelationships)
-					{
-						if (
-							socialRuleSource.HasSocialRuleInstance(
-								socialRule,
-								UID,
-								other.UID
-							)
-						)
-						{
-							var instance = socialRuleSource.GetSocialRuleInstance(
-								socialRule, UID, other.UID
-							);
-
-							var isValid = new DBQuery(socialRule.Preconditions).Run(
-								Engine.DB,
-								instance.Context.Bindings
-							).Success;
-
-							if (!isValid)
-							{
-								instance.Remove();
-								socialRuleSource.RemoveSocialRuleInstance(instance);
-							}
-
-							continue;
-						}
-
-						var results = new DBQuery(socialRule.Preconditions).Run(
-								Engine.DB,
-								new Dictionary<string, object>()
-								{
-									{"?owner", UID},
-									{"?other", other.UID}
-								}
-							);
-
-						if (!results.Success) continue;
-
-						EffectContext ctx = new EffectContext(
-							Engine,
-							socialRule.DescriptionTemplate,
-							new Dictionary<string, object>(){
-								{"?owner", UID},
-								{"?other", other.UID}
-							},
-							socialRule.Source
-						);
-
-						var ruleInstance = SocialRuleInstance.Instantiate(socialRule, ctx);
-
-						socialRuleSource.AddSocialRuleInstance(ruleInstance);
-
-						ruleInstance.Apply();
-					}
-
-					foreach (var (other, relationship) in IncomingRelationships)
-					{
-						if (
-							socialRuleSource.HasSocialRuleInstance(
-								socialRule,
-								UID,
-								other.UID
-							)
-						)
-						{
-							var instance = socialRuleSource.GetSocialRuleInstance(
-								socialRule, UID, other.UID
-							);
-
-							var isValid = new DBQuery(socialRule.Preconditions).Run(
-								Engine.DB,
-								instance.Context.Bindings
-							).Success;
-
-							if (!isValid)
-							{
-								instance.Remove();
-								socialRuleSource.RemoveSocialRuleInstance(instance);
-							}
-
-							continue;
-						}
-
-						var results = new DBQuery(socialRule.Preconditions).Run(
-							Engine.DB,
-							new Dictionary<string, object>()
-							{
-								{"?owner", UID},
-								{"?other", other.UID}
-							}
-						);
-
-						if (!results.Success) continue;
-
-						EffectContext ctx = new EffectContext(
-							Engine,
-							socialRule.DescriptionTemplate,
-							new Dictionary<string, object>(){
-								{"?owner", UID},
-								{"?other", other.UID}
-							},
-							socialRule.Source
-						);
-
-						var ruleInstance = SocialRuleInstance.Instantiate(socialRule, ctx);
-
-						socialRuleSource.AddSocialRuleInstance(ruleInstance);
-
-						ruleInstance.Apply();
-					}
-				}
+				relationship.ReevaluateSocialRules();
 			}
+
+			foreach (var (_, relationship) in IncomingRelationships)
+			{
+				relationship.ReevaluateSocialRules();
+			}
+		}
+
+		public void ReevaluateRelationship(Agent target)
+		{
+			OutgoingRelationships[target].ReevaluateSocialRules();
 		}
 
 		public override string ToString()
