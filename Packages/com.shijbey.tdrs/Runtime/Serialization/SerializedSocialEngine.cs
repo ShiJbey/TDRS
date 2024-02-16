@@ -257,21 +257,7 @@ namespace TDRS.Serialization
 			foreach (var entry in serializedEngine.socialEvents)
 			{
 				socialEngine.SocialEventLibrary.AddSocialEvent(
-					new SocialEvent(
-						name: entry.name,
-						roles: entry.roles,
-						description: entry.description,
-						responses: entry.responses
-							.Select(response =>
-							{
-								return new SocialEventResponse()
-								{
-									Preconditions = response.preconditions,
-									Effects = response.effects
-								};
-							})
-							.ToArray()
-					)
+					entry.ToRuntimeInstance()
 				);
 			}
 

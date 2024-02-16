@@ -8,25 +8,25 @@ namespace TDRS
 	public class TraitYamlFileLoader : MonoBehaviour
 	{
 		/// <summary>
-		/// A list of file paths relative to the StreamingAssets directory
+		/// YAML files containing traits to load.
 		/// </summary>
 		[SerializeField]
 		private TextAsset[] m_traitYamlFiles;
 
 		private void OnEnable()
 		{
-			SocialEngineController.OnLoadTraits += LoadTraitDefinitions;
+			SocialEngineController.OnLoadTraits += LoadTraits;
 		}
 
 		private void OnDisable()
 		{
-			SocialEngineController.OnLoadTraits -= LoadTraitDefinitions;
+			SocialEngineController.OnLoadTraits -= LoadTraits;
 		}
 
 		/// <summary>
 		/// Load trait definitions from definition filed provided in the inspector
 		/// </summary>
-		public void LoadTraitDefinitions(SocialEngine state)
+		public void LoadTraits(SocialEngine state)
 		{
 			var loader = new TraitYamlLoader();
 
@@ -38,7 +38,7 @@ namespace TDRS
 
 				foreach (var traitDefinition in definitions)
 				{
-					state.TraitLibrary.Traits[traitDefinition.TraitID] = traitDefinition;
+					state.TraitLibrary.AddTrait(traitDefinition);
 				}
 			}
 		}

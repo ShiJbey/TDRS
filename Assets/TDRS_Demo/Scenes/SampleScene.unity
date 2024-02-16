@@ -450,7 +450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_traitYamlFiles:
-  - {fileID: 0}
+  - {fileID: 4900000, guid: 905ca4f98d10e89449e9f617372a2de9, type: 3}
 --- !u!114 &568713670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463,8 +463,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab3135e6fae3497ba93d377ce3e3b32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_filePaths:
-  - events.yaml
+  m_eventYamlFiles:
+  - {fileID: 4900000, guid: 946f59a4d0fc74da88438cdc26e6886e, type: 3}
 --- !u!1 &680955580
 GameObject:
   m_ObjectHideFlags: 0

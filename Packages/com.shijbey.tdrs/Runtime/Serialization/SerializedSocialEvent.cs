@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace TDRS.Serialization
 {
 	public class SerializedSocialEvent
@@ -19,6 +21,28 @@ namespace TDRS.Serialization
 			roles = new string[0];
 			description = "";
 			responses = new SerializedSocialEventResponse[0];
+		}
+
+		#endregion
+
+		#region Public Methods
+
+		public SocialEvent ToRuntimeInstance()
+		{
+			return new SocialEvent(
+				name: name,
+				roles: roles,
+				description: description,
+				responses: responses
+					.Select(response =>
+					{
+						return new SocialEventResponse(
+							response.preconditions,
+							response.effects
+						);
+					})
+					.ToArray()
+			);
 		}
 
 		#endregion

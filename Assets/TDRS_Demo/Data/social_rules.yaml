@@ -1,0 +1,12 @@
+- preconditions:
+    - ?other.relationships.?owner
+    - not ?other.traits.jerk
+  effects:
+    - DecreaseRelationshipStat ?other ?owner Friendship 10
+  description: "[owner] is a jerk"
+- preconditions:
+    - ?owner.relationships.?other
+    - ?other.traits.jerk
+  effects:
+    - IncreaseRelationshipStat ?owner ?other Friendship 10
+  description: "Jerks like other jerks"

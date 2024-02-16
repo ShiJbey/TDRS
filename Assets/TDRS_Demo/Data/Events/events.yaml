@@ -1,6 +1,9 @@
 # TDRS Sample Social Events
 
-- event: Betrayal ?betrayer ?victim
+- name: Betrayal
+  roles:
+    - "?betrayer"
+    - "?victim"
   description: "[betrayer] betrayed [victim]."
   responses:
     - effects:
@@ -17,21 +20,30 @@
       effects:
         - AddRelationshipTrait ?victim_family ?betrayer angry_at 10
 
-- event: BecomeFriends ?character_a ?character_b
+- name: BecomeFriends
+  roles:
+    - "?character_a"
+    - "?character_b"
   description: "[character_a] and [character_b] became friends."
   responses:
     - effects:
         - AddRelationshipTrait ?character_a ?character_b friend
         - AddRelationshipTrait ?character_b ?character_a friend
 
-- event: StartDating ?character_a ?character_b
+- name: StartDating
+  roles:
+    - "?character_a"
+    - "?character_b"
   description: "[character_a] and [character_b] started dating."
   responses:
     - effects:
         - AddRelationshipTrait ?character_a ?character_b dating
         - AddRelationshipTrait ?character_b ?character_a dating
 
-- event: BreakUp ?character_a ?character_b
+- name: BreakUp
+  roles:
+    - "?character_a"
+    - "?character_b"
   description: "[character_a] broke-up with [character_b]."
   responses:
     - effects:

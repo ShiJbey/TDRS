@@ -49,11 +49,10 @@ namespace TDRS
 						.ToArray();
 				}
 
-				responses[i] = new SocialEventResponse()
-				{
-					Preconditions = preconditions,
-					Effects = entry.effects
-				};
+				responses[i] = new SocialEventResponse(
+					preconditions,
+					entry.effects
+				);
 			}
 
 			var socialEvent = new SocialEvent(
