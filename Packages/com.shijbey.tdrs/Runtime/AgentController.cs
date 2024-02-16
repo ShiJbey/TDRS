@@ -17,7 +17,7 @@ namespace TDRS
 		private string m_UID;
 
 		[SerializeField]
-		private AgentConfigSO m_agentConfig;
+		private AgentSchemaSO m_agentSchema;
 
 		[SerializeField]
 		private List<StatInitializer> m_baseStats;
@@ -35,9 +35,9 @@ namespace TDRS
 		public string UID => m_UID;
 
 		/// <summary>
-		/// A reference to the config settings for this agent
+		/// A reference to the configuration settings for this agent
 		/// </summary>
-		public AgentConfigSO Config => m_agentConfig;
+		public AgentSchemaSO Schema => m_agentSchema;
 
 		/// <summary>
 		/// A reference to this agent's corresponding node within the social engine.

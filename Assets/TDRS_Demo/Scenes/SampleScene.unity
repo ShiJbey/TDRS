@@ -624,7 +624,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UID: jamal
-  m_agentConfig: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
+  m_agentSchema: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
   m_baseStats: []
   m_baseTraits:
   - anti-social
@@ -708,7 +708,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UID: ameera
-  m_agentConfig: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
+  m_agentSchema: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
   m_baseStats: []
   m_baseTraits:
   - jerk
@@ -774,7 +774,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UID: lily
-  m_agentConfig: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
+  m_agentSchema: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
   m_baseStats: []
   m_baseTraits:
   - happy_go_lucky
@@ -1065,11 +1065,19 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentSchemas.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_socialEvents.Array.size
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_agentConfigs.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_agentSchemas.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
@@ -1105,11 +1113,19 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_relationshipSchemas.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_agentConfigAssets.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: 7b5f7ac6beb1f4832a1976799ba57f59, type: 2}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_relationshipConfigs.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 13889b32cedde4ff2a7dc05e530b79be, type: 2}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_relationshipSchemas.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: 13889b32cedde4ff2a7dc05e530b79be, type: 2}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}

@@ -180,14 +180,14 @@ namespace TDRS.Serialization
 			// Serialize the database
 			serializedEngine.dbEntries = SerializeDatabase(socialEngine.DB);
 
-			foreach (var entry in socialEngine.AgentConfigs.Values)
+			foreach (var entry in socialEngine.AgentSchemas.Values)
 			{
 				serializedEngine.agentSchemas.Add(
 					new SerializedAgentSchema()
 					{
-						agentType = entry.agentType,
-						traits = entry.traits,
-						stats = entry.stats
+						agentType = entry.AgentType,
+						traits = entry.Traits,
+						stats = entry.Stats
 							.Select(stat =>
 							{
 								return new SerializedStatSchema()
@@ -203,15 +203,15 @@ namespace TDRS.Serialization
 				);
 			}
 
-			foreach (var entry in socialEngine.RelationshipConfigs.Values)
+			foreach (var entry in socialEngine.RelationshipSchemas.Values)
 			{
 				serializedEngine.relationshipSchemas.Add(
 					new SerializedRelationshipSchema()
 					{
-						ownerType = entry.ownerAgentType,
-						targetType = entry.targetAgentType,
-						traits = entry.traits,
-						stats = entry.stats
+						ownerType = entry.OwnerType,
+						targetType = entry.TargetType,
+						traits = entry.Traits,
+						stats = entry.Stats
 							.Select(stat =>
 							{
 								return new SerializedStatSchema()
@@ -300,8 +300,8 @@ namespace TDRS.Serialization
 
 			foreach (var entry in serializedEngine.agentSchemas)
 			{
-				socialEngine.AddAgentConfig(
-					new AgentConfig(
+				socialEngine.AddAgentSchema(
+					new AgentSchema(
 						agentType: entry.agentType,
 						stats: entry.stats
 							.Select(stat =>
@@ -321,8 +321,8 @@ namespace TDRS.Serialization
 
 			foreach (var entry in serializedEngine.relationshipSchemas)
 			{
-				socialEngine.AddRelationshipConfig(
-					new RelationshipConfig(
+				socialEngine.AddRelationshipSchema(
+					new RelationshipSchema(
 						ownerType: entry.ownerType,
 						targetType: entry.targetType,
 						stats: entry.stats

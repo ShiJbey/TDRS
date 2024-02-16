@@ -26,14 +26,14 @@ namespace TDRS
 		/// in the social graph.
 		/// </summary>
 		[SerializeField]
-		private AgentConfigSO[] m_agentConfigs;
+		private AgentSchemaSO[] m_agentSchemas;
 
 		/// <summary>
 		/// ScriptableObjects containing settings for constructing new relationships
 		/// in the social graph.
 		/// </summary>
 		[SerializeField]
-		private RelationshipConfigSO[] m_relationshipConfigs;
+		private RelationshipSchemaSO[] m_relationshipSchemas;
 
 		/// <summary>
 		/// A list of text files containing social event definitions.
@@ -70,9 +70,9 @@ namespace TDRS
 
 		public static UnityAction<SocialEngine> OnLoadTraits;
 
-		public static UnityAction<SocialEngine> OnLoadAgentConfigs;
+		public static UnityAction<SocialEngine> OnLoadAgentSchemas;
 
-		public static UnityAction<SocialEngine> OnLoadRelationshipConfigs;
+		public static UnityAction<SocialEngine> OnLoadRelationshipSchemas;
 
 		public static UnityAction<SocialEngine> OnLoadSocialEvents;
 
@@ -118,8 +118,8 @@ namespace TDRS
 		public void Initialize()
 		{
 			LoadTraits();
-			LoadAgentConfigs();
-			LoadRelationshipConfigs();
+			LoadAgentSchemas();
+			LoadRelationshipSchemas();
 			LoadSocialEvents();
 			RegisterEffectFactories();
 		}
@@ -138,7 +138,7 @@ namespace TDRS
 			}
 			else
 			{
-				node = State.AddAgent(agent.Config.agentType, agent.UID);
+				node = State.AddAgent(agent.Schema.agentType, agent.UID);
 
 				// Configure initial traits
 				foreach (var traitID in agent.BaseTraits)
@@ -238,26 +238,26 @@ namespace TDRS
 			}
 		}
 
-		private void LoadAgentConfigs()
+		private void LoadAgentSchemas()
 		{
-			foreach (AgentConfigSO configSO in m_agentConfigs)
+			foreach (AgentSchemaSO schemaSO in m_agentSchemas)
 			{
-				var config = configSO.CreateAgentConfig();
-				State.AgentConfigs[config.agentType] = config;
+				var schema = schemaSO.CreateAgentSchema();
+				State.AddAgentSchema(schema);
 			}
 
-			OnLoadAgentConfigs?.Invoke(State);
+			OnLoadAgentSchemas?.Invoke(State);
 		}
 
-		private void LoadRelationshipConfigs()
+		private void LoadRelationshipSchemas()
 		{
-			foreach (RelationshipConfigSO configSO in m_relationshipConfigs)
+			foreach (RelationshipSchemaSO schemaSO in m_relationshipSchemas)
 			{
-				var config = configSO.CreateRelationshipConfig();
-				State.RelationshipConfigs[(config.ownerAgentType, config.targetAgentType)] = config;
+				var schema = schemaSO.CreateRelationshipSchema();
+				State.AddRelationshipSchema(schema);
 			}
 
-			OnLoadRelationshipConfigs?.Invoke(State);
+			OnLoadRelationshipSchemas?.Invoke(State);
 		}
 
 		private void LoadSocialEvents()

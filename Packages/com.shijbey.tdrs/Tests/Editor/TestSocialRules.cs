@@ -77,45 +77,47 @@ namespace TDRS.Tests
 				)
 			);
 
-			_engine.AgentConfigs["character"] = new AgentConfig()
-			{
-				agentType = "character",
-				traits = new string[0],
-				stats = new StatSchema[]
-				{
-					new StatSchema(
-						statName: "Confidence",
-						baseValue: 0,
-						maxValue: 50,
-						minValue: 0,
-						isDiscrete: true
-					)
-				}
-			};
-
-			_engine.RelationshipConfigs[("character", "character")] = new RelationshipConfig()
-			{
-				ownerAgentType = "character",
-				targetAgentType = "character",
-				traits = new string[0],
-				stats = new StatSchema[]
+			_engine.AddAgentSchema(
+				new AgentSchema(
+					"character",
+					new StatSchema[]
 					{
-					new StatSchema(
-						statName: "Friendship",
-						baseValue: 0,
-						maxValue: 50,
-						minValue: 0,
-						isDiscrete: true
-					),
-					new StatSchema(
-						statName: "Romance",
-						baseValue: 0,
-						maxValue: 50,
-						minValue: 0,
-						isDiscrete: true
-					)
-					}
-			};
+						new StatSchema(
+							statName: "Confidence",
+							baseValue: 0,
+							maxValue: 50,
+							minValue: 0,
+							isDiscrete: true
+						)
+					},
+					new string[0]
+				)
+			);
+
+			_engine.AddRelationshipSchema(
+				new RelationshipSchema(
+					"character",
+					"character",
+					new StatSchema[]
+					{
+						new StatSchema(
+							statName: "Friendship",
+							baseValue: 0,
+							maxValue: 50,
+							minValue: 0,
+							isDiscrete: true
+						),
+						new StatSchema(
+							statName: "Romance",
+							baseValue: 0,
+							maxValue: 50,
+							minValue: 0,
+							isDiscrete: true
+						)
+					},
+					new string[0]
+				)
+			);
 
 			_engine.AddSocialRule(
 				new SocialRule(

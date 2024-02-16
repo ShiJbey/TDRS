@@ -62,13 +62,13 @@ namespace TDRS
 		/// <summary>
 		/// A lookup table of agent type names mapped to configuration settings.
 		/// </summary>
-		public Dictionary<string, AgentConfig> AgentConfigs { get; private set; }
+		public Dictionary<string, AgentSchema> AgentSchemas { get; private set; }
 
 		/// <summary>
 		/// A lookup table of relationship owner/target type name tuples mapped to
 		/// relationship configuration settings.
 		/// </summary>
-		public Dictionary<(string, string), RelationshipConfig> RelationshipConfigs { get; private set; }
+		public Dictionary<(string, string), RelationshipSchema> RelationshipSchemas { get; private set; }
 
 		#endregion
 
@@ -98,8 +98,8 @@ namespace TDRS
 			SocialEventLibrary = new SocialEventLibrary();
 			EffectLibrary = new EffectLibrary();
 			DB = new RePraxisDatabase();
-			AgentConfigs = new Dictionary<string, AgentConfig>();
-			RelationshipConfigs = new Dictionary<(string, string), RelationshipConfig>();
+			AgentSchemas = new Dictionary<string, AgentSchema>();
+			RelationshipSchemas = new Dictionary<(string, string), RelationshipSchema>();
 			SocialRules = new Dictionary<string, SocialRule>();
 		}
 
@@ -107,14 +107,14 @@ namespace TDRS
 
 		#region Public Methods
 
-		public void AddAgentConfig(AgentConfig config)
+		public void AddAgentSchema(AgentSchema schema)
 		{
-			AgentConfigs[config.agentType] = config;
+			AgentSchemas[schema.AgentType] = schema;
 		}
 
-		public void AddRelationshipConfig(RelationshipConfig config)
+		public void AddRelationshipSchema(RelationshipSchema schema)
 		{
-			RelationshipConfigs[(config.ownerAgentType, config.targetAgentType)] = config;
+			RelationshipSchemas[(schema.OwnerType, schema.TargetType)] = schema;
 		}
 
 		public void AddSocialRule(SocialRule rule)
@@ -124,19 +124,19 @@ namespace TDRS
 
 		public Agent AddAgent(string agentType, string uid)
 		{
-			if (!AgentConfigs.ContainsKey(agentType))
+			if (!AgentSchemas.ContainsKey(agentType))
 			{
-				throw new KeyNotFoundException($"No config found for agent type: {agentType}");
+				throw new KeyNotFoundException($"No schema found for agent type: {agentType}");
 			}
 
-			AgentConfig config = AgentConfigs[agentType];
+			AgentSchema schema = AgentSchemas[agentType];
 
 			Agent agent = new Agent(this, uid, agentType);
 			m_agents[uid] = agent;
 			DB.Insert($"{uid}");
 
 			// Configure stats
-			foreach (StatSchema entry in config.stats)
+			foreach (StatSchema entry in schema.Stats)
 			{
 				agent.Stats.AddStat(
 					entry.statName,
@@ -147,7 +147,7 @@ namespace TDRS
 			}
 
 			// Configure initial traits
-			foreach (string traitID in config.traits)
+			foreach (string traitID in schema.Traits)
 			{
 				agent.AddTrait(traitID);
 			}
@@ -167,7 +167,7 @@ namespace TDRS
 
 		public Relationship AddRelationship(Agent owner, Agent target)
 		{
-			RelationshipConfig config = RelationshipConfigs[(owner.AgentType, target.AgentType)];
+			RelationshipSchema schema = RelationshipSchemas[(owner.AgentType, target.AgentType)];
 
 			Relationship relationship = new Relationship(this, owner, target);
 
@@ -179,7 +179,7 @@ namespace TDRS
 			DB.Insert($"{owner.UID}.relationships.{target.UID}");
 
 			// Set initial stats from schema
-			foreach (var entry in config.stats)
+			foreach (var entry in schema.Stats)
 			{
 				relationship.Stats.AddStat(
 					entry.statName,
@@ -190,7 +190,7 @@ namespace TDRS
 			}
 
 			// Configure initial traits
-			foreach (string traitID in config.traits)
+			foreach (string traitID in schema.Traits)
 			{
 				relationship.AddTrait(traitID);
 			}

@@ -20,7 +20,7 @@ namespace TDRS.Demo
 			SocialEngineController.Instance.Initialize();
 
 			// You need to initialize the Social engine before you load the save file
-			// because it depends on the agent and relationship configs supplied
+			// because it depends on the agent and relationship schemas supplied
 			// in the inspector and/or loaded from StreamingAssets.
 
 			string filePath = Path.Combine(

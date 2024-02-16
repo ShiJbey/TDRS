@@ -14,13 +14,12 @@ namespace TDRS.Tests
 		{
 			_engine = SocialEngine.Instantiate();
 
-			_engine.AddAgentConfig(
-				new AgentConfig()
-				{
-					agentType = "character",
-					traits = new string[0],
-					stats = new StatSchema[0],
-				}
+			_engine.AddAgentSchema(
+				new AgentSchema(
+					"character",
+					new StatSchema[0],
+					new string[0]
+				)
 			);
 
 			_agent = _engine.AddAgent("character", "perry");

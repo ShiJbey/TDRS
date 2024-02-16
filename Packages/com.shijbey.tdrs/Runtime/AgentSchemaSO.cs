@@ -5,8 +5,8 @@ namespace TDRS
 	/// <summary>
 	/// Configuration settings used to create agents.
 	/// </summary>
-	[CreateAssetMenu(menuName = "TDRS/Agent Config")]
-	public class AgentConfigSO : ScriptableObject
+	[CreateAssetMenu(menuName = "TDRS/Agent Schema")]
+	public class AgentSchemaSO : ScriptableObject
 	{
 		/// <summary>
 		/// The type of agent this creates.
@@ -24,17 +24,14 @@ namespace TDRS
 		public string[] traits;
 
 		/// <summary>
-		/// Create an agent config from the scriptable object data.
+		/// Create an agent schema from the scriptable object data.
 		/// </summary>
 		/// <returns></returns>
-		public AgentConfig CreateAgentConfig()
+		public AgentSchema CreateAgentSchema()
 		{
-			return new AgentConfig()
-			{
-				agentType = agentType,
-				stats = stats,
-				traits = traits
-			};
+			return new AgentSchema(
+				agentType, stats, traits
+			);
 		}
 	}
 }

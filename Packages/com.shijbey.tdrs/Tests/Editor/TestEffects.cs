@@ -39,12 +39,10 @@ namespace TDRS.Tests
 				)
 			);
 
-			_engine.AddAgentConfig(
-				new AgentConfig()
-				{
-					agentType = "character",
-					traits = new string[0],
-					stats = new StatSchema[]
+			_engine.AddAgentSchema(
+				new AgentSchema(
+					"character",
+					new StatSchema[]
 					{
 						new StatSchema(
 							statName: "Confidence",
@@ -53,8 +51,9 @@ namespace TDRS.Tests
 							minValue: 0,
 							isDiscrete: true
 						)
-					}
-				}
+					},
+					new string[0]
+				)
 			);
 		}
 

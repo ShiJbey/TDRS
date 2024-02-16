@@ -16,7 +16,7 @@ namespace TDRS
 		public string UID { get; }
 
 		/// <summary>
-		/// The type config name of this agent.
+		/// The schema name name of this agent.
 		/// </summary>
 		public string AgentType { get; }
 

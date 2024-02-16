@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <uie:PropertyField name="UID" binding-path="m_UID" label="UID" style="height: 26px; width: 351px;" />
-    <uie:PropertyField name="Config" binding-path="m_agentConfig" />
+    <uie:PropertyField name="Config" binding-path="m_agentSchema" />
     <ui:Foldout text="Base Configuration" view-data-key="baseConfigFoldout" name="BaseConfigFoldout">
         <uie:PropertyField name="BaseStats" binding-path="m_baseStats" />
         <uie:PropertyField name="BaseTraits" binding-path="m_baseTraits" />

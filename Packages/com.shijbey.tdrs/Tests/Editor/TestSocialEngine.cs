@@ -12,23 +12,21 @@ namespace TDRS.Tests
 		{
 			_engine = SocialEngine.Instantiate();
 
-			_engine.AddAgentConfig(
-				new AgentConfig()
-				{
-					agentType = "agent",
-					stats = new StatSchema[0],
-					traits = new string[0]
-				}
+			_engine.AddAgentSchema(
+				new AgentSchema(
+					"agent",
+					new StatSchema[0],
+					new string[0]
+				)
 			);
 
-			_engine.AddRelationshipConfig(
-				new RelationshipConfig()
-				{
-					ownerAgentType = "agent",
-					targetAgentType = "agent",
-					stats = new StatSchema[0],
-					traits = new string[0]
-				}
+			_engine.AddRelationshipSchema(
+				new RelationshipSchema(
+					"agent",
+					"agent",
+					new StatSchema[0],
+					new string[0]
+				)
 			);
 		}
 

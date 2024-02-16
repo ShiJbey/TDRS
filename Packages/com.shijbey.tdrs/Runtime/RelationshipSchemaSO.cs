@@ -1,22 +1,22 @@
-using System;
+using UnityEngine;
 
 namespace TDRS
 {
 	/// <summary>
 	/// Configuration information used to create relationship instances.
 	/// </summary>
-	[Serializable]
-	public class RelationshipConfig
+	[CreateAssetMenu(menuName = "TDRS/Relationship Schema")]
+	public class RelationshipSchemaSO : ScriptableObject
 	{
 		/// <summary>
 		/// The agent type of the owner of the relationship.
 		/// </summary>
-		public string ownerAgentType;
+		public AgentSchemaSO ownerType;
 
 		/// <summary>
 		/// The agent type of the target of the relationship.
 		/// </summary>
-		public string targetAgentType;
+		public AgentSchemaSO targetType;
 
 		/// <summary>
 		/// The stats associated with this agent type.
@@ -28,20 +28,18 @@ namespace TDRS
 		/// </summary>
 		public string[] traits;
 
-		public RelationshipConfig()
+		/// <summary>
+		/// Create relationship schema from scriptable object
+		/// </summary>
+		/// <returns></returns>
+		public RelationshipSchema CreateRelationshipSchema()
 		{
-			ownerAgentType = "";
-			targetAgentType = "";
-			stats = new StatSchema[0];
-			traits = new string[0];
-		}
-
-		public RelationshipConfig(string ownerType, string targetType, StatSchema[] stats, string[] traits)
-		{
-			this.ownerAgentType = ownerType;
-			this.targetAgentType = targetType;
-			this.stats = stats;
-			this.traits = traits;
+			return new RelationshipSchema(
+				ownerType.agentType,
+				targetType.agentType,
+				stats,
+				traits
+			);
 		}
 	}
 }

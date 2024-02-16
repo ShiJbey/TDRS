@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37a6dbb2403fe401ca757e75c0229b28, type: 3}
-  m_Name: CharacterAgentConfig
+  m_Name: CharacterAgent
   m_EditorClassIdentifier: 
   agentType: character
   stats:
