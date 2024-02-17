@@ -9,7 +9,7 @@ namespace TDRS
 
 		protected string m_name;
 		protected string[] m_roles;
-		protected string m_descriptionTemplate;
+		protected string m_description;
 		protected SocialEventResponse[] m_responses;
 
 		#endregion
@@ -18,7 +18,7 @@ namespace TDRS
 
 		public string Name => m_name;
 		public string[] Roles => m_roles;
-		public string DescriptionTemplate => m_descriptionTemplate;
+		public string Description => m_description;
 		public SocialEventResponse[] Responses => m_responses;
 		public int Cardinality => m_roles.Length;
 		public string Symbol => $"{m_name}/{Cardinality}";
@@ -36,7 +36,7 @@ namespace TDRS
 		{
 			m_name = name;
 			m_roles = roles;
-			m_descriptionTemplate = description;
+			m_description = description;
 			m_responses = responses;
 		}
 
@@ -47,26 +47,6 @@ namespace TDRS
 		public override string ToString()
 		{
 			return Symbol;
-		}
-
-		#endregion
-	}
-
-	public class SocialEventResponse
-	{
-		#region Properties
-
-		public string[] Preconditions { get; set; }
-		public string[] Effects { get; set; }
-
-		#endregion
-
-		#region Constructors
-
-		public SocialEventResponse(string[] preconditions, string[] effects)
-		{
-			Preconditions = preconditions;
-			Effects = effects;
 		}
 
 		#endregion

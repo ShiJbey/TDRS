@@ -1,37 +1,22 @@
 namespace TDRS
 {
-	public class IncreaseRelationshipStat : Effect
+	public class IncreaseRelationshipStat : IEffect
 	{
 		#region Fields
 
-		protected Relationship m_relationship;
-		protected string m_statName;
-		protected float m_value;
-
-		#endregion
-
-		#region Properties
-
-		public override string Description
-		{
-			get
-			{
-				string sign = (m_value >= 0) ? "+" : "-";
-				return $"{sign}{m_value} {m_statName} stat";
-			}
-		}
+		private Relationship m_relationship;
+		private string m_statName;
+		private float m_value;
 
 		#endregion
 
 		#region Constructors
 
 		public IncreaseRelationshipStat(
-			EffectContext ctx,
 			Relationship relationship,
 			string statName,
-			float value,
-			int duration
-		) : base(relationship, ctx, duration)
+			float value
+		)
 		{
 			m_relationship = relationship;
 			m_statName = statName;
@@ -42,22 +27,15 @@ namespace TDRS
 
 		#region Public Method
 
-		public override void Apply()
+		public void Apply()
 		{
-			m_relationship.Stats.GetStat(m_statName).AddModifier(
-				new StatModifier(
-					m_value,
-					StatModifierType.FLAT,
-					this
-				)
-			);
-			m_relationship.Effects.AddEffect(this);
+			m_relationship.Stats.GetStat(m_statName).BaseValue += m_value;
 		}
 
-		public override void Remove()
+		public override string ToString()
 		{
-			m_relationship.Stats.GetStat(m_statName).RemoveModifiersFromSource(this);
-			m_relationship.Effects.RemoveEffect(this);
+			string sign = (m_value >= 0) ? "+" : "-";
+			return $"{sign}{m_value} {m_statName} stat";
 		}
 
 		#endregion

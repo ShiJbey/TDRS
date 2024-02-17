@@ -25,12 +25,11 @@ namespace TDRS
 			if (!ctx.Engine.HasAgent(ctx.Bindings[agentVar].ToString()))
 			{
 				throw new System.ArgumentException(
-					$"No Agent found with ID: {ctx.Bindings[agentVar]}"
+					$"No Agent found with UID: {ctx.Bindings[agentVar]}"
 				);
 			}
 
 			return new RemoveAgentTrait(
-				ctx,
 				ctx.Engine.GetAgent(
 					ctx.Bindings[agentVar].ToString()
 				),

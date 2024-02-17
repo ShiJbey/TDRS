@@ -1,47 +1,43 @@
 namespace TDRS
 {
-	public class AddAgentTrait : Effect
+	public class AddAgentTrait : IEffect
 	{
 		#region Fields
 
 		private Agent m_agent;
 		private string m_traitID;
-
-		#endregion
-
-		#region Properties
-
-		public override string Description => $"Add {m_traitID} trait";
+		private int m_duration;
+		private string m_descriptionOverride;
 
 		#endregion
 
 		#region Constructors
 
 		public AddAgentTrait(
-			EffectContext ctx,
 			Agent agent,
 			string traitID,
-			int duration
-		) : base(agent, ctx, duration)
+			int duration,
+			string descriptionOverride
+		)
 		{
 			m_agent = agent;
 			m_traitID = traitID;
+			m_duration = duration;
+			m_descriptionOverride = descriptionOverride;
 		}
 
 		#endregion
 
 		#region Public Methods
 
-		public override void Apply()
+		public void Apply()
 		{
-			m_agent.AddTrait(m_traitID);
-			m_agent.Effects.AddEffect(this);
+			m_agent.AddTrait(m_traitID, m_duration, m_descriptionOverride);
 		}
 
-		public override void Remove()
+		public override string ToString()
 		{
-			m_agent.RemoveTrait(m_traitID);
-			m_agent.Effects.RemoveEffect(this);
+			return $"Add {m_traitID} trait";
 		}
 
 		#endregion

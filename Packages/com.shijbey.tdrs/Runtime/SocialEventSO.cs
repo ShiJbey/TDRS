@@ -51,7 +51,8 @@ namespace TDRS
 
 				responses[i] = new SocialEventResponse(
 					preconditions,
-					entry.effects
+					entry.effects,
+					entry.description
 				);
 			}
 
@@ -71,6 +72,7 @@ namespace TDRS
 			[TextArea(minLines: 3, maxLines: 8)]
 			public string precondition;
 			public string[] effects;
+			public string description;
 		}
 	}
 }

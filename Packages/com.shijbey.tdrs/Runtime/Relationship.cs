@@ -7,7 +7,7 @@ namespace TDRS
 	/// <summary>
 	/// A directed relationship from one agent to another.
 	/// </summary>
-	public class Relationship : ISocialEntity, IEffectable
+	public class Relationship : ISocialEntity
 	{
 		#region Fields
 
@@ -46,11 +46,6 @@ namespace TDRS
 		public StatManager Stats { get; protected set; }
 
 		/// <summary>
-		/// Manages all effects applied to this relationship.
-		/// </summary>
-		public EffectManager Effects { get; }
-
-		/// <summary>
 		/// Social rules currently applied to this relationship.
 		/// </summary>
 		public IEnumerable<SocialRule> ActiveSocialRules => m_activeSocialRules;
@@ -75,7 +70,6 @@ namespace TDRS
 			Target = target;
 			Traits = new TraitManager(this);
 			Stats = new StatManager();
-			Effects = new EffectManager();
 			m_activeSocialRules = new List<SocialRule>();
 			Stats.OnValueChanged += HandleStatChanged;
 		}
@@ -89,7 +83,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="traitID"></param>
 		/// <returns></returns>
-		public bool AddTrait(string traitID, int duration = -1)
+		public bool AddTrait(string traitID, int duration = -1, string descriptionOverride = "")
 		{
 			Trait trait = Engine.TraitLibrary.Traits[traitID];
 
@@ -107,8 +101,17 @@ namespace TDRS
 				);
 			}
 
+			string description = trait.Description
+				.Replace($"[owner]", Owner.UID)
+				.Replace($"[target]", Target.UID);
+
+			if (descriptionOverride != "")
+			{
+				description = descriptionOverride;
+			}
+
 			// Add trait and apply effects.
-			Traits.AddTrait(trait, duration);
+			Traits.AddTrait(trait, description, duration);
 
 			// Update the traits listed in RePraxis database.
 			Engine.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");

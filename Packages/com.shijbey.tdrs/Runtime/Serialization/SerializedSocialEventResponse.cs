@@ -6,6 +6,7 @@ namespace TDRS.Serialization
 
 		public string[] preconditions { get; set; }
 		public string[] effects { get; set; }
+		public string description { get; set; }
 
 		#endregion
 
@@ -15,6 +16,7 @@ namespace TDRS.Serialization
 		{
 			preconditions = new string[0];
 			effects = new string[0];
+			description = "";
 		}
 
 		#endregion

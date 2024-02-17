@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -5,17 +6,91 @@ namespace TDRS.Tests
 {
 	public class TestSocialEngine
 	{
+		/// <summary>
+		/// Tolerance threshold for floating point equality assertions.
+		/// </summary>
+		private double _assertTolerance;
+
 		private SocialEngine _engine;
 
 		[SetUp]
 		public void SetUp()
 		{
+			_assertTolerance = Math.Pow(10, -Stat.ROUND_PRECISION);
+
 			_engine = SocialEngine.Instantiate();
+
+			_engine.TraitLibrary.AddTrait(
+				new Trait(
+					traitID: "recently-complimented",
+					traitType: TraitType.Agent,
+					displayName: "Recently complimented",
+					description: "[owner] recently received a compliment from someone.",
+					modifiers: new StatModifierData[]
+					{
+						new StatModifierData(
+							statName: "Confidence",
+							value: 20,
+							modifierType: StatModifierType.FLAT
+						)
+					},
+					conflictingTraits: new string[0]
+				)
+			);
+
+			_engine.TraitLibrary.AddTrait(
+				new Trait(
+					traitID: "confident",
+					traitType: TraitType.Agent,
+					displayName: "Confident",
+					description: "[owner] is confident.",
+					modifiers: new StatModifierData[]
+					{
+						new StatModifierData(
+							statName: "Confidence",
+							value: 10,
+							modifierType: StatModifierType.FLAT
+						)
+					},
+					conflictingTraits: new string[0]
+				)
+			);
+
+			_engine.TraitLibrary.AddTrait(
+				new Trait(
+					traitID: "friendly",
+					traitType: TraitType.Agent,
+					displayName: "Friendly",
+					description: "[owner] is friendly.",
+					modifiers: new StatModifierData[0],
+					conflictingTraits: new string[0]
+				)
+			);
+
+			_engine.TraitLibrary.AddTrait(
+				new Trait(
+					traitID: "attractive",
+					traitType: TraitType.Agent,
+					displayName: "Attractive",
+					description: "[owner] is attractive.",
+					modifiers: new StatModifierData[0],
+					conflictingTraits: new string[0]
+				)
+			);
 
 			_engine.AddAgentSchema(
 				new AgentSchema(
 					"agent",
-					new StatSchema[0],
+					new StatSchema[]
+					{
+						new StatSchema(
+							statName: "Confidence",
+							baseValue: 0,
+							maxValue: 50,
+							minValue: 0,
+							isDiscrete: true
+						)
+					},
 					new string[0]
 				)
 			);
@@ -24,8 +99,47 @@ namespace TDRS.Tests
 				new RelationshipSchema(
 					"agent",
 					"agent",
-					new StatSchema[0],
+					new StatSchema[]
+					{
+						new StatSchema(
+							statName: "Friendship",
+							baseValue: 0,
+							maxValue: 50,
+							minValue: 0,
+							isDiscrete: true
+						),
+						new StatSchema(
+							statName: "Romance",
+							baseValue: 0,
+							maxValue: 50,
+							minValue: 0,
+							isDiscrete: true
+						)
+					},
 					new string[0]
+				)
+			);
+
+			_engine.SocialEventLibrary.AddSocialEvent(
+				new SocialEvent(
+					name: "compliment",
+					roles: new string[]
+					{
+						"?initiator",
+						"?target"
+					},
+					description: "[initiator] complimented [target]",
+					responses: new SocialEventResponse[]
+					{
+						new SocialEventResponse(
+							preconditions: new string[0],
+							effects: new string[]
+							{
+								"AddAgentTrait ?target recently-complimented 3"
+							},
+							description: ""
+						)
+					}
 				)
 			);
 		}
@@ -165,6 +279,30 @@ namespace TDRS.Tests
 
 			Assert.That(_engine.HasRelationship("sara", "lisa"), Is.False);
 			Assert.That(_engine.HasRelationship("lisa", "sara"), Is.True);
+		}
+
+		/// <summary>
+		/// Ensure social events are dispatched by name.
+		/// </summary>
+		[Test]
+		public void TestDispatchEvent()
+		{
+			var jose = _engine.AddAgent("agent", "jose");
+			var lisa = _engine.AddAgent("agent", "lisa");
+			var sara = _engine.AddAgent("agent", "sara");
+
+			Assert.That(lisa.Traits.HasTrait("recently-complimented"), Is.False);
+
+			_engine.DispatchEvent("compliment", "jose", "lisa");
+
+			Assert.That(lisa.Traits.HasTrait("recently-complimented"), Is.True);
+
+			_engine.Tick();
+			_engine.Tick();
+			_engine.Tick();
+			_engine.Tick();
+
+			Assert.That(lisa.Traits.HasTrait("recently-complimented"), Is.False);
 		}
 
 		/// <summary>

@@ -43,27 +43,13 @@ namespace TDRS
 				);
 			}
 
-			int duration = -1;
-
-			if (args.Length >= 5)
-			{
-				if (!int.TryParse(args[4], out duration))
-				{
-					throw new System.ArgumentException(
-						$"Expected integer as 5th argument but was '{args[4]}'"
-					);
-				}
-			}
-
 			return new DecreaseRelationshipStat(
-				ctx,
 				ctx.Engine.GetRelationship(
 					ctx.Bindings[relationshipOwnerVar].ToString(),
 					ctx.Bindings[relationshipTargetVar].ToString()
 				),
 				statName,
-				value,
-				duration
+				value
 			);
 		}
 	}

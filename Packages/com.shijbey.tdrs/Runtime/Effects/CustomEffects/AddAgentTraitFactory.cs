@@ -46,10 +46,10 @@ namespace TDRS
 
 
 			return new AddAgentTrait(
-				ctx,
 				ctx.Engine.GetAgent(ctx.Bindings[agentVar].ToString()),
 				traitID,
-				duration
+				duration,
+				ctx.Description
 			);
 		}
 	}

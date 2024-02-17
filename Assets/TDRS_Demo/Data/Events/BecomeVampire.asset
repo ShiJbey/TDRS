@@ -20,3 +20,4 @@ MonoBehaviour:
   - precondition: 
     effects:
     - AddAgentTrait ?character vampirism
+    description: Whoops! [character] is a vampire

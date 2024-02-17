@@ -49,13 +49,13 @@ namespace TDRS
 			}
 
 			return new AddRelationshipTrait(
-				ctx,
 				ctx.Engine.GetRelationship(
 					ctx.Bindings[relationshipOwnerVar].ToString(),
 					ctx.Bindings[relationshipTargetVar].ToString()
 				),
 				traitID,
-				duration
+				duration,
+				ctx.Description
 			);
 		}
 	}

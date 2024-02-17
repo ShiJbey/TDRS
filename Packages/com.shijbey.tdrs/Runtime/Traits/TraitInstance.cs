@@ -41,7 +41,7 @@ namespace TDRS
 		/// <summary>
 		/// A short textual description of the trait.
 		/// </summary>
-		public string Description => m_trait.Description;
+		public string Description { get; }
 
 		/// <summary>
 		/// IDs of traits that this trait cannot be added with.
@@ -62,10 +62,16 @@ namespace TDRS
 
 		#region Constructors
 
-		public TraitInstance(ISocialEntity target, Trait trait, int duration = -1)
+		public TraitInstance(
+			ISocialEntity target,
+			Trait trait,
+			string description,
+			int duration = -1
+		)
 		{
 			m_trait = trait;
 			Target = target;
+			Description = description;
 			HasDuration = duration > 0;
 			Duration = duration;
 		}

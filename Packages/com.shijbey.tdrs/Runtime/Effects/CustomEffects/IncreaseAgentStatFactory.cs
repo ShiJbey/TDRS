@@ -36,26 +36,12 @@ namespace TDRS
 				);
 			}
 
-			int duration = -1;
-
-			if (args.Length >= 4)
-			{
-				if (!int.TryParse(args[3], out duration))
-				{
-					throw new System.ArgumentException(
-						$"Expected integer as 4th argument but was '{args[3]}'"
-					);
-				}
-			}
-
 			return new IncreaseAgentStat(
-				ctx,
 				ctx.Engine.GetAgent(
 					ctx.Bindings[agentVar].ToString()
 				),
 				statName,
-				value,
-				duration
+				value
 			);
 		}
 	}

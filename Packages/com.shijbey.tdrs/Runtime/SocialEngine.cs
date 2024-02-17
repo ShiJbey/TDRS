@@ -384,14 +384,13 @@ namespace TDRS
 			}
 
 			// Create the base context for the events
-			var ctx = new EffectContext(this, eventType.DescriptionTemplate, bindings, null);
+			var ctx = new EffectContext(this, eventType.Description, bindings);
 
 			// Iterate through the responses
 			foreach (var response in eventType.Responses)
 			{
-				DBQuery preconditionQuery = new DBQuery(response.Preconditions);
-
-				var results = preconditionQuery.Run(ctx.Engine.DB, ctx.Bindings);
+				var results = new DBQuery(response.Preconditions)
+					.Run(ctx.Engine.DB, bindings);
 
 				// Skip this response because the query failed
 				if (!results.Success) continue;
@@ -401,19 +400,27 @@ namespace TDRS
 				{
 					var scopedCtx = ctx.WithBindings(bindingSet);
 
+					if (response.Description != "")
+					{
+						scopedCtx.DescriptionTemplate = response.Description;
+					}
+
 					try
 					{
 						var effects = response.Effects
-						.Select(s => EffectLibrary.CreateInstance(scopedCtx, s));
+							.Select(effectString =>
+							{
+								return EffectLibrary.CreateInstance(scopedCtx, effectString);
+							});
 
 						foreach (var effect in effects)
 						{
 							effect.Apply();
 						}
 					}
-					catch (System.ArgumentException ex)
+					catch (ArgumentException ex)
 					{
-						throw new System.ArgumentException(
+						throw new ArgumentException(
 							$"Error encountered while instantiating effects for '{eventName}' event: "
 							+ ex.Message
 						);

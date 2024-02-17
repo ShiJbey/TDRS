@@ -1,27 +1,20 @@
 namespace TDRS
 {
-	public class RemoveAgentTrait : Effect
+	public class RemoveAgentTrait : IEffect
 	{
 		#region Fields
 
-		protected Agent m_agent;
-		protected string m_traitID;
-
-		#endregion
-
-		#region Properties
-
-		public override string Description => $"Remove {m_traitID} trait.";
+		private Agent m_agent;
+		private string m_traitID;
 
 		#endregion
 
 		#region Constructors
 
 		public RemoveAgentTrait(
-			EffectContext ctx,
 			Agent agent,
 			string traitID
-		) : base(agent, ctx, -1)
+		)
 		{
 			m_agent = agent;
 			m_traitID = traitID;
@@ -31,15 +24,14 @@ namespace TDRS
 
 		#region Public Methods
 
-		public override void Apply()
+		public void Apply()
 		{
 			m_agent.RemoveTrait(m_traitID);
 		}
 
-		public override void Remove()
+		public override string ToString()
 		{
-			// Trait removal is permanent
-			return;
+			return $"Remove {m_traitID} trait.";
 		}
 
 		#endregion

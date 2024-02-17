@@ -1,27 +1,20 @@
 namespace TDRS
 {
-	public class RemoveRelationshipTrait : Effect
+	public class RemoveRelationshipTrait : IEffect
 	{
 		#region Fields
 
-		protected Relationship m_relationship;
-		protected string m_traitID;
-
-		#endregion
-
-		#region Properties
-
-		public override string Description => $"Remove {m_traitID} relationship trait";
+		private Relationship m_relationship;
+		private string m_traitID;
 
 		#endregion
 
 		#region Constructors
 
 		public RemoveRelationshipTrait(
-			EffectContext ctx,
 			Relationship relationship,
 			string traitID
-		) : base(relationship, ctx, -1)
+		)
 		{
 			m_relationship = relationship;
 			m_traitID = traitID;
@@ -31,15 +24,14 @@ namespace TDRS
 
 		#region Public Methods
 
-		public override void Apply()
+		public void Apply()
 		{
 			m_relationship.RemoveTrait(m_traitID);
 		}
 
-		public override void Remove()
+		public override string ToString()
 		{
-			// trait removal is permanent
-			return;
+			return $"Remove {m_traitID} relationship trait";
 		}
 
 		#endregion

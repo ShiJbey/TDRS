@@ -19,10 +19,5 @@ namespace TDRS
 		/// A collection of stats associated with this entity.
 		/// </summary>
 		public StatManager Stats { get; }
-
-		/// <summary>
-		/// Manages all effects applied to this entity.
-		/// </summary>
-		public EffectManager Effects { get; }
 	}
 }

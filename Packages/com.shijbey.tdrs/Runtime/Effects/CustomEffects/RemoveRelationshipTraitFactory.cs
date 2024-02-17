@@ -37,7 +37,6 @@ namespace TDRS
 			}
 
 			return new RemoveRelationshipTrait(
-				ctx,
 				ctx.Engine.GetRelationship(
 					ctx.Bindings[relationshipOwnerVar].ToString(),
 					ctx.Bindings[relationshipTargetVar].ToString()

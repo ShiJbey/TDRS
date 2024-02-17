@@ -73,7 +73,7 @@ namespace TDRS.Serialization
 					{
 						name = entry.Name,
 						roles = entry.Roles,
-						description = entry.DescriptionTemplate,
+						description = entry.Description,
 						responses = entry.Responses
 							.Select(response =>
 							{
@@ -123,7 +123,8 @@ namespace TDRS.Serialization
 						new SerializedTraitInstance()
 						{
 							traitID = instance.TraitID,
-							duration = instance.Duration
+							duration = instance.Duration,
+							description = instance.Description
 						}
 					);
 				}
@@ -158,7 +159,8 @@ namespace TDRS.Serialization
 						new SerializedTraitInstance()
 						{
 							traitID = instance.TraitID,
-							duration = instance.Duration
+							duration = instance.Duration,
+							description = instance.Description
 						}
 					);
 				}
@@ -335,7 +337,7 @@ namespace TDRS.Serialization
 				{
 					Trait trait = socialEngine.TraitLibrary.Traits[entry.traitID];
 
-					agent.Traits.AddTrait(trait, entry.duration);
+					agent.Traits.AddTrait(trait, entry.description, entry.duration);
 				}
 			}
 
@@ -348,7 +350,7 @@ namespace TDRS.Serialization
 				{
 					Trait trait = socialEngine.TraitLibrary.Traits[entry.traitID];
 
-					relationship.Traits.AddTrait(trait, entry.duration);
+					relationship.Traits.AddTrait(trait, entry.description, entry.duration);
 				}
 			}
 

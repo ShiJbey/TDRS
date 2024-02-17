@@ -38,7 +38,8 @@ namespace TDRS.Serialization
 					{
 						return new SocialEventResponse(
 							response.preconditions,
-							response.effects
+							response.effects,
+							response.description
 						);
 					})
 					.ToArray()

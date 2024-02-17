@@ -80,13 +80,13 @@ namespace TDRS
 		/// </remarks>
 		/// <param name="trait"></param>
 		/// <returns></returns>
-		public bool AddTrait(Trait trait, int duration = -1)
+		public bool AddTrait(Trait trait, string description = "", int duration = -1)
 		{
 			if (m_traits.ContainsKey(trait.TraitID)) return false;
 
 			if (HasConflictingTrait(trait)) return false;
 
-			var traitInstance = new TraitInstance(m_target, trait, duration);
+			var traitInstance = new TraitInstance(m_target, trait, description, duration);
 
 			m_traits[trait.TraitID] = traitInstance;
 

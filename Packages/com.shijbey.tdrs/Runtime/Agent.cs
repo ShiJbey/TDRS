@@ -6,7 +6,7 @@ namespace TDRS
 	/// <summary>
 	/// An entity within a social graph that is connected to other agents via relationships.
 	/// </summary>
-	public class Agent : ISocialEntity, IEffectable
+	public class Agent : ISocialEntity
 	{
 		#region Properties
 
@@ -34,11 +34,6 @@ namespace TDRS
 		/// A collection of stats associated with this agent.
 		/// </summary>
 		public StatManager Stats { get; }
-
-		/// <summary>
-		/// Manages all effects applied to this agent.
-		/// </summary>
-		public EffectManager Effects { get; }
 
 		/// <summary>
 		/// Relationships directed toward this agent.
@@ -70,7 +65,6 @@ namespace TDRS
 			Engine = engine;
 			Traits = new TraitManager(this);
 			Stats = new StatManager();
-			Effects = new EffectManager();
 			OutgoingRelationships = new Dictionary<Agent, Relationship>();
 			IncomingRelationships = new Dictionary<Agent, Relationship>();
 
@@ -87,7 +81,7 @@ namespace TDRS
 		/// <param name="traitID"></param>
 		/// <param name="duration"></param>
 		/// <returns></returns>
-		public bool AddTrait(string traitID, int duration = -1)
+		public bool AddTrait(string traitID, int duration = -1, string descriptionOverride = "")
 		{
 			Trait trait = Engine.TraitLibrary.Traits[traitID];
 
@@ -102,7 +96,14 @@ namespace TDRS
 				);
 			}
 
-			Traits.AddTrait(trait, duration);
+			string description = trait.Description.Replace($"[owner]", UID);
+
+			if (descriptionOverride != "")
+			{
+				description = descriptionOverride;
+			}
+
+			Traits.AddTrait(trait, description, duration);
 
 			Engine.DB.Insert($"{UID}.traits.{traitID}");
 

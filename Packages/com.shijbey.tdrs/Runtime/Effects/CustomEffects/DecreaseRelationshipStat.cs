@@ -1,6 +1,6 @@
 namespace TDRS
 {
-	public class DecreaseRelationshipStat : Effect
+	public class DecreaseRelationshipStat : IEffect
 	{
 		#region Fields
 
@@ -10,38 +10,13 @@ namespace TDRS
 
 		#endregion
 
-		#region Properties
-
-		public override string Description
-		{
-			get
-			{
-				// Sign is opposite because a positive effect value means we are decreasing
-				// the stat by that amount. A negative decrease is an increase.
-				string sign = (m_value >= 0) ? "-" : "+";
-				return $"{sign}{m_value} {m_statName} stat";
-			}
-		}
-
-		public override bool IsValid
-		{
-			get
-			{
-				return !HasDuration || (HasDuration && RemainingDuration > 0);
-			}
-		}
-
-		#endregion
-
 		#region Constructors
 
 		public DecreaseRelationshipStat(
-			EffectContext ctx,
 			Relationship relationship,
 			string statName,
-			float value,
-			int duration
-		) : base(relationship, ctx, duration)
+			float value
+		)
 		{
 			m_relationship = relationship;
 			m_statName = statName;
@@ -52,22 +27,17 @@ namespace TDRS
 
 		#region Public Methods
 
-		public override void Apply()
+		public void Apply()
 		{
-			m_relationship.Stats.GetStat(m_statName).AddModifier(
-				new StatModifier(
-					-m_value,
-					StatModifierType.FLAT,
-					this
-				)
-			);
-			m_relationship.Effects.AddEffect(this);
+			m_relationship.Stats.GetStat(m_statName).BaseValue -= m_value;
 		}
 
-		public override void Remove()
+		public override string ToString()
 		{
-			m_relationship.Stats.GetStat(m_statName).RemoveModifiersFromSource(this);
-			m_relationship.Effects.RemoveEffect(this);
+			// Sign is opposite because a positive effect value means we are decreasing
+			// the stat by that amount. A negative decrease is an increase.
+			string sign = (m_value >= 0) ? "-" : "+";
+			return $"{sign}{m_value} {m_statName} stat";
 		}
 
 		#endregion

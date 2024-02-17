@@ -10,9 +10,28 @@ namespace TDRS
 		#region Properties
 
 		/// <summary>
+		/// A template text description of what triggered the effect.
+		/// </summary>
+		public string DescriptionTemplate { get; set; }
+
+		/// <summary>
 		/// A text description of what triggered the effect.
 		/// </summary>
-		public string CauseDescription { get; }
+		public string Description
+		{
+			get
+			{
+				string description = DescriptionTemplate;
+
+				foreach (var (variableName, value) in Bindings)
+				{
+					description = DescriptionTemplate.Replace(
+						$"[{variableName.Substring(1)}]", value.ToString());
+				}
+
+				return description;
+			}
+		}
 
 		/// <summary>
 		/// A reference to the game's social engine.
@@ -24,11 +43,6 @@ namespace TDRS
 		/// </summary>
 		public Dictionary<string, object> Bindings { get; }
 
-		/// <summary>
-		/// The source of this effect.
-		/// </summary>
-		public IEffectSource Source { get; }
-
 		#endregion
 
 		#region Constructors
@@ -36,32 +50,12 @@ namespace TDRS
 		public EffectContext(
 			SocialEngine engine,
 			string descriptionTemplate,
-			Dictionary<string, object> bindings,
-			IEffectSource effectSource
+			Dictionary<string, object> bindings
 		)
 		{
 			Engine = engine;
-			CauseDescription = descriptionTemplate;
+			DescriptionTemplate = descriptionTemplate;
 			Bindings = new Dictionary<string, object>(bindings);
-			Source = effectSource;
-
-			foreach (var (variableName, value) in bindings)
-			{
-				CauseDescription = CauseDescription.Replace(
-					$"[{variableName.Substring(1)}]", value.ToString());
-			}
-		}
-
-		/// <summary>
-		/// Copy constructor.
-		/// </summary>
-		/// <param name="ctx"></param>
-		public EffectContext(EffectContext ctx)
-		{
-			Engine = ctx.Engine;
-			CauseDescription = ctx.CauseDescription;
-			Bindings = new Dictionary<string, object>(ctx.Bindings);
-			Source = ctx.Source;
 		}
 
 		#endregion
@@ -75,12 +69,17 @@ namespace TDRS
 		/// <returns></returns>
 		public EffectContext WithBindings(Dictionary<string, object> bindings)
 		{
-			var updatedCtx = new EffectContext(this);
-
-			foreach (var pair in bindings)
+			var updatedBindings = new Dictionary<string, object>(this.Bindings);
+			foreach (var (key, value) in bindings)
 			{
-				updatedCtx.Bindings[pair.Key] = pair.Value;
+				updatedBindings[key] = value;
 			}
+
+			var updatedCtx = new EffectContext(
+				this.Engine,
+				this.DescriptionTemplate,
+				updatedBindings
+			);
 
 			return updatedCtx;
 		}
