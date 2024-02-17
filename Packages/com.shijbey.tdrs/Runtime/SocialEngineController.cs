@@ -63,11 +63,35 @@ namespace TDRS
 		[SerializeField]
 		private bool m_dontDestroyOnLoad;
 
+		/// <summary>
+		/// The social engine that the controller manages.
+		/// </summary>
+		private SocialEngine _state;
+
 		#endregion
 
 		#region Properties
 
-		public SocialEngine State { get; private set; }
+		public SocialEngine State
+		{
+			get { return _state; }
+			private set
+			{
+				if (_state != null)
+				{
+					_state.OnAgentAdded -= HandleAgentAdded;
+					_state.OnAgentRemoved -= HandleAgentRemoved;
+					_state.OnRelationshipAdded -= HandleRelationshipAdded;
+					_state.OnRelationshipRemoved -= HandleRelationshipRemoved;
+				}
+
+				_state = value;
+				_state.OnAgentAdded += HandleAgentAdded;
+				_state.OnAgentRemoved += HandleAgentRemoved;
+				_state.OnRelationshipAdded += HandleRelationshipAdded;
+				_state.OnRelationshipRemoved += HandleRelationshipRemoved;
+			}
+		}
 		public static SocialEngineController Instance { get; private set; }
 		public RePraxisDatabase DB => State.DB;
 
@@ -88,6 +112,14 @@ namespace TDRS
 		public static UnityAction<SocialEngine> OnRegisterEffectFactories;
 
 		public static UnityAction<SocialEngine> OnRegisterAgentsAndRelationships;
+
+		public static UnityAction<Agent> OnAgentAdded;
+
+		public static UnityAction<Relationship> OnRelationshipAdded;
+
+		public static UnityAction<Agent> OnAgentRemoved;
+
+		public static UnityAction<Relationship> OnRelationshipRemoved;
 
 		#endregion
 
@@ -312,6 +344,27 @@ namespace TDRS
 			}
 
 			OnRegisterEffectFactories?.Invoke(State);
+		}
+
+
+		private void HandleAgentAdded(object obj, SocialEngine.OnAgentAddedArgs args)
+		{
+			OnAgentAdded?.Invoke(args.Agent);
+		}
+
+		private void HandleAgentRemoved(object obj, SocialEngine.OnAgentRemovedArgs args)
+		{
+			OnAgentRemoved?.Invoke(args.Agent);
+		}
+
+		private void HandleRelationshipAdded(object obj, SocialEngine.OnRelationshipAddedArgs args)
+		{
+			OnRelationshipAdded?.Invoke(args.Relationship);
+		}
+
+		private void HandleRelationshipRemoved(object obj, SocialEngine.OnRelationshipRemovedArgs args)
+		{
+			OnRelationshipRemoved?.Invoke(args.Relationship);
 		}
 
 		#endregion

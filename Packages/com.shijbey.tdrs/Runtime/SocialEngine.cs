@@ -74,16 +74,48 @@ namespace TDRS
 
 		#region Actions and Events
 
-		public event EventHandler<OnNewAgentArgs> OnNewAgent;
-		public class OnNewAgentArgs : EventArgs
+		public event EventHandler<OnAgentAddedArgs> OnAgentAdded;
+		public class OnAgentAddedArgs : EventArgs
 		{
-			public Agent agent;
+			public Agent Agent { get; }
+
+			public OnAgentAddedArgs(Agent agent)
+			{
+				Agent = agent;
+			}
 		}
 
-		public event EventHandler<OnNewRelationshipArgs> OnNewRelationship;
-		public class OnNewRelationshipArgs : EventArgs
+		public event EventHandler<OnRelationshipAddedArgs> OnRelationshipAdded;
+		public class OnRelationshipAddedArgs : EventArgs
 		{
-			public Relationship relationship;
+			public Relationship Relationship { get; }
+
+			public OnRelationshipAddedArgs(Relationship relationship)
+			{
+				Relationship = relationship;
+			}
+		}
+
+		public event EventHandler<OnAgentRemovedArgs> OnAgentRemoved;
+		public class OnAgentRemovedArgs : EventArgs
+		{
+			public Agent Agent { get; }
+
+			public OnAgentRemovedArgs(Agent agent)
+			{
+				Agent = agent;
+			}
+		}
+
+		public event EventHandler<OnRelationshipRemovedArgs> OnRelationshipRemoved;
+		public class OnRelationshipRemovedArgs : EventArgs
+		{
+			public Relationship Relationship { get; }
+
+			public OnRelationshipRemovedArgs(Relationship relationship)
+			{
+				Relationship = relationship;
+			}
 		}
 
 		#endregion
@@ -152,7 +184,7 @@ namespace TDRS
 				agent.AddTrait(traitID);
 			}
 
-			OnNewAgent?.Invoke(this, new OnNewAgentArgs() { agent = agent });
+			OnAgentAdded?.Invoke(this, new OnAgentAddedArgs(agent));
 
 			return agent;
 		}
@@ -197,8 +229,8 @@ namespace TDRS
 
 			relationship.ReevaluateSocialRules();
 
-			OnNewRelationship?.Invoke(
-				this, new OnNewRelationshipArgs() { relationship = relationship });
+			OnRelationshipAdded?.Invoke(
+				this, new OnRelationshipAddedArgs(relationship));
 
 			return relationship;
 		}
@@ -295,9 +327,9 @@ namespace TDRS
 
 			Agent agent = GetAgent(agentID);
 
+			OnAgentRemoved?.Invoke(this, new OnAgentRemovedArgs(agent));
+
 			m_agents.Remove(agentID);
-
-
 
 			var outgoingRelationships = agent.OutgoingRelationships.Values.ToList();
 			foreach (var relationship in outgoingRelationships)
@@ -332,6 +364,8 @@ namespace TDRS
 			}
 
 			Relationship relationship = GetRelationship(ownerID, targetID);
+
+			OnRelationshipRemoved?.Invoke(this, new OnRelationshipRemovedArgs(relationship));
 
 			// Remove all the traits from the relationship
 			foreach (var trait in relationship.Traits.Traits)
