@@ -52,7 +52,7 @@ namespace TDRS
 		/// <summary>
 		/// All the social rules registered with the social engine.
 		/// </summary>
-		public Dictionary<string, SocialRule> SocialRules { get; private set; }
+		public List<SocialRule> SocialRules { get; private set; }
 
 		/// <summary>
 		/// The database where queryable relationship information is stored.
@@ -100,7 +100,7 @@ namespace TDRS
 			DB = new RePraxisDatabase();
 			AgentSchemas = new Dictionary<string, AgentSchema>();
 			RelationshipSchemas = new Dictionary<(string, string), RelationshipSchema>();
-			SocialRules = new Dictionary<string, SocialRule>();
+			SocialRules = new List<SocialRule>();
 		}
 
 		#endregion
@@ -119,7 +119,7 @@ namespace TDRS
 
 		public void AddSocialRule(SocialRule rule)
 		{
-			SocialRules[rule.RuleID] = rule;
+			SocialRules.Add(rule);
 		}
 
 		public Agent AddAgent(string agentType, string uid)
@@ -427,6 +427,17 @@ namespace TDRS
 					}
 				}
 
+			}
+		}
+
+		/// <summary>
+		/// Reevaluate all relationships against the available social rules.
+		/// </summary>
+		public void ReevaluateRelationships()
+		{
+			foreach (var agent in m_agents.Values)
+			{
+				agent.ReevaluateRelationships();
 			}
 		}
 

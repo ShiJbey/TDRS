@@ -44,6 +44,11 @@ namespace TDRS
 		public string Description { get; }
 
 		/// <summary>
+		/// Stat modifiers to apply to the object this trait is attached to.
+		/// </summary>
+		public StatModifierData[] Modifiers => m_trait.Modifiers;
+
+		/// <summary>
 		/// IDs of traits that this trait cannot be added with.
 		/// </summary>
 		public HashSet<string> ConflictingTraits => m_trait.ConflictingTraits;

@@ -1,0 +1,15 @@
+- preconditions:
+    - ?target.traits.jerk
+    - not ?owner.traits.jerk
+  modifiers:
+    - statName: Friendship
+      value: -10
+  description: "[target] is a jerk"
+
+- preconditions:
+    - ?target.traits.jerk
+    - ?owner.traits.jerk
+  modifiers:
+    - statName: Friendship
+      value: 10
+  description: "Jerks like other jerks"

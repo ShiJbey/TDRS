@@ -14,7 +14,7 @@ namespace TDRS
 		/// <summary>
 		/// Social rules currently applied to this relationship.
 		/// </summary>
-		protected List<SocialRule> m_activeSocialRules;
+		protected List<ActiveSocialRuleEntry> m_activeSocialRules;
 
 		#endregion
 
@@ -48,7 +48,7 @@ namespace TDRS
 		/// <summary>
 		/// Social rules currently applied to this relationship.
 		/// </summary>
-		public IEnumerable<SocialRule> ActiveSocialRules => m_activeSocialRules;
+		public IEnumerable<ActiveSocialRuleEntry> ActiveSocialRules => m_activeSocialRules;
 
 		#endregion
 
@@ -70,7 +70,7 @@ namespace TDRS
 			Target = target;
 			Traits = new TraitManager(this);
 			Stats = new StatManager();
-			m_activeSocialRules = new List<SocialRule>();
+			m_activeSocialRules = new List<ActiveSocialRuleEntry>();
 			Stats.OnValueChanged += HandleStatChanged;
 		}
 
@@ -173,14 +173,14 @@ namespace TDRS
 		/// </summary>
 		public void ReevaluateSocialRules()
 		{
-			foreach (var rule in m_activeSocialRules)
+			foreach (var entry in m_activeSocialRules)
 			{
-				rule.RemoveModifiers(this);
+				entry.Rule.RemoveModifiers(this);
 			}
 
 			m_activeSocialRules.Clear();
 
-			foreach (var rule in Engine.SocialRules.Values)
+			foreach (var rule in Engine.SocialRules)
 			{
 				var results = new DBQuery(rule.Preconditions).Run(
 					Engine.DB,
@@ -195,7 +195,14 @@ namespace TDRS
 
 				rule.ApplyModifiers(this);
 
-				m_activeSocialRules.Add(rule);
+				m_activeSocialRules.Add(
+					new ActiveSocialRuleEntry(
+						rule,
+						rule.Description
+							.Replace($"[owner]", Owner.UID)
+							.Replace($"[target]", Target.UID)
+					)
+				);
 			}
 		}
 
@@ -220,5 +227,17 @@ namespace TDRS
 		}
 
 		#endregion
+	}
+
+	public class ActiveSocialRuleEntry
+	{
+		public SocialRule Rule { get; }
+		public string Description { get; }
+
+		public ActiveSocialRuleEntry(SocialRule rule, string description)
+		{
+			Rule = rule;
+			Description = description;
+		}
 	}
 }

@@ -1,38 +1,42 @@
+using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 namespace TDRS.Serialization
 {
 	/// <summary>
 	/// Applies stat changes to a relationship based on a set of preconditions.
 	/// </summary>
-	public class SerializedSocialRule
+	[CreateAssetMenu(menuName = "TDRS/Social Rule")]
+	public class SocialRuleSO : ScriptableObject
 	{
 		#region Properties
 
 		/// <summary>
 		/// A template description to be filled when recording the rules effects on a relationship.
 		/// </summary>
-		public string description { get; set; }
+		public string description;
 
 		/// <summary>
 		/// RePraxis query clauses to run against the social engine's database.
 		/// </summary>
-		public string[] preconditions { get; set; }
+		public string[] preconditions;
 
 		/// <summary>
 		/// Effects to apply if the preconditions pass.
 		/// </summary>
-		public SerializedStatModifierData[] modifiers { get; set; }
+		public StatModifierEntry[] modifiers;
 
 		#endregion
 
 		#region Constructors
 
-		public SerializedSocialRule()
+		public SocialRuleSO()
 		{
 			description = "";
 			preconditions = new string[0];
-			modifiers = new SerializedStatModifierData[0];
+			modifiers = new StatModifierEntry[0];
 		}
 
 		#endregion
@@ -42,15 +46,13 @@ namespace TDRS.Serialization
 		public SocialRule ToRuntimeInstance()
 		{
 			var modifiers = new List<StatModifierData>();
-			foreach (var serializedModifierData in this.modifiers)
+			foreach (var entry in this.modifiers)
 			{
 				modifiers.Add(
 					new StatModifierData(
-						serializedModifierData.statName,
-						serializedModifierData.value,
-						StatModifierType.Parse<StatModifierType>(
-							serializedModifierData.modifierType, true
-						)
+						entry.statName,
+						entry.value,
+						entry.modifierType
 					)
 				);
 			}
@@ -59,5 +61,24 @@ namespace TDRS.Serialization
 		}
 
 		#endregion
+
+		[Serializable]
+		public class StatModifierEntry
+		{
+			/// <summary>
+			/// The name of the stat to modify
+			/// </summary>
+			public string statName;
+
+			/// <summary>
+			/// The modifier value to apply.
+			/// </summary>
+			public float value;
+
+			/// <summary>
+			/// How to mathematically apply the modifier value.
+			/// </summary>
+			public StatModifierType modifierType = StatModifierType.FLAT;
+		}
 	}
 }

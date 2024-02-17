@@ -1,6 +1,7 @@
 using UnityEngine;
 using RePraxis;
 using UnityEngine.Events;
+using TDRS.Serialization;
 
 namespace TDRS
 {
@@ -42,6 +43,12 @@ namespace TDRS
 		private SocialEventSO[] m_socialEvents;
 
 		/// <summary>
+		/// A list of text files containing social event definitions.
+		/// </summary>
+		[SerializeField]
+		private SocialRuleSO[] m_socialRules;
+
+		/// <summary>
 		/// ScriptableObject trait definitions
 		/// </summary>
 		[SerializeField]
@@ -73,6 +80,8 @@ namespace TDRS
 		public static UnityAction<SocialEngine> OnLoadAgentSchemas;
 
 		public static UnityAction<SocialEngine> OnLoadRelationshipSchemas;
+
+		public static UnityAction<SocialEngine> OnLoadSocialRules;
 
 		public static UnityAction<SocialEngine> OnLoadSocialEvents;
 
@@ -120,6 +129,7 @@ namespace TDRS
 			LoadTraits();
 			LoadAgentSchemas();
 			LoadRelationshipSchemas();
+			LoadSocialRules();
 			LoadSocialEvents();
 			RegisterEffectFactories();
 		}
@@ -270,6 +280,16 @@ namespace TDRS
 			}
 
 			OnLoadSocialEvents?.Invoke(State);
+		}
+
+		private void LoadSocialRules()
+		{
+			foreach (SocialRuleSO ruleSO in m_socialRules)
+			{
+				State.AddSocialRule(ruleSO.ToRuntimeInstance());
+			}
+
+			OnLoadSocialRules?.Invoke(State);
 		}
 
 		private void LoadTraits()

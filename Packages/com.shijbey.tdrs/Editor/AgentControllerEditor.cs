@@ -2,11 +2,12 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 namespace TDRS
 {
 	[CustomEditor(typeof(AgentController))]
-	public class SocialAgentInspector : Editor
+	public class AgentControllerEditor : Editor
 	{
 		public VisualTreeAsset m_UXml;
 
@@ -48,6 +49,7 @@ namespace TDRS
 
 			cols["trait"].makeCell = () => new Label();
 			cols["description"].makeCell = () => new TextElement();
+			cols["modifiers"].makeCell = () => new TextElement();
 
 			// Set bindCell
 
@@ -59,6 +61,21 @@ namespace TDRS
 			cols["description"].bindCell = (VisualElement e, int index) =>
 			{
 				(e as TextElement).text = m_traitsList[index].Description;
+			};
+
+			cols["modifiers"].bindCell = (VisualElement e, int index) =>
+			{
+				List<string> modifierDescriptions = new List<string>();
+
+				var traitInstance = m_traitsList[index];
+				foreach (var entry in traitInstance.Modifiers)
+				{
+					modifierDescriptions.Add(
+						$"{entry.StatName}: {entry.Value} ({entry.ModifierType})"
+					);
+				}
+
+				(e as TextElement).text = string.Join("\n", modifierDescriptions);
 			};
 		}
 
@@ -80,7 +97,7 @@ namespace TDRS
 			// Set makeCell
 
 			cols["stat"].makeCell = () => new Label();
-			cols["value"].makeCell = () => new TextElement() { };
+			cols["value"].makeCell = () => new TextElement();
 
 			// Set bindCell
 

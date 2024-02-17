@@ -465,6 +465,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_eventYamlFiles:
   - {fileID: 4900000, guid: 946f59a4d0fc74da88438cdc26e6886e, type: 3}
+--- !u!114 &568713673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 315543634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1922270bc0ef4115a6bac503573bd09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ruleYamlFiles:
+  - {fileID: 4900000, guid: 125b531ca1503436c8fdcdc77508acec, type: 3}
 --- !u!1 &680955580
 GameObject:
   m_ObjectHideFlags: 0
@@ -1061,6 +1075,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 54f99bd43a98c4b5c8a72cb1ea7dbc80, type: 2}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_socialRules.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_agentConfigs.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -1072,6 +1090,10 @@ PrefabInstance:
       propertyPath: m_socialEvents.Array.size
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      propertyPath: m_socialRules.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: f5334633f26db4a5c8d8fa4349c108e6, type: 2}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_agentConfigs.Array.data[0]
       value: 
@@ -1198,6 +1220,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7378574934789867301, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 568713669}
+    - targetCorrespondingSourceObject: {fileID: 7378574934789867301, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 568713673}
   m_SourcePrefab: {fileID: 100100000, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

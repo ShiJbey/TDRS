@@ -87,12 +87,11 @@ namespace TDRS.Serialization
 				);
 			}
 
-			foreach (var entry in socialEngine.SocialRules.Values)
+			foreach (var entry in socialEngine.SocialRules)
 			{
 				serializedEngine.socialRules.Add(
 					new SerializedSocialRule()
 					{
-						ruleID = entry.RuleID,
 						description = entry.Description,
 						preconditions = entry.Preconditions,
 						modifiers = entry.Modifiers
@@ -148,9 +147,7 @@ namespace TDRS.Serialization
 				var serializedRelationship = new SerializedRelationship()
 				{
 					owner = relationship.Owner.UID,
-					target = relationship.Target.UID,
-					activeSocialRules = relationship.ActiveSocialRules
-						.Select(rule => rule.RuleID).ToList()
+					target = relationship.Target.UID
 				};
 
 				foreach (TraitInstance instance in relationship.Traits.Traits)
@@ -267,7 +264,6 @@ namespace TDRS.Serialization
 			{
 				socialEngine.AddSocialRule(
 					new SocialRule(
-						ruleID: entry.ruleID,
 						description: entry.description,
 						preconditions: entry.preconditions,
 						modifiers: entry.modifiers
@@ -333,6 +329,11 @@ namespace TDRS.Serialization
 			{
 				Agent agent = socialEngine.AddAgent(serializedAgent.agentType, serializedAgent.uid);
 
+				foreach (var entry in serializedAgent.stats)
+				{
+					agent.Stats.GetStat(entry.name).BaseValue = entry.baseValue;
+				}
+
 				foreach (var entry in serializedAgent.traits)
 				{
 					Trait trait = socialEngine.TraitLibrary.Traits[entry.traitID];
@@ -345,6 +346,11 @@ namespace TDRS.Serialization
 			{
 				Relationship relationship = socialEngine.AddRelationship(
 					serializedRelationship.owner, serializedRelationship.target);
+
+				foreach (var entry in serializedRelationship.stats)
+				{
+					relationship.Stats.GetStat(entry.name).BaseValue = entry.baseValue;
+				}
 
 				foreach (var entry in serializedRelationship.traits)
 				{

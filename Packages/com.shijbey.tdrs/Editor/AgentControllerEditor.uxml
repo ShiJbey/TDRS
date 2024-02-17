@@ -12,6 +12,7 @@
             <ui:Columns>
                 <ui:Column name="trait" title="Name" width="150" />
                 <ui:Column name="description" title="Description" width="200" style="flex-grow: 1;" />
+                <ui:Column name="modifiers" title="Modifiers" width="200" style="flex-grow: 1;" />
             </ui:Columns>
         </ui:MultiColumnListView>
     </ui:VisualElement>

@@ -121,7 +121,6 @@ namespace TDRS.Tests
 
 			_engine.AddSocialRule(
 				new SocialRule(
-					ruleID: "people_like_attractiveness",
 					description: "Characters like attractive characters",
 					preconditions: new string[]
 					{
@@ -140,7 +139,6 @@ namespace TDRS.Tests
 
 			_engine.AddSocialRule(
 				new SocialRule(
-					ruleID: "friendly_characters_make_friends",
 					description: "Friendly characters are more friendly",
 					preconditions: new string[]
 					{

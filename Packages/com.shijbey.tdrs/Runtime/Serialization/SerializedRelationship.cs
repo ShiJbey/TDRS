@@ -11,7 +11,6 @@ namespace TDRS.Serialization
 		public string target { get; set; }
 		public List<SerializedTraitInstance> traits { get; set; }
 		public List<SerializedStat> stats { get; set; }
-		public List<string> activeSocialRules { get; set; }
 
 		public SerializedRelationship()
 		{
@@ -19,7 +18,6 @@ namespace TDRS.Serialization
 			target = "";
 			traits = new List<SerializedTraitInstance>();
 			stats = new List<SerializedStat>();
-			activeSocialRules = new List<string>();
 		}
 	}
 }

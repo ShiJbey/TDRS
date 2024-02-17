@@ -136,6 +136,7 @@ namespace TDRS
 		public void Tick()
 		{
 			TickTraits();
+			ReevaluateRelationships();
 
 			OnTick?.Invoke(this, EventArgs.Empty);
 		}

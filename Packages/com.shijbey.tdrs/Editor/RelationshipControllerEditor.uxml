@@ -13,6 +13,16 @@
             <ui:Columns>
                 <ui:Column name="trait" title="Name" width="150" />
                 <ui:Column name="description" title="Description" width="200" style="flex-grow: 1;" />
+                <ui:Column name="modifiers" title="Modifiers" width="200" style="flex-grow: 1;" />
+            </ui:Columns>
+        </ui:MultiColumnListView>
+    </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 1; padding-bottom: 16px; padding-top: 12px;">
+        <ui:Label tabindex="-1" text="Social Rules" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 12px; border-bottom-width: 2px; border-bottom-color: rgb(0, 0, 0);" />
+        <ui:MultiColumnListView virtualization-method="DynamicHeight" name="ActiveSocialRules" show-alternating-row-backgrounds="ContentOnly" style="flex-direction: column; -unity-text-align: upper-center;">
+            <ui:Columns>
+                <ui:Column name="description" title="Description" width="200" style="flex-grow: 1;" />
+                <ui:Column name="modifiers" title="Modifiers" width="200" style="flex-grow: 1;" />
             </ui:Columns>
         </ui:MultiColumnListView>
     </ui:VisualElement>

@@ -8,11 +8,6 @@ namespace TDRS
 		#region Properties
 
 		/// <summary>
-		/// A unique identifier for this social rule.
-		/// </summary>
-		public string RuleID { get; }
-
-		/// <summary>
 		/// A template description to be filled when recording the rules effects on a relationship.
 		/// </summary>
 		public string Description { get; }
@@ -32,23 +27,14 @@ namespace TDRS
 		#region Constructors
 
 		public SocialRule(
-			string ruleID,
 			string description,
 			string[] preconditions,
 			StatModifierData[] modifiers
 		)
 		{
-			RuleID = ruleID;
 			Description = description;
 			Preconditions = preconditions;
 			Modifiers = modifiers;
-
-			// Check that ruleID is not the empty string
-			if (ruleID == "")
-			{
-				throw new System.ArgumentException(
-					"Argument 'ruleID' of SocialRule cannot be empty string");
-			}
 		}
 
 		#endregion
@@ -87,7 +73,7 @@ namespace TDRS
 
 		public override string ToString()
 		{
-			return $"SocialRule({RuleID})";
+			return $"SocialRule({Description})";
 		}
 
 		#endregion
