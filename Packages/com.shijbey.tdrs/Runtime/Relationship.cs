@@ -46,6 +46,13 @@ namespace TDRS
 		public StatManager Stats { get; protected set; }
 
 		/// <summary>
+		/// The trait associated with this relationship that specifies the
+		/// general nature of this relationship. (Allows for one mutually-exclusive
+		/// relationship stats)
+		/// </summary>
+		public Trait RelationshipType { get; protected set; }
+
+		/// <summary>
 		/// Social rules currently applied to this relationship.
 		/// </summary>
 		public IEnumerable<ActiveSocialRuleEntry> ActiveSocialRules => m_activeSocialRules;
@@ -133,12 +140,38 @@ namespace TDRS
 
 			Traits.RemoveTrait(traitID);
 
+			Trait trait = Engine.TraitLibrary.Traits[traitID];
+
+			if (RelationshipType == trait)
+			{
+				RelationshipType = null;
+				Engine.DB.Delete($"{Owner.UID}.relationships.{Target.UID}.type!{traitID}");
+			}
+
 			Engine.DB.Delete($"{Owner.UID}.relationships.{Target.UID}.traits.{traitID}");
 
 			// Reevaluate social rules for this relationship incase any depend on the removed trait.
 			ReevaluateSocialRules();
 
 			return true;
+		}
+
+		/// <summary>
+		/// Set the relationship type to a new trait
+		/// </summary>
+		/// <param name="traitID"></param>
+		public void SetRelationshipType(string traitID)
+		{
+			if (RelationshipType != null)
+			{
+				RemoveTrait(RelationshipType.TraitID);
+			}
+
+			Trait trait = Engine.TraitLibrary.Traits[traitID];
+			RelationshipType = trait;
+			Engine.DB.Insert($"{Owner.UID}.relationships.{Target.UID}.type!{traitID}");
+
+			AddTrait(traitID);
 		}
 
 		/// <summary>

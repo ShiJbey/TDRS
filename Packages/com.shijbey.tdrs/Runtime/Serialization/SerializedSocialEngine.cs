@@ -147,7 +147,9 @@ namespace TDRS.Serialization
 				var serializedRelationship = new SerializedRelationship()
 				{
 					owner = relationship.Owner.UID,
-					target = relationship.Target.UID
+					target = relationship.Target.UID,
+					relationshipType = (relationship.RelationshipType != null) ?
+						relationship.RelationshipType.TraitID : ""
 				};
 
 				foreach (TraitInstance instance in relationship.Traits.Traits)
@@ -346,6 +348,11 @@ namespace TDRS.Serialization
 			{
 				Relationship relationship = socialEngine.AddRelationship(
 					serializedRelationship.owner, serializedRelationship.target);
+
+				if (serializedRelationship.relationshipType != "")
+				{
+					relationship.SetRelationshipType(serializedRelationship.relationshipType);
+				}
 
 				foreach (var entry in serializedRelationship.stats)
 				{
