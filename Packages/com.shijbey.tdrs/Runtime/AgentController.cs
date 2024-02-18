@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace TDRS
 {
 	/// <summary>
-	/// A user-facing Unity component for associating a GameObject with as node within
+	/// A user-facing Unity component for associating a GameObject with an agent within
 	/// the social engine's social network
 	/// </summary>
 	public class AgentController : MonoBehaviour
@@ -40,9 +41,9 @@ namespace TDRS
 		public AgentSchemaSO Schema => m_agentSchema;
 
 		/// <summary>
-		/// A reference to this agent's corresponding node within the social engine.
+		/// A reference to this controller's corresponding agent within the social engine.
 		/// </summary>
-		public Agent Node { get; private set; }
+		public Agent Agent { get; private set; }
 
 		/// <summary>
 		/// Initial values for this entity's stats.
@@ -89,23 +90,23 @@ namespace TDRS
 
 		private void OnEnable()
 		{
-			if (Node != null)
+			if (Agent != null)
 			{
-				Node.OnTick += HandleOnTick;
-				Node.Traits.OnTraitAdded += HandleTraitAdded;
-				Node.Traits.OnTraitRemoved += HandleTraitRemoved;
-				Node.Stats.OnValueChanged += HandleStatChange;
+				Agent.OnTick += HandleOnTick;
+				Agent.OnTraitAdded += HandleTraitAdded;
+				Agent.OnTraitRemoved += HandleTraitRemoved;
+				Agent.OnStatChanged += HandleStatChange;
 			}
 		}
 
 		private void OnDisable()
 		{
-			if (Node != null)
+			if (Agent != null)
 			{
-				Node.OnTick -= HandleOnTick;
-				Node.Traits.OnTraitAdded -= HandleTraitAdded;
-				Node.Traits.OnTraitRemoved -= HandleTraitRemoved;
-				Node.Stats.OnValueChanged -= HandleStatChange;
+				Agent.OnTick -= HandleOnTick;
+				Agent.OnTraitAdded -= HandleTraitAdded;
+				Agent.OnTraitRemoved -= HandleTraitRemoved;
+				Agent.OnStatChanged -= HandleStatChange;
 			}
 		}
 
@@ -114,19 +115,19 @@ namespace TDRS
 		#region Public Methods
 
 		/// <summary>
-		/// Set the agent's node reference.
+		/// Set the controller's agent reference.
 		/// </summary>
-		/// <param name="node"></param>
-		/// <exception cref="Exception">If node is already set.</exception>
-		public void SetNode(Agent node)
+		/// <param name="agent"></param>
+		/// <exception cref="Exception">If agent is already set.</exception>
+		public void SetAgent(Agent agent)
 		{
-			if (Node != null) throw new Exception($"Node already assigned for: {UID}");
+			if (Agent != null) throw new Exception($"Agent already assigned for: {UID}");
 
-			Node = node;
-			Node.OnTick += HandleOnTick;
-			Node.Traits.OnTraitAdded += HandleTraitAdded;
-			Node.Traits.OnTraitRemoved += HandleTraitRemoved;
-			Node.Stats.OnValueChanged += HandleStatChange;
+			Agent = agent;
+			Agent.OnTick += HandleOnTick;
+			Agent.OnTraitAdded += HandleTraitAdded;
+			Agent.OnTraitRemoved += HandleTraitRemoved;
+			Agent.OnStatChanged += HandleStatChange;
 			OnRegistered?.Invoke();
 		}
 
@@ -139,17 +140,17 @@ namespace TDRS
 			OnTick?.Invoke();
 		}
 
-		private void HandleStatChange(object sender, StatManager.OnValueChangedArgs args)
+		private void HandleStatChange(object sender, Agent.OnStatChangedArgs args)
 		{
 			OnStatChange?.Invoke(args.StatName, args.Value);
 		}
 
-		private void HandleTraitAdded(object sender, TraitManager.OnTraitAddedArgs args)
+		private void HandleTraitAdded(object sender, Agent.OnTraitAddedArgs args)
 		{
 			OnTraitAdded?.Invoke(args.Trait.TraitID);
 		}
 
-		private void HandleTraitRemoved(object sender, TraitManager.OnTraitRemovedArgs args)
+		private void HandleTraitRemoved(object sender, Agent.OnTraitRemovedArgs args)
 		{
 			OnTraitRemoved?.Invoke(args.Trait.TraitID);
 		}

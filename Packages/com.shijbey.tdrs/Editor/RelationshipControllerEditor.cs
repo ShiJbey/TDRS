@@ -39,9 +39,9 @@ namespace TDRS
 			m_traitListView = m_root.Q<MultiColumnListView>(name: "Traits");
 
 
-			if (m_relationship.Edge != null)
+			if (m_relationship.Relationship != null)
 			{
-				m_traitsList = m_relationship.Edge.Traits.Traits.ToList();
+				m_traitsList = m_relationship.Relationship.Traits.Traits.ToList();
 			}
 
 			m_traitListView.itemsSource = m_traitsList;
@@ -88,9 +88,9 @@ namespace TDRS
 
 			m_statsListView = m_root.Q<MultiColumnListView>(name: "Stats");
 
-			if (m_relationship.Edge != null)
+			if (m_relationship.Relationship != null)
 			{
-				m_statsList = m_relationship.Edge.Stats.Stats.ToList();
+				m_statsList = m_relationship.Relationship.Stats.Stats.ToList();
 			}
 
 			m_statsListView.itemsSource = m_statsList;
@@ -122,9 +122,9 @@ namespace TDRS
 			m_activeSocialRulesView = m_root.Q<MultiColumnListView>(name: "ActiveSocialRules");
 
 
-			if (m_relationship.Edge != null)
+			if (m_relationship.Relationship != null)
 			{
-				m_activeSocialRuleList = m_relationship.Edge.ActiveSocialRules.ToList();
+				m_activeSocialRuleList = m_relationship.Relationship.ActiveSocialRules.ToList();
 			}
 
 			m_activeSocialRulesView.itemsSource = m_activeSocialRuleList;
@@ -202,9 +202,9 @@ namespace TDRS
 
 		private void UpdateGUI()
 		{
-			m_traitsList = m_relationship.Edge.Traits.Traits.ToList();
-			m_statsList = m_relationship.Edge.Stats.Stats.ToList();
-			m_activeSocialRuleList = m_relationship.Edge.ActiveSocialRules.ToList();
+			m_traitsList = m_relationship.Relationship.Traits.Traits.ToList();
+			m_statsList = m_relationship.Relationship.Stats.Stats.ToList();
+			m_activeSocialRuleList = m_relationship.Relationship.ActiveSocialRules.ToList();
 
 			m_traitListView.itemsSource = m_traitsList;
 			m_statsListView.itemsSource = m_statsList;

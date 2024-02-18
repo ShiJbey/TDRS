@@ -20,6 +20,9 @@ namespace TDRS
 		private AgentController m_target;
 
 		[SerializeField]
+		private string m_baseRelationshipType;
+
+		[SerializeField]
 		private List<StatInitializer> m_baseStats;
 
 		[SerializeField]
@@ -68,7 +71,9 @@ namespace TDRS
 		/// </summary>
 		public AgentController Target => m_target;
 
-		public Relationship Edge { get; private set; }
+		public Relationship Relationship { get; private set; }
+
+		public string BaseRelationshipType => m_baseRelationshipType;
 
 		/// <summary>
 		/// Initial values for this entity's stats.
@@ -86,23 +91,23 @@ namespace TDRS
 
 		private void OnEnable()
 		{
-			if (Edge != null)
+			if (Relationship != null)
 			{
-				Edge.OnTick += HandleOnTick;
-				Edge.Traits.OnTraitAdded += HandleTraitAdded;
-				Edge.Traits.OnTraitRemoved += HandleTraitRemoved;
-				Edge.Stats.OnValueChanged += HandleStatChange;
+				Relationship.OnTick += HandleOnTick;
+				Relationship.OnTraitAdded += HandleTraitAdded;
+				Relationship.OnTraitRemoved += HandleTraitRemoved;
+				Relationship.OnStatChanged += HandleStatChange;
 			}
 		}
 
 		private void OnDisable()
 		{
-			if (Edge != null)
+			if (Relationship != null)
 			{
-				Edge.OnTick -= HandleOnTick;
-				Edge.Traits.OnTraitAdded -= HandleTraitAdded;
-				Edge.Traits.OnTraitRemoved -= HandleTraitRemoved;
-				Edge.Stats.OnValueChanged -= HandleStatChange;
+				Relationship.OnTick -= HandleOnTick;
+				Relationship.OnTraitAdded -= HandleTraitAdded;
+				Relationship.OnTraitRemoved -= HandleTraitRemoved;
+				Relationship.OnStatChanged -= HandleStatChange;
 			}
 		}
 
@@ -111,23 +116,23 @@ namespace TDRS
 		#region Public Methods
 
 		/// <summary>
-		/// Set the relationship's edge reference.
+		/// Set the controller's relationship reference.
 		/// </summary>
-		/// <param name="edge"></param>
-		/// <exception cref="Exception">If edge is already set.</exception>
-		public void SetEdge(Relationship edge)
+		/// <param name="relationship"></param>
+		/// <exception cref="Exception">If relationship is already set.</exception>
+		public void SetRelationship(Relationship relationship)
 		{
-			if (Edge != null)
+			if (Relationship != null)
 			{
 				throw new Exception(
-					$"Node already assigned for: ({Owner.UID},{Target.UID})");
+					$"Relationship already assigned for: ({Owner.UID},{Target.UID})");
 			}
 
-			Edge = edge;
-			Edge.OnTick += HandleOnTick;
-			Edge.Traits.OnTraitAdded += HandleTraitAdded;
-			Edge.Traits.OnTraitRemoved += HandleTraitRemoved;
-			Edge.Stats.OnValueChanged += HandleStatChange;
+			Relationship = relationship;
+			Relationship.OnTick += HandleOnTick;
+			Relationship.OnTraitAdded += HandleTraitAdded;
+			Relationship.OnTraitRemoved += HandleTraitRemoved;
+			Relationship.OnStatChanged += HandleStatChange;
 			OnRegistered?.Invoke();
 		}
 
@@ -140,17 +145,17 @@ namespace TDRS
 			OnTick?.Invoke();
 		}
 
-		private void HandleStatChange(object sender, StatManager.OnValueChangedArgs args)
+		private void HandleStatChange(object sender, Relationship.OnStatChangedArgs args)
 		{
 			OnStatChange?.Invoke(args.StatName, args.Value);
 		}
 
-		private void HandleTraitAdded(object sender, TraitManager.OnTraitAddedArgs args)
+		private void HandleTraitAdded(object sender, Relationship.OnTraitAddedArgs args)
 		{
 			OnTraitAdded?.Invoke(args.Trait.TraitID);
 		}
 
-		private void HandleTraitRemoved(object sender, TraitManager.OnTraitRemovedArgs args)
+		private void HandleTraitRemoved(object sender, Relationship.OnTraitRemovedArgs args)
 		{
 			OnTraitRemoved?.Invoke(args.Trait.TraitID);
 		}

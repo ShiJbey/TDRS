@@ -3,6 +3,7 @@
     <uie:PropertyField name="Target" binding-path="m_target" label="Target" />
     <uie:PropertyField name="Config" binding-path="m_relationshipSchema" focusable="false" />
     <ui:Foldout text="Base Configuration" view-data-key="baseConfigFoldout" name="BaseConfigFoldout">
+        <uie:PropertyField name="BaseRelationshioType" binding-path="m_baseRelationshipType" />
         <uie:PropertyField name="BaseStats" binding-path="m_baseStats" />
         <uie:PropertyField name="BaseTraits" binding-path="m_baseTraits" />
     </ui:Foldout>

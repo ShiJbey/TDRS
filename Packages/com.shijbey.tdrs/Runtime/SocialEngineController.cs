@@ -23,7 +23,7 @@ namespace TDRS
 		#region Fields
 
 		/// <summary>
-		/// ScriptableObjects containing settings for constructing new nodes
+		/// ScriptableObjects containing settings for constructing new agents
 		/// in the social graph.
 		/// </summary>
 		[SerializeField]
@@ -169,83 +169,88 @@ namespace TDRS
 		/// <summary>
 		/// Register a new entity with the manager.
 		/// </summary>
-		/// <param name="agent"></param>
-		public Agent RegisterAgent(AgentController agent)
+		/// <param name="agentController"></param>
+		public Agent RegisterAgent(AgentController agentController)
 		{
-			Agent node;
+			Agent agent;
 
-			if (State.HasAgent(agent.UID))
+			if (State.HasAgent(agentController.UID))
 			{
-				node = State.GetAgent(agent.UID);
+				agent = State.GetAgent(agentController.UID);
 			}
 			else
 			{
-				node = State.AddAgent(agent.Schema.agentType, agent.UID);
+				agent = State.AddAgent(agentController.Schema.agentType, agentController.UID);
 
 				// Configure initial traits
-				foreach (var traitID in agent.BaseTraits)
+				foreach (var traitID in agentController.BaseTraits)
 				{
-					node.AddTrait(traitID);
+					agent.AddTrait(traitID);
 				}
 
 				// Configure initial stats
-				foreach (var entry in agent.BaseStats)
+				foreach (var entry in agentController.BaseStats)
 				{
-					node.Stats.GetStat(entry.name).BaseValue = entry.baseValue;
+					agent.Stats.GetStat(entry.name).BaseValue = entry.baseValue;
 				}
 			}
 
-			agent.SetNode(node);
+			agentController.SetAgent(agent);
 
-			return node;
+			return agent;
 		}
 
 		/// <summary>
 		/// Register a new relationship with the manager.
 		/// </summary>
-		/// <param name="relationship"></param>
+		/// <param name="relationshipController"></param>
 		/// <returns></returns>
-		public Relationship RegisterRelationship(RelationshipController relationship)
+		public Relationship RegisterRelationship(RelationshipController relationshipController)
 		{
-			Relationship relationshipEdge;
+			Relationship relationship;
 
-			if (State.HasRelationship(relationship.Owner.UID, relationship.Target.UID))
+			if (State.HasRelationship(relationshipController.Owner.UID, relationshipController.Target.UID))
 			{
-				return State.GetRelationship(relationship.Owner.UID, relationship.Target.UID);
+				return State.GetRelationship(relationshipController.Owner.UID, relationshipController.Target.UID);
 			}
 			else
 			{
-				if (!State.HasAgent(relationship.Owner.UID))
+				if (!State.HasAgent(relationshipController.Owner.UID))
 				{
-					RegisterAgent(relationship.Owner);
+					RegisterAgent(relationshipController.Owner);
 				}
 
-				if (!State.HasAgent(relationship.Target.UID))
+				if (!State.HasAgent(relationshipController.Target.UID))
 				{
-					RegisterAgent(relationship.Target);
+					RegisterAgent(relationshipController.Target);
 				}
 
-				relationshipEdge = State.AddRelationship(
-					relationship.Owner.UID,
-					relationship.Target.UID);
+				relationship = State.AddRelationship(
+					relationshipController.Owner.UID,
+					relationshipController.Target.UID);
 
 
 				// Configure initial stats
-				foreach (var entry in relationship.BaseStats)
+				foreach (var entry in relationshipController.BaseStats)
 				{
-					relationshipEdge.Stats.GetStat(entry.name).BaseValue = entry.baseValue;
+					relationship.Stats.GetStat(entry.name).BaseValue = entry.baseValue;
+				}
+
+				if (relationshipController.BaseRelationshipType != "")
+				{
+					relationship.SetRelationshipType(relationshipController.BaseRelationshipType);
 				}
 
 				// Configure initial traits
-				foreach (var traitID in relationship.BaseTraits)
+				foreach (var traitID in relationshipController.BaseTraits)
 				{
-					relationshipEdge.AddTrait(traitID);
+					relationship.AddTrait(traitID);
 				}
 			}
 
-			relationship.SetEdge(relationshipEdge);
+			relationshipController.SetRelationship(relationship);
 
-			return relationshipEdge;
+			return relationship;
 		}
 
 		/// <summary>

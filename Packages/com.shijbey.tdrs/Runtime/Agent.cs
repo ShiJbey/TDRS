@@ -54,6 +54,41 @@ namespace TDRS
 		/// </summary>
 		public event EventHandler OnTick;
 
+		public event EventHandler<OnTraitAddedArgs> OnTraitAdded;
+		public class OnTraitAddedArgs : EventArgs
+		{
+			public Trait Trait { get; }
+
+			public OnTraitAddedArgs(Trait trait)
+			{
+				Trait = trait;
+			}
+		}
+
+		public event EventHandler<OnTraitRemovedArgs> OnTraitRemoved;
+		public class OnTraitRemovedArgs : EventArgs
+		{
+			public Trait Trait { get; }
+
+			public OnTraitRemovedArgs(Trait trait)
+			{
+				Trait = trait;
+			}
+		}
+
+		public event EventHandler<OnStatChangedArgs> OnStatChanged;
+		public class OnStatChangedArgs : EventArgs
+		{
+			public string StatName { get; }
+			public float Value { get; }
+
+			public OnStatChangedArgs(string statName, float value)
+			{
+				StatName = statName;
+				Value = value;
+			}
+		}
+
 		#endregion
 
 		#region Constructors
@@ -109,6 +144,8 @@ namespace TDRS
 
 			ReevaluateRelationships();
 
+			OnTraitAdded?.Invoke(this, new OnTraitAddedArgs(trait));
+
 			return true;
 		}
 
@@ -126,6 +163,9 @@ namespace TDRS
 			Engine.DB.Delete($"{UID}.traits.{traitID}");
 
 			ReevaluateRelationships();
+
+			OnTraitRemoved?.Invoke(
+				this, new OnTraitRemovedArgs(Engine.TraitLibrary.Traits[traitID]));
 
 			return true;
 		}
@@ -196,6 +236,7 @@ namespace TDRS
 		private void HandleStatChanged(object stats, StatManager.OnValueChangedArgs args)
 		{
 			Engine.DB.Insert($"{UID}.stats.{args.StatName}!{args.Value}");
+			OnStatChanged?.Invoke(this, new OnStatChangedArgs(args.StatName, args.Value));
 		}
 
 		#endregion

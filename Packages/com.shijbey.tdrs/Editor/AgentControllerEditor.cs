@@ -36,9 +36,9 @@ namespace TDRS
 			m_traitListView = root.Q<MultiColumnListView>(name: "Traits");
 
 
-			if (m_agent.Node != null)
+			if (m_agent.Agent != null)
 			{
-				m_traitsList = m_agent.Node.Traits.Traits.ToList();
+				m_traitsList = m_agent.Agent.Traits.Traits.ToList();
 			}
 
 			m_traitListView.itemsSource = m_traitsList;
@@ -85,9 +85,9 @@ namespace TDRS
 
 			m_statsListView = root.Q<MultiColumnListView>(name: "Stats");
 
-			if (m_agent.Node != null)
+			if (m_agent.Agent != null)
 			{
-				m_statsList = m_agent.Node.Stats.Stats.ToList();
+				m_statsList = m_agent.Agent.Stats.Stats.ToList();
 			}
 
 			m_statsListView.itemsSource = m_statsList;
@@ -157,8 +157,8 @@ namespace TDRS
 
 		private void UpdateGUI()
 		{
-			m_traitsList = m_agent.Node.Traits.Traits.ToList();
-			m_statsList = m_agent.Node.Stats.Stats.ToList();
+			m_traitsList = m_agent.Agent.Traits.Traits.ToList();
+			m_statsList = m_agent.Agent.Stats.Stats.ToList();
 
 			m_traitListView.itemsSource = m_traitsList;
 			m_statsListView.itemsSource = m_statsList;

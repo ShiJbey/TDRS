@@ -66,6 +66,41 @@ namespace TDRS
 		/// </summary>
 		public event EventHandler OnTick;
 
+		public event EventHandler<OnTraitAddedArgs> OnTraitAdded;
+		public class OnTraitAddedArgs : EventArgs
+		{
+			public Trait Trait { get; }
+
+			public OnTraitAddedArgs(Trait trait)
+			{
+				Trait = trait;
+			}
+		}
+
+		public event EventHandler<OnTraitRemovedArgs> OnTraitRemoved;
+		public class OnTraitRemovedArgs : EventArgs
+		{
+			public Trait Trait { get; }
+
+			public OnTraitRemovedArgs(Trait trait)
+			{
+				Trait = trait;
+			}
+		}
+
+		public event EventHandler<OnStatChangedArgs> OnStatChanged;
+		public class OnStatChangedArgs : EventArgs
+		{
+			public string StatName { get; }
+			public float Value { get; }
+
+			public OnStatChangedArgs(string statName, float value)
+			{
+				StatName = statName;
+				Value = value;
+			}
+		}
+
 		#endregion
 
 		#region Constructors
@@ -126,6 +161,8 @@ namespace TDRS
 			// Reevaluate social rules for this relationship incase any depend on the new trait.
 			ReevaluateSocialRules();
 
+			OnTraitAdded?.Invoke(this, new OnTraitAddedArgs(trait));
+
 			return true;
 		}
 
@@ -152,6 +189,8 @@ namespace TDRS
 
 			// Reevaluate social rules for this relationship incase any depend on the removed trait.
 			ReevaluateSocialRules();
+
+			OnTraitRemoved?.Invoke(this, new OnTraitRemovedArgs(trait));
 
 			return true;
 		}
@@ -257,6 +296,8 @@ namespace TDRS
 		{
 			Engine.DB.Insert(
 				$"{Owner.UID}.relationships.{Target.UID}.stats.{args.StatName}!{args.Value}");
+
+			OnStatChanged?.Invoke(this, new OnStatChangedArgs(args.StatName, args.Value));
 		}
 
 		#endregion

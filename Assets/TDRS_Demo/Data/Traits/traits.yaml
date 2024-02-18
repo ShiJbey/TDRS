@@ -34,10 +34,30 @@
     - statName: Romance
       value: 10
 
+- traitID: stranger
+  traitType: relationship
+  displayName: Stranger
+  description: "[target] is a stranger to [owner]"
+
+- traitID: acquaintance
+  traitType: relationship
+  displayName: Acquaintance
+  description: "[target] is an acquaintance to [owner]"
+
 - traitID: friend
   traitType: relationship
   displayName: Friend
   description: "[owner] considers [target] to be a friend"
+
+- traitID: good_friend
+  traitType: relationship
+  displayName: Good Friend
+  description: "[owner] considers [target] to be a good friend"
+
+- traitID: best_friend
+  traitType: relationship
+  displayName: Best Friend
+  description: "[owner] considers [target] to be a best friend"
 
 - traitID: family
   traitType: relationship
