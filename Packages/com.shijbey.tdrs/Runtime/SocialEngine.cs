@@ -1,336 +1,247 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using RePraxis;
 using System.Linq;
-
+using System.Collections.Generic;
+using RePraxis;
+using System;
 
 namespace TDRS
 {
-	/// <summary>
-	/// This is the main entry point and overall manager for all information related
-	/// to the Trait-Driven Relationship System.
-	///
-	/// <para>
-	/// This MonoBehaviour is responsible for managing information about all the
-	/// traits, preconditions, and effects.
-	/// </para>
-	///
-	/// <para>
-	/// This is a singleton class. Only one SocialEngine should be present in a scene.
-	/// </para>
-	/// </summary>
-	[DefaultExecutionOrder(-5)]
-	public class SocialEngine : MonoBehaviour
+	public class SocialEngine
 	{
 		#region Fields
 
-		private Queue<SocialRelationship> m_relationshipQueue;
-		private Dictionary<string, SocialAgent> m_agents;
-		private Dictionary<(string, string), SocialRelationship> m_relationships;
-		[SerializeField]
-		private EffectFactories m_effectFactories;
-		[SerializeField]
-		private SocialEventLibrary m_socialEventLibrary;
-		[SerializeField]
-		private TraitLibrary m_traitLibrary;
-		[SerializeField]
-		private bool m_dontDestroyOnLoad;
+		/// <summary>
+		/// A lookup table of UIDs mapped to their agent instances.
+		/// </summary>
+		private Dictionary<string, Agent> m_agents;
+
+		/// <summary>
+		/// A lookup table of owner/target UID tuples mapped to relationship instances.
+		/// </summary>
+		private Dictionary<(string, string), Relationship> m_relationships;
 
 		#endregion
 
 		#region Properties
 
-		public static SocialEngine Instance { get; private set; }
-		public TraitLibrary TraitLibrary => m_traitLibrary;
-		public EffectFactories EffectFactories => m_effectFactories;
-		public List<SocialAgent> Agents => m_agents.Values.ToList();
+		/// <summary>
+		/// All agents.
+		/// </summary>
+		public IEnumerable<Agent> Agents => m_agents.Values;
+
+		/// <summary>
+		/// All relationships between agents.
+		/// </summary>
+		public IEnumerable<Relationship> Relationships => m_relationships.Values;
+
+		/// <summary>
+		/// A library of social event definitions.
+		/// </summary>
+		public SocialEventLibrary SocialEventLibrary { get; private set; }
+
+		/// <summary>
+		/// Manages all definition information for available traits.
+		/// </summary>
+		public TraitLibrary TraitLibrary { get; private set; }
+
+		/// <summary>
+		/// Manages factory instances used to instantiate effects for traits, social rules, and
+		/// social events.
+		/// </summary>
+		public EffectLibrary EffectLibrary { get; private set; }
+
+		/// <summary>
+		/// All the social rules registered with the social engine.
+		/// </summary>
+		public List<SocialRule> SocialRules { get; private set; }
+
+		/// <summary>
+		/// The database where queryable relationship information is stored.
+		/// </summary>
 		public RePraxisDatabase DB { get; private set; }
-		public SocialEventLibrary SocialEventLibrary => m_socialEventLibrary;
+
+		/// <summary>
+		/// A lookup table of agent type names mapped to configuration settings.
+		/// </summary>
+		public Dictionary<string, AgentSchema> AgentSchemas { get; private set; }
+
+		/// <summary>
+		/// A lookup table of relationship owner/target type name tuples mapped to
+		/// relationship configuration settings.
+		/// </summary>
+		public Dictionary<(string, string), RelationshipSchema> RelationshipSchemas { get; private set; }
 
 		#endregion
 
-		#region Unity Messages
+		#region Actions and Events
 
-		private void Awake()
+		public event EventHandler<OnAgentAddedArgs> OnAgentAdded;
+		public class OnAgentAddedArgs : EventArgs
 		{
-			// Ensure there is only one instance of this MonoBehavior active within the scene
-			if (Instance != null && Instance != this)
-			{
-				Debug.LogError(
-					"Only on SocialEngine may be active in a scene. Destroying this one."
-				);
-				Destroy(this);
-			}
-			else
-			{
-				Instance = this;
-				m_relationshipQueue = new Queue<SocialRelationship>();
-				DB = new RePraxisDatabase();
-				m_agents = new Dictionary<string, SocialAgent>();
-				m_relationships = new Dictionary<(string, string), SocialRelationship>();
+			public Agent Agent { get; }
 
-				if (m_dontDestroyOnLoad)
-				{
-					DontDestroyOnLoad(this);
-				}
+			public OnAgentAddedArgs(Agent agent)
+			{
+				Agent = agent;
 			}
 		}
 
-		private void Start()
+		public event EventHandler<OnRelationshipAddedArgs> OnRelationshipAdded;
+		public class OnRelationshipAddedArgs : EventArgs
 		{
-			m_effectFactories.RegisterFactories();
-			m_traitLibrary.LoadTraitDefinitions();
-			m_socialEventLibrary.LoadEventDefinitions();
+			public Relationship Relationship { get; }
+
+			public OnRelationshipAddedArgs(Relationship relationship)
+			{
+				Relationship = relationship;
+			}
 		}
 
-		private void Update()
+		public event EventHandler<OnAgentRemovedArgs> OnAgentRemoved;
+		public class OnAgentRemovedArgs : EventArgs
 		{
-			ProcessRelationshipQueue();
+			public Agent Agent { get; }
+
+			public OnAgentRemovedArgs(Agent agent)
+			{
+				Agent = agent;
+			}
+		}
+
+		public event EventHandler<OnRelationshipRemovedArgs> OnRelationshipRemoved;
+		public class OnRelationshipRemovedArgs : EventArgs
+		{
+			public Relationship Relationship { get; }
+
+			public OnRelationshipRemovedArgs(Relationship relationship)
+			{
+				Relationship = relationship;
+			}
+		}
+
+		#endregion
+
+		#region Constructors
+
+		private SocialEngine()
+		{
+			m_agents = new Dictionary<string, Agent>();
+			m_relationships = new Dictionary<(string, string), Relationship>();
+			TraitLibrary = new TraitLibrary();
+			SocialEventLibrary = new SocialEventLibrary();
+			EffectLibrary = new EffectLibrary();
+			DB = new RePraxisDatabase();
+			AgentSchemas = new Dictionary<string, AgentSchema>();
+			RelationshipSchemas = new Dictionary<(string, string), RelationshipSchema>();
+			SocialRules = new List<SocialRule>();
 		}
 
 		#endregion
 
 		#region Public Methods
 
-		/// <summary>
-		/// Register a new entity with the manager.
-		/// </summary>
-		/// <param name="agent"></param>
-		public bool RegisterAgent(SocialAgent agent)
+		public void AddAgentSchema(AgentSchema schema)
 		{
-			if (m_agents.ContainsKey(agent.UID))
+			AgentSchemas[schema.AgentType] = schema;
+		}
+
+		public void AddRelationshipSchema(RelationshipSchema schema)
+		{
+			RelationshipSchemas[(schema.OwnerType, schema.TargetType)] = schema;
+		}
+
+		public void AddSocialRule(SocialRule rule)
+		{
+			SocialRules.Add(rule);
+		}
+
+		public Agent AddAgent(string agentType, string uid)
+		{
+			if (!AgentSchemas.ContainsKey(agentType))
 			{
-				throw new Exception($"Agent already exists with ID: {agent.UID}");
+				throw new KeyNotFoundException($"No schema found for agent type: {agentType}");
 			}
 
-			m_agents[agent.UID] = agent;
+			AgentSchema schema = AgentSchemas[agentType];
 
-			DB.Insert($"{agent.UID}");
+			Agent agent = new Agent(this, uid, agentType);
+			m_agents[uid] = agent;
+			DB.Insert($"{uid}");
 
-			foreach (var entry in agent.StatSchema.stats)
+			// Configure stats
+			foreach (StatSchema entry in schema.Stats)
 			{
 				agent.Stats.AddStat(
 					entry.statName,
-					new StatSystem.Stat(
+					new Stat(
 						entry.baseValue, entry.minValue, entry.maxValue, entry.isDiscrete
 					)
 				);
 			}
 
 			// Configure initial traits
-			foreach (var traitID in agent.BaseTraits)
+			foreach (string traitID in schema.Traits)
 			{
 				agent.AddTrait(traitID);
 			}
 
-			// Configure initial stats
-			foreach (var entry in agent.BaseStats)
-			{
-				agent.Stats.GetStat(entry.name).BaseValue = entry.baseValue;
-			}
+			OnAgentAdded?.Invoke(this, new OnAgentAddedArgs(agent));
 
-			return true;
+			return agent;
 		}
 
-		/// <summary>
-		/// Register a new relationship with the manager.
-		/// </summary>
-		/// <param name="relationship"></param>
-		/// <returns></returns>
-		public bool RegisterRelationship(SocialRelationship relationship)
+		public Relationship AddRelationship(string ownerID, string targetID)
 		{
-			if (!HasAgent(relationship.Owner.UID))
-			{
-				m_relationshipQueue.Enqueue(relationship);
-				return false;
-			}
+			Agent owner = GetAgent(ownerID);
+			Agent target = GetAgent(targetID);
 
-			if (!HasAgent(relationship.Target.UID))
-			{
-				m_relationshipQueue.Enqueue(relationship);
-				return false;
-			}
+			return AddRelationship(owner, target);
+		}
 
-			if (m_relationships.ContainsKey((relationship.Owner.UID, relationship.Target.UID)))
-			{
-				throw new Exception(
-					"A relationship already exists between "
-					+ $"{relationship.Owner} and {relationship.Target}.");
-			}
+		public Relationship AddRelationship(Agent owner, Agent target)
+		{
+			RelationshipSchema schema = RelationshipSchemas[(owner.AgentType, target.AgentType)];
 
-			m_relationships[(relationship.Owner.UID, relationship.Target.UID)] = relationship;
+			Relationship relationship = new Relationship(this, owner, target);
 
-			var owner = relationship.Owner;
-			var target = relationship.Target;
+			m_relationships[(owner.UID, target.UID)] = relationship;
 
 			owner.OutgoingRelationships[target] = relationship;
 			target.IncomingRelationships[owner] = relationship;
 
 			DB.Insert($"{owner.UID}.relationships.{target.UID}");
 
-			foreach (var entry in relationship.StatSchema.stats)
+			// Set initial stats from schema
+			foreach (var entry in schema.Stats)
 			{
 				relationship.Stats.AddStat(
 					entry.statName,
-					new StatSystem.Stat(
+					new Stat(
 						entry.baseValue, entry.minValue, entry.maxValue, entry.isDiscrete
 					)
 				);
 			}
 
-			// Configure initial stats
-			foreach (var entry in relationship.BaseStats)
-			{
-				relationship.Stats.GetStat(entry.name).BaseValue = entry.baseValue;
-			}
-
 			// Configure initial traits
-			foreach (var traitID in relationship.BaseTraits)
+			foreach (string traitID in schema.Traits)
 			{
 				relationship.AddTrait(traitID);
 			}
 
-			// Apply social rules from the owner
-			foreach (var socialRule in owner.SocialRules.Rules)
-			{
-				if (owner.SocialRules.HasSocialRuleInstance(socialRule, owner.UID, target.UID))
-				{
-					continue;
-				}
+			relationship.ReevaluateSocialRules();
 
-				if (socialRule.Query != null)
-				{
-					var results = socialRule.Query.Run(
-						DB,
-						new Dictionary<string, string>()
-						{
-							{"?owner", owner.UID},
-							{"?other", target.UID}
-						}
-					);
+			OnRelationshipAdded?.Invoke(
+				this, new OnRelationshipAddedArgs(relationship));
 
-					if (!results.Success) continue;
-
-					foreach (var result in results.Bindings)
-					{
-						var ctx = new EffectBindingContext(
-							this,
-							socialRule.DescriptionTemplate,
-							// Here we limit the scope of available variables to only ?owner and ?other
-							new Dictionary<string, string>(){
-								{"?owner", result["?owner"]},
-								{"?other", result["?other"]}
-							}
-						);
-
-						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-						if (ruleInstance != null)
-						{
-							owner.SocialRules.AddSocialRuleInstance(ruleInstance);
-						}
-					}
-				}
-				else
-				{
-					var ctx = new EffectBindingContext(
-						this,
-						socialRule.DescriptionTemplate,
-						new Dictionary<string, string>()
-						{
-							{"?owner", owner.UID},
-							{"?other", target.UID}
-						}
-					);
-
-					var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-					if (ruleInstance != null)
-					{
-						owner.SocialRules.AddSocialRuleInstance(ruleInstance);
-					}
-				}
-			}
-
-			// Apply social rules from the target
-			foreach (var socialRule in target.SocialRules.Rules)
-			{
-				if (target.SocialRules.HasSocialRuleInstance(socialRule, target.UID, owner.UID))
-				{
-					continue;
-				}
-
-				if (socialRule.Query != null)
-				{
-					var results = socialRule.Query.Run(
-						DB,
-						new Dictionary<string, string>()
-						{
-							{"?owner", target.UID},
-							{"?other", owner.UID}
-						}
-					);
-
-					if (!results.Success) continue;
-
-					foreach (var result in results.Bindings)
-					{
-						var ctx = new EffectBindingContext(
-							this,
-							socialRule.DescriptionTemplate,
-							// Here we limit the scope of available variables to only ?owner and ?other
-							new Dictionary<string, string>(){
-								{"?owner", result["?owner"]},
-								{"?other", result["?other"]}
-							}
-						);
-
-						var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-						if (ruleInstance != null)
-						{
-							target.SocialRules.AddSocialRuleInstance(ruleInstance);
-						}
-					}
-				}
-				else
-				{
-					var ctx = new EffectBindingContext(
-						this,
-						socialRule.DescriptionTemplate,
-						new Dictionary<string, string>()
-						{
-							{"?owner", target.UID},
-							{"?other", owner.UID}
-						}
-					);
-
-					var ruleInstance = SocialRuleInstance.TryInstantiateRule(socialRule, ctx);
-
-					if (ruleInstance != null)
-					{
-						target.SocialRules.AddSocialRuleInstance(ruleInstance);
-					}
-				}
-			}
-
-			return true;
+			return relationship;
 		}
 
 		/// <summary>
-		/// Get a reference to a node.
+		/// Get a reference to an agent.
 		/// </summary>
 		/// <param name="agentID"></param>
 		/// <returns></returns>
-		/// <exception cref="KeyNotFoundException">If no node found with given ID.</exception>
-		public SocialAgent GetAgent(string agentID)
+		public Agent GetAgent(string agentID)
 		{
-			if (!m_agents.ContainsKey(agentID))
-			{
-				throw new KeyNotFoundException($"Cannot find node with ID: {agentID}.");
-			}
-
 			return m_agents[agentID];
 		}
 
@@ -340,32 +251,13 @@ namespace TDRS
 		/// <param name="ownerID"></param>
 		/// <param name="targetID"></param>
 		/// <returns></returns>
-		public SocialRelationship GetRelationship(string ownerID, string targetID)
+		public Relationship GetRelationship(string ownerID, string targetID)
 		{
-			if (!m_agents.ContainsKey(ownerID))
-			{
-				throw new KeyNotFoundException($"Cannot find node with ID: {ownerID}.");
-			}
-
-			if (!m_agents.ContainsKey(targetID))
-			{
-				throw new KeyNotFoundException($"Cannot find node with ID: {targetID}.");
-			}
-
-			var owner = GetAgent(ownerID);
-			var target = GetAgent(targetID);
-
-			if (!owner.OutgoingRelationships.ContainsKey(target))
-			{
-				throw new KeyNotFoundException(
-					$"Cannot find relationship from {ownerID} to {targetID}.");
-			}
-
-			return owner.OutgoingRelationships[target];
+			return m_relationships[(ownerID, targetID)];
 		}
 
 		/// <summary>
-		/// Check if a node exists
+		/// Check if an agent exists
 		/// </summary>
 		/// <param name="agentID"></param>
 		/// <returns></returns>
@@ -382,25 +274,20 @@ namespace TDRS
 		/// <returns></returns>
 		public bool HasRelationship(string ownerID, string targetID)
 		{
-			if (!m_agents.ContainsKey(ownerID)) return false;
-			if (!m_agents.ContainsKey(targetID)) return false;
-
-			var targetNode = m_agents[targetID];
-
-			return m_agents[ownerID].OutgoingRelationships.ContainsKey(targetNode);
+			return m_relationships.ContainsKey((ownerID, targetID));
 		}
 
 		/// <summary>
-		/// Try to get a reference to a node
+		/// Try to get a reference to an agent.
 		/// </summary>
 		/// <param name="agentID"></param>
 		/// <param name="agent"></param>
 		/// <returns></returns>
-		public bool TryGetAgent(string agentID, out SocialAgent agent)
+		public bool TryGetAgent(string agentID, out Agent agent)
 		{
 			agent = null;
 
-			if (!m_agents.ContainsKey(agentID)) return false;
+			if (!HasAgent(agentID)) return false;
 
 			agent = m_agents[agentID];
 			return true;
@@ -416,90 +303,85 @@ namespace TDRS
 		public bool TryGetRelationship(
 			string ownerID,
 			string targetID,
-			out SocialRelationship relationship)
+			out Relationship relationship)
 		{
-			relationship = null;
 
-			if (!m_agents.ContainsKey(ownerID)) return false;
-			if (!m_agents.ContainsKey(targetID)) return false;
+			if (!HasRelationship(ownerID, targetID))
+			{
+				relationship = null;
+				return false;
+			}
 
-			var ownerNode = m_agents[ownerID];
-			var targetNode = m_agents[targetID];
-
-			if (!ownerNode.OutgoingRelationships.ContainsKey(targetNode)) return false;
-
-			relationship = m_agents[ownerID].OutgoingRelationships[targetNode];
+			relationship = m_relationships[(ownerID, targetID)];
 			return true;
 		}
 
+		/// <summary>
+		/// Remove an agent from the social engine.
+		/// </summary>
+		/// <param name="agentID"></param>
+		/// <returns></returns>
+		public bool RemoveAgent(string agentID)
+		{
+			if (!HasAgent(agentID)) return false;
+
+			Agent agent = GetAgent(agentID);
+
+			OnAgentRemoved?.Invoke(this, new OnAgentRemovedArgs(agent));
+
+			m_agents.Remove(agentID);
+
+			var outgoingRelationships = agent.OutgoingRelationships.Values.ToList();
+			foreach (var relationship in outgoingRelationships)
+			{
+				RemoveRelationship(relationship.Owner.UID, relationship.Target.UID);
+			}
+
+			var incomingRelationships = agent.IncomingRelationships.Values.ToList();
+			foreach (var relationship in incomingRelationships)
+			{
+				RemoveRelationship(relationship.Owner.UID, relationship.Target.UID);
+			}
+
+			DB.Delete($"{agent.UID}");
+
+			// agent.Destroy();
+
+			return true;
+		}
 
 		/// <summary>
-		/// Dispatch an event throughout the social network and apply effects
+		/// Remove a relationship from the social engine.
 		/// </summary>
-		/// <param name="socialEvent"></param>
-		public void DispatchEvent(string eventName, params string[] agents)
+		/// <param name="ownerID"></param>
+		/// <param name="targetID"></param>
+		/// <returns></returns>
+		public bool RemoveRelationship(string ownerID, string targetID)
 		{
-			// Get the event type definition from the library
-			var eventType = m_socialEventLibrary.GetEventType($"{eventName}/{agents.Length}");
-
-			// Create the base context for the events
-			var ctx = new EffectBindingContext(this, eventType, agents);
-
-			// Iterate through the responses
-			foreach (var response in eventType.Responses)
+			if (!HasRelationship(ownerID, targetID))
 			{
-				if (response.Query != null)
-				{
-					var results = response.Query.Run(ctx.Engine.DB, ctx.Bindings);
-
-					// Skip this response because the query failed
-					if (!results.Success) continue;
-
-					// Create a new context for each binding result
-					foreach (var bindingSet in results.Bindings)
-					{
-						var scopedCtx = ctx.WithBindings(bindingSet);
-
-						try
-						{
-							var effects = response.Effects
-							.Select(s => m_effectFactories.CreateInstance(scopedCtx, s));
-
-							foreach (var effect in effects)
-							{
-								effect.Apply();
-							}
-						}
-						catch (ArgumentException ex)
-						{
-							throw new ArgumentException(
-								$"Error encountered while instantiating effects for '{eventName}' event: "
-								+ ex.Message
-							);
-						}
-					}
-				}
-				else
-				{
-					try
-					{
-						var effects = response.Effects
-						.Select(s => m_effectFactories.CreateInstance(ctx, s));
-
-						foreach (var effect in effects)
-						{
-							effect.Apply();
-						}
-					}
-					catch (ArgumentException ex)
-					{
-						throw new ArgumentException(
-							$"Error encountered while instantiating effects for '{eventName}' event: "
-							+ ex.Message
-						);
-					}
-				}
+				return false;
 			}
+
+			Relationship relationship = GetRelationship(ownerID, targetID);
+
+			OnRelationshipRemoved?.Invoke(this, new OnRelationshipRemovedArgs(relationship));
+
+			// Remove all the traits from the relationship
+			foreach (var trait in relationship.Traits.Traits)
+			{
+				relationship.RemoveTrait(trait.TraitID);
+			}
+
+			//
+			relationship.Owner.OutgoingRelationships.Remove(relationship.Target);
+			relationship.Target.IncomingRelationships.Remove(relationship.Owner);
+
+			m_relationships.Remove((relationship.Owner.UID, relationship.Target.UID));
+
+			DB.Delete($"{relationship.Owner.UID}.relationships.{relationship.Owner.UID}");
+
+			return true;
 		}
 
 		/// <summary>
@@ -518,24 +400,119 @@ namespace TDRS
 			}
 		}
 
-		#endregion
+		/// <summary>
+		/// Dispatch an event throughout the social network and apply effects
+		/// </summary>
+		/// <param name="socialEvent"></param>
+		public void DispatchEvent(string eventName, params string[] agents)
+		{
+			// Get the event type definition from the library
+			var eventType = SocialEventLibrary.GetSocialEvent($"{eventName}/{agents.Length}");
 
-		#region Private Methods
+			var bindings = new Dictionary<string, object>();
+			for (int i = 0; i < eventType.Roles.Length; i++)
+			{
+				string role = eventType.Roles[i];
+				string agentID = agents[i];
+				bindings[role] = agentID;
+			}
+
+			// Create the base context for the events
+			var ctx = new EffectContext(this, eventType.Description, bindings);
+
+			// Iterate through the responses
+			foreach (var response in eventType.Responses)
+			{
+				var results = new DBQuery(response.Preconditions)
+					.Run(ctx.Engine.DB, bindings);
+
+				// Skip this response because the query failed
+				if (!results.Success) continue;
+
+				// Create a new context for each binding result
+				foreach (var bindingSet in results.Bindings)
+				{
+					var scopedCtx = ctx.WithBindings(bindingSet);
+
+					if (response.Description != "")
+					{
+						scopedCtx.DescriptionTemplate = response.Description;
+					}
+
+					try
+					{
+						var effects = response.Effects
+							.Select(effectString =>
+							{
+								return EffectLibrary.CreateInstance(scopedCtx, effectString);
+							});
+
+						foreach (var effect in effects)
+						{
+							effect.Apply();
+						}
+					}
+					catch (ArgumentException ex)
+					{
+						throw new ArgumentException(
+							$"Error encountered while instantiating effects for '{eventName}' event: "
+							+ ex.Message
+						);
+					}
+				}
+
+			}
+		}
 
 		/// <summary>
-		/// Iterate over the relationship queue and try to register pending relationships.
+		/// Reevaluate all relationships against the available social rules.
 		/// </summary>
-		private void ProcessRelationshipQueue()
+		public void ReevaluateRelationships()
 		{
-			List<SocialRelationship> relationships =
-				new List<SocialRelationship>(m_relationshipQueue);
-
-			m_relationshipQueue.Clear();
-
-			foreach (var relationship in relationships)
+			foreach (var agent in m_agents.Values)
 			{
-				RegisterRelationship(relationship);
+				agent.ReevaluateRelationships();
 			}
+		}
+
+		/// <summary>
+		/// Removes all agents and relationships from the state.
+		/// </summary>
+		public void Reset()
+		{
+			m_agents.Clear();
+			m_relationships.Clear();
+		}
+
+		#endregion
+
+		#region Static Methods
+
+		public static SocialEngine Instantiate()
+		{
+			return Instantiate(null);
+		}
+
+		public static SocialEngine Instantiate(RePraxisDatabase db)
+		{
+			var state = new SocialEngine();
+
+			if (db != null)
+			{
+				state.DB = db;
+			}
+
+			// Add all built-in effect factories
+			state.EffectLibrary.AddEffectFactory(new AddAgentTraitFactory());
+			state.EffectLibrary.AddEffectFactory(new AddRelationshipTraitFactory());
+			state.EffectLibrary.AddEffectFactory(new DecreaseAgentStatFactory());
+			state.EffectLibrary.AddEffectFactory(new DecreaseRelationshipStatFactory());
+			state.EffectLibrary.AddEffectFactory(new IncreaseAgentStatFactory());
+			state.EffectLibrary.AddEffectFactory(new IncreaseRelationshipStatFactory());
+			state.EffectLibrary.AddEffectFactory(new RemoveAgentTraitFactory());
+			state.EffectLibrary.AddEffectFactory(new RemoveRelationshipTraitFactory());
+
+			return state;
 		}
 
 		#endregion

@@ -1,15 +1,15 @@
 {
     "name": "com.shijbey.tdrs",
     "rootNamespace": "",
-    "references": [
-        "GUID:4a8957a6f21097b49aeea45fb8871de3",
-        "GUID:b3f49edfedc855a48aa1a9e5d3cba438"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "RePraxis.dll",
+        "YamlDotNet.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],

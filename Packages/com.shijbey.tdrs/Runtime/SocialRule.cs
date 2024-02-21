@@ -1,102 +1,79 @@
-using System;
-using System.Linq;
-using YamlDotNet.RepresentationModel;
-using RePraxis;
-using TDRS.Helpers;
-
 namespace TDRS
 {
 	/// <summary>
-	/// Data used to instantiate social rules when instantiating traits
+	/// Applies stat changes to a relationship based on a set of preconditions.
 	/// </summary>
 	public class SocialRule
 	{
-		#region Fields
-
-		protected DBQuery m_query;
-		protected string[] m_effects;
-		protected string m_descriptionTemplate;
-		protected TraitDefinition m_source;
-
-		#endregion
-
 		#region Properties
 
-		public DBQuery Query => m_query;
-		public string[] Effects => m_effects;
-		public string DescriptionTemplate => m_descriptionTemplate;
-		public TraitDefinition Source
-		{
-			get { return m_source; }
-			set { m_source = value; }
-		}
+		/// <summary>
+		/// A template description to be filled when recording the rules effects on a relationship.
+		/// </summary>
+		public string Description { get; }
+
+		/// <summary>
+		/// RePraxis query clauses to run against the social engine's database.
+		/// </summary>
+		public string[] Preconditions { get; }
+
+		/// <summary>
+		/// Stat modifiers to apply if the preconditions pass.
+		/// </summary>
+		public StatModifierData[] Modifiers { get; }
 
 		#endregion
 
 		#region Constructors
 
-		public SocialRule()
+		public SocialRule(
+			string description,
+			string[] preconditions,
+			StatModifierData[] modifiers
+		)
 		{
-			m_query = null;
-			m_effects = new string[0];
-			m_descriptionTemplate = "";
-			m_source = null;
-		}
-
-		public SocialRule(DBQuery precondition, string[] effects, string description)
-		{
-			m_query = precondition;
-			m_effects = effects;
-			m_descriptionTemplate = description;
-			m_source = null;
+			Description = description;
+			Preconditions = preconditions;
+			Modifiers = modifiers;
 		}
 
 		#endregion
 
-		#region Static Methods
+		#region Public Methods
 
 		/// <summary>
-		/// Create a new social rule definition from Yaml data.
+		/// Apply this rule's modifiers to a relationship.
 		/// </summary>
-		/// <param name="yamlNode"></param>
-		/// <returns></returns>
-		public static SocialRule FromYaml(TraitDefinition traitDef, YamlNode yamlNode)
+		/// <param name="relationship"></param>
+		public void ApplyModifiers(Relationship relationship)
 		{
-			SocialRule ruleDef = new SocialRule()
+			foreach (var modifierData in Modifiers)
 			{
-				m_descriptionTemplate = traitDef.DescriptionTemplate,
-				m_source = traitDef
-			};
-
-			// Try to set the query
-			if (yamlNode.TryGetChild("precondition", out var preconditionNode))
-			{
-				ruleDef.m_query = new DBQuery(
-					preconditionNode.GetValue()
-						.Split("\n")
-						.Where(clause => clause != "")
-						.ToArray()
+				relationship.Stats.GetStat(modifierData.StatName).AddModifier(
+					new StatModifier(
+						modifierData.Value,
+						modifierData.ModifierType,
+						this
+					)
 				);
 			}
+		}
 
-			// Try to set the effects
-			if (yamlNode.TryGetChild("effects", out var effectsNode))
+		/// <summary>
+		/// Remove this rule's modifiers from a relationship.
+		/// </summary>
+		/// <param name="relationship"></param>
+		public void RemoveModifiers(Relationship relationship)
+		{
+			foreach (var modifierData in Modifiers)
 			{
-				ruleDef.m_effects = (effectsNode as YamlSequenceNode).Children
-					.Select(node => node.GetValue())
-					.ToArray();
+				relationship.Stats.GetStat(modifierData.StatName).RemoveModifiersFromSource(this);
 			}
-			else
-			{
-				throw new ArgumentException("Social rule definition is missing 'effects' section");
-			}
+		}
 
-			if (yamlNode.TryGetChild("description", out var descriptionNode))
-			{
-				ruleDef.m_descriptionTemplate = descriptionNode.GetValue();
-			}
-
-			return ruleDef;
+		public override string ToString()
+		{
+			return $"SocialRule({Description})";
 		}
 
 		#endregion

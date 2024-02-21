@@ -1,0 +1,73 @@
+# TDRS Sample Traits
+
+- traitID: anti-social
+  traitType: agent
+  displayName: Anti-Social
+  description: "[owner] is anti-social"
+  modifiers:
+    - statName: Sociability
+      value: 10
+
+- traitID: jerk
+  traitType: agent
+  displayName: Jerk
+  description: "[owner] is a jerk"
+  modifiers:
+    - statName: Confidence
+      value: 5
+  conflictingTraits:
+    - friendly
+
+- traitID: friendly
+  traitType: agent
+  displayName: Friendly
+  description: "[owner] is friendly."
+  modifiers:
+    - statName: Sociability
+      value: 10
+
+- traitID: lovers
+  traitType: relationship
+  displayName: Lovers
+  description: "[owner] considers [target] to be a lover"
+  modifiers:
+    - statName: Romance
+      value: 10
+
+- traitID: stranger
+  traitType: relationship
+  displayName: Stranger
+  description: "[target] is a stranger to [owner]"
+
+- traitID: acquaintance
+  traitType: relationship
+  displayName: Acquaintance
+  description: "[target] is an acquaintance to [owner]"
+
+- traitID: friend
+  traitType: relationship
+  displayName: Friend
+  description: "[owner] considers [target] to be a friend"
+
+- traitID: good_friend
+  traitType: relationship
+  displayName: Good Friend
+  description: "[owner] considers [target] to be a good friend"
+
+- traitID: best_friend
+  traitType: relationship
+  displayName: Best Friend
+  description: "[owner] considers [target] to be a best friend"
+
+- traitID: family
+  traitType: relationship
+  displayName: Family
+  description: "[owner] is family of [target]"
+
+- traitID: angry_at
+  traitType: relationship
+  displayName: Angry-at
+  description: "[owner] is angry at [target]"
+  modifiers:
+    - statName: Friendship
+      value: 10

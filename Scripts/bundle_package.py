@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""Unity-TDRS package bundler script
+"""TDRS package bundler script
 
 This Python script to facilitates creating package distributions.
 Running it will create a `dist` directory and output the bundled Unity
@@ -83,14 +83,14 @@ def main() -> None:
 
     package_version = get_package_version()
 
-    print(f"=== Bundling Unity-TDRS version {package_version} ===")
+    print(f"=== Bundling TDRS version {package_version} ===")
 
     make_dist_directory()
 
-    create_package_tar(DIST_PATH / f"unity-tdrs_{package_version}.tgz")
+    create_package_tar(DIST_PATH / f"tdrs_{package_version}.tgz")
 
     print("=== Bundling complete! ===")
-    print(DIST_PATH / f"unity-tdrs_{package_version}.tgz")
+    print(DIST_PATH / f"tdrs_{package_version}.tgz")
 
 
 if __name__ == "__main__":

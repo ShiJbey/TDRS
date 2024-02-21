@@ -53,6 +53,9 @@
         "UserSettings/": true,
         "Logs/": true
     },
-    "cSpell.words": ["TDRS"],
-    "dotnet.defaultSolution": "Unity-TDRS.sln"
+    "cSpell.words": ["Effectable", "Kryzarel", "TDRS"],
+    "dotnet.defaultSolution": "Unity-TDRS.sln",
+    "markdownlint.config": {
+        "no-duplicate-heading": false
+    }
 }

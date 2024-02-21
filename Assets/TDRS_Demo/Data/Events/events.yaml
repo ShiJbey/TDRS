@@ -1,0 +1,58 @@
+# TDRS Sample Social Events
+
+- name: Betrayal
+  roles:
+    - "?betrayer"
+    - "?victim"
+  description: "[betrayer] betrayed [victim]."
+  responses:
+    - effects:
+        - DecreaseRelationshipStat ?victim ?betrayer Friendship 10 5
+        - RemoveRelationshipTrait ?victim ?betrayer friend
+    - preconditions:
+        - ?victim.relationships.?victim_friend.traits.friend
+        - neq ?victim_friend ?betrayer
+      effects:
+        - DecreaseRelationshipStat ?victim_friend ?betrayer Friendship 5 6
+    - preconditions:
+        - ?victim.relationships.?victim_family.traits.family
+        - neq ?victim_family ?betrayer
+      effects:
+        - AddRelationshipTrait ?victim_family ?betrayer angry_at 10
+
+- name: BecomeFriends
+  roles:
+    - "?character_a"
+    - "?character_b"
+  description: "[character_a] and [character_b] became friends."
+  responses:
+    - effects:
+        - AddRelationshipTrait ?character_a ?character_b friend
+        - AddRelationshipTrait ?character_b ?character_a friend
+
+- name: StartDating
+  roles:
+    - "?character_a"
+    - "?character_b"
+  description: "[character_a] and [character_b] started dating."
+  responses:
+    - effects:
+        - AddRelationshipTrait ?character_a ?character_b dating
+        - AddRelationshipTrait ?character_b ?character_a dating
+
+- name: BreakUp
+  roles:
+    - "?character_a"
+    - "?character_b"
+  description: "[character_a] broke-up with [character_b]."
+  responses:
+    - effects:
+        - RemoveRelationshipTrait ?character_a ?character_b dating
+        - RemoveRelationshipTrait ?character_b ?character_a dating
+        - AddRelationshipTrait ?character_a ?character_b ex-partner
+        - AddRelationshipTrait ?character_b ?character_a ex-partner
+    - preconditions:
+        - ?character_b.relationships.?other.traits.rival
+        - neq ?other ?character_a
+      effects:
+        - IncreaseAgentStat ?other confidence 5

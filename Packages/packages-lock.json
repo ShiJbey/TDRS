@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.shijbey.tdrs": {
+      "version": "file:com.shijbey.tdrs",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.2d.animation": {
       "version": "9.0.3",
       "depth": 1,
@@ -94,6 +100,12 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.asset-store-tools": {
+      "version": "file:com.unity.asset-store-tools",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.burst": {
       "version": "1.8.8",
       "depth": 3,
@@ -141,15 +153,6 @@
         "com.unity.2d.tilemap.extras": "3.1.1",
         "com.unity.2d.aseprite": "1.0.1"
       }
-    },
-    "com.unity.ide.rider": {
-      "version": "3.0.24",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.ext.nunit": "1.0.6"
-      },
-      "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
       "version": "2.0.22",
@@ -224,12 +227,6 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
-    },
-    "com.shijbey.tdrs": {
-      "version": "file:com.shijbey.tdrs",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

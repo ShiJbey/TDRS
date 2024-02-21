@@ -4,14 +4,13 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RePraxis;
-using TDRS;
 
-namespace Calypso
+namespace TDRS
 {
 	public class SocialDatabaseViewer : EditorWindow
 	{
 		private ScrollView scrollView;
-		private SocialEngine socialEngine;
+		private SocialEngineController socialEngine;
 
 
 		[MenuItem("Window/TDRS/Database Viewer")]
@@ -29,7 +28,7 @@ namespace Calypso
 
 			root.Add(scrollView);
 
-			socialEngine = FindObjectOfType<SocialEngine>();
+			socialEngine = FindObjectOfType<SocialEngineController>();
 
 			if (socialEngine == null)
 			{

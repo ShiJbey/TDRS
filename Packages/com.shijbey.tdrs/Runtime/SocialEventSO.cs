@@ -40,18 +40,19 @@ namespace TDRS
 			{
 				EventResponseEntry entry = m_responses[i];
 
-				RePraxis.DBQuery precondition = null;
+				string[] preconditions = new string[0];
 
 				if (entry.precondition != "")
 				{
-					precondition = new RePraxis.DBQuery(entry.precondition.Split("\n")
+					preconditions = entry.precondition.Split("\n")
 						.Where(clause => clause != "")
-						.ToArray());
+						.ToArray();
 				}
 
 				responses[i] = new SocialEventResponse(
-					precondition,
-					entry.effects
+					preconditions,
+					entry.effects,
+					entry.description
 				);
 			}
 
@@ -71,6 +72,7 @@ namespace TDRS
 			[TextArea(minLines: 3, maxLines: 8)]
 			public string precondition;
 			public string[] effects;
+			public string description;
 		}
 	}
 }
