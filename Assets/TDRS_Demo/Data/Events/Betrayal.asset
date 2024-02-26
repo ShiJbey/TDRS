@@ -18,19 +18,20 @@ MonoBehaviour:
   - ?victim
   m_description: '[betrayer] betrayed [victim]'
   m_responses:
-  - precondition: 
+  - preconditions: []
     effects:
     - DecreaseRelationshipStat ?victim ?betrayer Friendship 10 5
     - RemoveRelationshipTrait ?victim ?betrayer friend
-  - precondition: '?victim.relationships.?victim_friend.traits.friend
-
-      neq
-      ?victim_friend ?betrayer'
+    description: 
+  - preconditions:
+    - ?victim.relationships.?victim_friend.traits.friend
+    - neq ?victim_friend ?betrayer
     effects:
     - DecreaseRelationshipStat ?victim_friend ?betrayer Friendship 5 6
-  - precondition: '?victim.relationships.?victim_family.traits.family
-
-      neq
-      ?victim_family ?betrayer'
+    description: 
+  - preconditions:
+    - ?victim.relationships.?victim_family.traits.family
+    - neq ?victim_family ?betrayer
     effects:
     - AddRelationshipTrait ?victim_family ?betrayer angry_at 10
+    description: 

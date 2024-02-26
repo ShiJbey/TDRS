@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using UnityEngine;
 
 namespace TDRS
@@ -40,17 +39,8 @@ namespace TDRS
 			{
 				EventResponseEntry entry = m_responses[i];
 
-				string[] preconditions = new string[0];
-
-				if (entry.precondition != "")
-				{
-					preconditions = entry.precondition.Split("\n")
-						.Where(clause => clause != "")
-						.ToArray();
-				}
-
 				responses[i] = new SocialEventResponse(
-					preconditions,
+					entry.preconditions,
 					entry.effects,
 					entry.description
 				);
@@ -69,8 +59,7 @@ namespace TDRS
 		[Serializable]
 		public class EventResponseEntry
 		{
-			[TextArea(minLines: 3, maxLines: 8)]
-			public string precondition;
+			public string[] preconditions;
 			public string[] effects;
 			public string description;
 		}
