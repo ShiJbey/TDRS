@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using RePraxis;
-using YamlDotNet.Serialization;
 
 namespace TDRS.Serialization
 {
@@ -38,7 +37,7 @@ namespace TDRS.Serialization
 			relationshipSchemas = new List<SerializedRelationshipSchema>();
 		}
 
-		public static string Serialize(SocialEngine socialEngine)
+		public static SerializedSocialEngine Serialize(SocialEngine socialEngine)
 		{
 			var serializedEngine = new SerializedSocialEngine();
 
@@ -228,26 +227,14 @@ namespace TDRS.Serialization
 				);
 			}
 
-			// Do the actual serializing
-			var serializer = new SerializerBuilder()
-					.JsonCompatible()
-					.Build();
-
-			return serializer.Serialize(serializedEngine);
+			return serializedEngine;
 		}
 
-		public static SocialEngine Deserialize(string dataString)
+		public static SocialEngine Deserialize(
+			SocialEngine socialEngine,
+			SerializedSocialEngine serializedEngine
+		)
 		{
-			return Deserialize(SocialEngine.Instantiate(), dataString);
-		}
-
-		public static SocialEngine Deserialize(SocialEngine socialEngine, string dataString)
-		{
-			var deserializer = new DeserializerBuilder()
-					.Build();
-
-			var serializedEngine = deserializer.Deserialize<SerializedSocialEngine>(dataString);
-
 			foreach (var entry in serializedEngine.traits)
 			{
 				socialEngine.TraitLibrary.AddTrait(

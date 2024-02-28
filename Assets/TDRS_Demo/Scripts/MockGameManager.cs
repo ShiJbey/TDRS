@@ -30,8 +30,9 @@ namespace TDRS.Demo
 
 			if (File.Exists(filePath))
 			{
-				string yamlData = File.ReadAllText(filePath);
-				SerializedSocialEngine.Deserialize(SocialEngineController.Instance.State, yamlData);
+				string jsonString = File.ReadAllText(filePath);
+				var jsonImporter = new TdrsJsonImporter();
+				jsonImporter.Import(SocialEngineController.Instance.State, jsonString);
 				Debug.Log($"Loaded save from: {filePath}");
 			}
 

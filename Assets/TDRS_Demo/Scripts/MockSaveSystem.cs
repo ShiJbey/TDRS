@@ -33,16 +33,17 @@ namespace TDRS.Demo
 
 			if (Input.GetKeyUp(m_saveButton))
 			{
-				string json = SerializedSocialEngine.Serialize(
-					SocialEngineController.Instance.State);
+				var jsonExporter = new TdrsJsonExporter();
 
-				Debug.Log(json);
+				string jsonString = jsonExporter.Export(
+					SocialEngineController.Instance.State
+				);
 
-				// string filePath = Path.Combine(Application.persistentDataPath, SAVE_PATH);
+				string filePath = Path.Combine(Application.persistentDataPath, SAVE_PATH);
 
-				// File.WriteAllText(filePath, json);
+				File.WriteAllText(filePath, jsonString);
 
-				// Debug.Log($"Saved state to: {filePath}");
+				Debug.Log($"Saved state to: {filePath}");
 			}
 
 			// Delete the existing save

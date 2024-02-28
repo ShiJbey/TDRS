@@ -16,7 +16,5 @@ MonoBehaviour:
   m_traitType: 1
   m_displayName: Friend
   m_description: '[owner] considers [target] to be a friend'
-  m_effects: []
-  m_socialRules: []
+  m_modifiers: []
   m_conflictingTraits: []
-  m_duration: -1
