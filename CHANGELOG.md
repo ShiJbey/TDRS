@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on <https://common-changelog.org/>, and this project adheres mostly to Semantic Versioning. However, all releases before 1.0.0 have breaking changes between minor-version updates.
 
-## [2.0.0] - Unreleased
+## [2.0.0] - 2024-02-28
 
 Version 2.0.0's architecture has been heavily refactored on the back-end to simplify testing, reliability, and serialization (save/load). Users will find a similar experience within the inspector, but some core content authoring features have been moved around.
 
