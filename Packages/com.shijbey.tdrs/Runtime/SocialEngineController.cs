@@ -121,6 +121,8 @@ namespace TDRS
 
 		public static UnityAction<Relationship> OnRelationshipRemoved;
 
+		public static UnityAction<SocialEngine.OnSocialEventArgs> OnSocialEvent;
+
 		#endregion
 
 		#region Unity Messages
@@ -139,6 +141,11 @@ namespace TDRS
 			{
 				Instance = this;
 				State = SocialEngine.Instantiate(null);
+
+				State.OnSocialEvent += (source, args) =>
+				{
+					OnSocialEvent?.Invoke(args);
+				};
 
 				if (m_dontDestroyOnLoad)
 				{

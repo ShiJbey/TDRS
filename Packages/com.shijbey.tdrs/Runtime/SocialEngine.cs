@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using RePraxis;
 using System;
 using UnityEditor;
-using TDRS.Helpers;
-using UnityEngine;
 
 namespace TDRS
 {
@@ -118,6 +116,21 @@ namespace TDRS
 			public OnRelationshipRemovedArgs(Relationship relationship)
 			{
 				Relationship = relationship;
+			}
+		}
+
+		public event EventHandler<OnSocialEventArgs> OnSocialEvent;
+		public class OnSocialEventArgs : EventArgs
+		{
+			public string eventName;
+			public string description;
+			public Dictionary<string, object> bindings;
+
+			public OnSocialEventArgs(string eventName, string description, Dictionary<string, object> bindings)
+			{
+				this.eventName = eventName;
+				this.description = description;
+				this.bindings = bindings;
 			}
 		}
 
@@ -504,7 +517,7 @@ namespace TDRS
 				}
 			}
 
-			Debug.Log(ctx.Description);
+			OnSocialEvent?.Invoke(this, new OnSocialEventArgs(eventName, ctx.Description, bindings));
 		}
 
 		/// <summary>

@@ -40,6 +40,11 @@ namespace TDRS.Demo
 			// GameObjects in the scene.
 
 			SocialEngineController.Instance.RegisterAgentsAndRelationships();
+
+			SocialEngineController.OnSocialEvent += (evt) =>
+			{
+				Debug.Log(evt.description);
+			};
 		}
 	}
 }

@@ -1,6 +1,6 @@
 {
   "name": "com.shijbey.tdrs",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "displayName": "TDRS",
   "description": "TDRS is a toolkit for modeling dynamic character relationships for life sims, dating sims, visual novels, and adventure games in Unity. It enables game developers to track relationships between social entities (NPCs, players, factions, etc.). Designers can create and tag relationships and characters with various traits that modify how characters feel about each other. Also, they can dispatch various event types that change relationships and build interpersonal histories between characters. Game designers can leverage this package for NPC decision-making, customizing dialogue, and adding a semblance of social intelligence.",
   "unity": "2019.4",
