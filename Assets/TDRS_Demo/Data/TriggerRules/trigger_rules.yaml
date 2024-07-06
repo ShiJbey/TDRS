@@ -1,0 +1,60 @@
+---
+# This file contains sample trigger rules authored using YAML.
+# Rules should be specified using a YAML sequence syntax.
+# They are loaded when the social engine is initialized and
+# are evaluated every time step.
+# Trigger rules have the same fields as social events, but
+# they contain additional information to guide how frequently
+# and how many times a rule can be triggered.
+
+- # Every rule starts with an ID that must be unique among all other rules.
+  name: Betrayal
+
+  # Roles/variables that must be bound by the precondition.
+  roles:
+    - "?betrayer"
+    - "?victim"
+
+  # Text describing what happened with this rule.
+  description: "[betrayer] betrayed [victim]."
+
+  # If the trigger rule attribute is provided with a social event. It contains metadata required
+  # for automatically triggering the event during simulation steps.
+  triggerRules:
+    # Can this rule be used again once it has been triggered.
+    - isRepeatable: true
+
+      # The maximum number of times this rule can be triggered within a single time step.
+      maxUsesPerTick: 1
+
+      # The cooldown is the number of simulation ticks that must elapse before the rule
+      # can be trigger again.
+      cooldown: 3
+
+      # Preconditions are specified using YAML sequences where a rule only needs
+      # one precondition query to pass. In this way, rule preconditions entries operate with
+      # implicit OR.
+      preconditions:
+        - "?betrayer.relationships.?victim.stats.Friendship!?val"
+        - "lte ?val 0"
+
+  # A sequence of response objects that specify how the agents involved, or those related
+  # to them should respond when this rule is triggered. Entries must contain an 'effects'
+  # attribute and may optionally specify a 'precondition' attribute. If no precondition is
+  # provided, the effect runs using the variables bound from the rule's precondition.
+  # However, if a precondition is specified, the variables from the rule's precondition are
+  # bound first, then the precondition runs with those variables pre-bound.
+  responses:
+    - effects:
+        - "DecreaseRelationshipStat ?victim ?betrayer Friendship 15"
+        - "RemoveRelationshipTrait ?victim ?betrayer friend"
+    - preconditions:
+        - "?victim.relationships.?victim_friend.traits.friend"
+        - "neq ?victim_friend ?betrayer"
+      effects:
+        - "DecreaseRelationshipStat ?victim_friend ?betrayer Friendship 5 6"
+    - preconditions:
+        - "?victim.relationships.?victim_family.traits.family"
+        - "neq ?victim_family ?betrayer"
+      effects:
+        - "AddRelationshipTrait ?victim_family ?betrayer angry_at 10"

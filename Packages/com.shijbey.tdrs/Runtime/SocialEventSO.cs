@@ -22,6 +22,9 @@ namespace TDRS
 		[SerializeField]
 		private EventResponseEntry[] m_responses;
 
+		[SerializeField]
+		private TriggerRuleData[] m_triggerRules;
+
 		public SocialEvent GetSocialEvent()
 		{
 			if (m_eventName == "")
@@ -46,11 +49,28 @@ namespace TDRS
 				);
 			}
 
+			SocialEventTriggerRule[] triggerRules =
+				new SocialEventTriggerRule[m_triggerRules.Length];
+
+			for (int i = 0; i < m_triggerRules.Length; i++)
+			{
+				TriggerRuleData entry = m_triggerRules[i];
+
+				triggerRules[i] = new SocialEventTriggerRule()
+				{
+					Preconditions = entry.preconditions,
+					IsRepeatable = entry.isRepeatable,
+					Cooldown = entry.cooldown,
+					MaxUsesPerTick = entry.maxUsesPerTick,
+				};
+			}
+
 			var socialEvent = new SocialEvent(
 				name,
 				m_roles,
 				m_description,
-				responses
+				responses,
+				triggerRules
 			);
 
 			return socialEvent;
@@ -62,6 +82,16 @@ namespace TDRS
 			public string[] preconditions;
 			public string[] effects;
 			public string description;
+		}
+
+		[Serializable]
+		public class TriggerRuleData
+		{
+			public bool isRepeatable;
+			public int maxUsesPerTick;
+			public int cooldown;
+			[TextArea()]
+			public string[] preconditions;
 		}
 	}
 }

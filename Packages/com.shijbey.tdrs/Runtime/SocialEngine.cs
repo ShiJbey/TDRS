@@ -2,6 +2,9 @@ using System.Linq;
 using System.Collections.Generic;
 using RePraxis;
 using System;
+using UnityEditor;
+using TDRS.Helpers;
+using UnityEngine;
 
 namespace TDRS
 {
@@ -398,6 +401,45 @@ namespace TDRS
 			{
 				relationship.Tick();
 			}
+
+			// Attempt to trigger social events using the trigger rules
+			foreach (var (eventId, socialEvent) in SocialEventLibrary.Events)
+			{
+				string eventName = eventId.Split("/")[0];
+
+				foreach (var triggerRule in socialEvent.TriggerRules)
+				{
+					triggerRule.DecrementCooldownTimer();
+
+					if (!triggerRule.IsEligible()) continue;
+
+					int remainingUses = triggerRule.MaxUsesPerTick;
+
+					var results = new DBQuery(triggerRule.Preconditions).Run(DB);
+
+					if (!results.Success) continue;
+
+					var resultBindings = results.Bindings.ToList();
+
+					while (remainingUses > 0 && resultBindings.Count() > 0)
+					{
+						int index = new System.Random().Next(0, resultBindings.Count);
+
+						var chosenResult = resultBindings[index];
+
+						var event_params = socialEvent.Roles
+							.Select(r => (string)chosenResult[r]).ToArray();
+
+						DispatchEvent(eventName, event_params);
+
+						remainingUses -= 1;
+						resultBindings.RemoveAt(index);
+					}
+
+					triggerRule.ResetCooldownTimer();
+					triggerRule.Uses += 1;
+				}
+			}
 		}
 
 		/// <summary>
@@ -460,8 +502,9 @@ namespace TDRS
 						);
 					}
 				}
-
 			}
+
+			Debug.Log(ctx.Description);
 		}
 
 		/// <summary>

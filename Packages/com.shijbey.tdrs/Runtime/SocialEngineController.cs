@@ -211,7 +211,7 @@ namespace TDRS
 
 			if (State.HasRelationship(relationshipController.Owner.UID, relationshipController.Target.UID))
 			{
-				return State.GetRelationship(relationshipController.Owner.UID, relationshipController.Target.UID);
+				relationship = State.GetRelationship(relationshipController.Owner.UID, relationshipController.Target.UID);
 			}
 			else
 			{

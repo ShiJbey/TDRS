@@ -9,6 +9,8 @@ namespace TDRS.Serialization
 		public string name { get; set; }
 		public string[] roles { get; set; }
 		public string description { get; set; }
+		[YamlDotNet.Serialization.YamlMember(DefaultValuesHandling = YamlDotNet.Serialization.DefaultValuesHandling.OmitNull)]
+		public SerializedTriggerRule[] triggerRules { get; set; }
 		public SerializedSocialEventResponse[] responses { get; set; }
 
 		#endregion
@@ -20,6 +22,7 @@ namespace TDRS.Serialization
 			name = "";
 			roles = new string[0];
 			description = "";
+			triggerRules = new SerializedTriggerRule[0];
 			responses = new SerializedSocialEventResponse[0];
 		}
 
@@ -42,7 +45,8 @@ namespace TDRS.Serialization
 							response.description
 						);
 					})
-					.ToArray()
+					.ToArray(),
+				triggerRules: triggerRules.Select(r => r.ToRuntimeInstance()).ToArray()
 			);
 		}
 
