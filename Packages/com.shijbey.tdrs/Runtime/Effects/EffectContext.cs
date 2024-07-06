@@ -25,7 +25,7 @@ namespace TDRS
 
 				foreach (var (variableName, value) in Bindings)
 				{
-					description = DescriptionTemplate.Replace(
+					description = description.Replace(
 						$"[{variableName.Substring(1)}]", value.ToString());
 				}
 

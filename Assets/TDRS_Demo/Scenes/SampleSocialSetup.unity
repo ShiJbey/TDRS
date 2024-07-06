@@ -467,6 +467,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_eventYamlFiles:
   - {fileID: 4900000, guid: 946f59a4d0fc74da88438cdc26e6886e, type: 3}
+  - {fileID: 4900000, guid: 6f8ac4b72d11240e1b9b6fbd6ee73baf, type: 3}
 --- !u!114 &568713673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -612,37 +613,6 @@ MonoBehaviour:
   OnRegistered:
     m_PersistentCalls:
       m_Calls: []
---- !u!1 &716753144
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 716753145}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &716753145
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 716753144}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 284.23175, y: 179.14279, z: -0.16023073}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &756568540
 GameObject:
   m_ObjectHideFlags: 0
@@ -1125,7 +1095,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_socialEvents.Array.size
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_socialRules.Array.data[0]
@@ -1150,11 +1120,11 @@ PrefabInstance:
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_socialEvents.Array.data[2]
       value: 
-      objectReference: {fileID: 11400000, guid: 1ea3f2e7fd9a949c3ba8e15c58da27eb, type: 2}
+      objectReference: {fileID: 11400000, guid: 55672dfed0cf34cf28d07245f70a2287, type: 2}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_socialEvents.Array.data[3]
       value: 
-      objectReference: {fileID: 11400000, guid: 55672dfed0cf34cf28d07245f70a2287, type: 2}
+      objectReference: {fileID: 11400000, guid: bcc69e67ec9e2451e97056107fca349b, type: 2}
     - target: {fileID: 6292888019506514160, guid: 290ddeb23afa6430881d614c02bf2ad9, type: 3}
       propertyPath: m_socialEvents.Array.data[4]
       value: 
@@ -1271,4 +1241,3 @@ SceneRoots:
   - {fileID: 904270040}
   - {fileID: 756568542}
   - {fileID: 215390784}
-  - {fileID: 716753145}
