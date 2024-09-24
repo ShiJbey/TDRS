@@ -25,7 +25,7 @@ namespace TDRS
 		[SerializeField]
 		private TriggerRuleData[] m_triggerRules;
 
-		public SocialEvent GetSocialEvent()
+		public SocialEventType GetSocialEvent()
 		{
 			if (m_eventName == "")
 			{
@@ -65,7 +65,7 @@ namespace TDRS
 				};
 			}
 
-			var socialEvent = new SocialEvent(
+			var socialEvent = new SocialEventType(
 				name,
 				m_roles,
 				m_description,

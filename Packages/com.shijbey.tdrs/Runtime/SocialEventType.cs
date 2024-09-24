@@ -5,7 +5,7 @@ namespace TDRS
 	/// <summary>
 	/// Definition information for creating SocialEvent instances
 	/// </summary>
-	public class SocialEvent
+	public class SocialEventType
 	{
 		#region Fields
 
@@ -31,7 +31,7 @@ namespace TDRS
 
 		#region Constructors
 
-		public SocialEvent(
+		public SocialEventType(
 			string name,
 			string[] roles,
 			string description,

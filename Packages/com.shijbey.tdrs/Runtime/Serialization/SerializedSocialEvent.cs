@@ -30,9 +30,9 @@ namespace TDRS.Serialization
 
 		#region Public Methods
 
-		public SocialEvent ToRuntimeInstance()
+		public SocialEventType ToRuntimeInstance()
 		{
-			return new SocialEvent(
+			return new SocialEventType(
 				name: name,
 				roles: roles,
 				description: description,

@@ -12,17 +12,17 @@ namespace TDRS
 		/// <summary>
 		/// Event definitions sorted by name and cardinality.
 		/// </summary>
-		protected Dictionary<string, SocialEvent> m_events;
+		protected Dictionary<string, SocialEventType> m_events;
 
 		#endregion
 
-		public Dictionary<string, SocialEvent> Events => m_events;
+		public Dictionary<string, SocialEventType> Events => m_events;
 
 		#region Constructors
 
 		public SocialEventLibrary()
 		{
-			m_events = new Dictionary<string, SocialEvent>();
+			m_events = new Dictionary<string, SocialEventType>();
 		}
 
 		#endregion
@@ -33,7 +33,7 @@ namespace TDRS
 		/// Add a social event to the library.
 		/// </summary>
 		/// <param name="socialEvent"></param>
-		public void AddSocialEvent(SocialEvent socialEvent)
+		public void AddSocialEvent(SocialEventType socialEvent)
 		{
 			m_events[socialEvent.Symbol] = socialEvent;
 		}
@@ -43,7 +43,7 @@ namespace TDRS
 		/// </summary>
 		/// <param name="symbol"></param>
 		/// <returns></returns>
-		public SocialEvent GetSocialEvent(string symbol)
+		public SocialEventType GetSocialEvent(string symbol)
 		{
 			return m_events[symbol];
 		}

@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on <https://common-changelog.org/>, and this project adheres mostly to Semantic Versioning. However, all releases before 1.0.0 have breaking changes between minor-version updates.
 
+## [2.2.0] - 2024-09-24
+
+### Added
+
+- `SocialEventInstance` class that pairs a `SocialEventDef` instance with a set of parameters, allowing for deferred execution outside of `SocialEngine.DispatchEvent(...)`.
+- Additional `SocialEngine.DispatchEvent(SocialEventInstance)` method overload.
+
+### Changed
+
+- `SocialEvent` class has been renamed `SocialEventType` to communicate its role as definition data
+
 ## [2.1.0] - 2024-07-06
 
 ### Added
@@ -71,3 +82,4 @@ _Initial release._
 [1.1.0]: https://github.com/ShiJbey/TDRS/releases/tag/v1.1.0
 [2.0.0]: https://github.com/ShiJbey/TDRS/releases/tag/v2.0.0
 [2.1.0]: https://github.com/ShiJbey/TDRS/releases/tag/v2.1.0
+[2.2.0]: https://github.com/ShiJbey/TDRS/releases/tag/v2.2.0

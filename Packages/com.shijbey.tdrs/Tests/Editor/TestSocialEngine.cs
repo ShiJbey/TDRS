@@ -121,7 +121,7 @@ namespace TDRS.Tests
 			);
 
 			_engine.SocialEventLibrary.AddSocialEvent(
-				new SocialEvent(
+				new SocialEventType(
 					name: "compliment",
 					roles: new string[]
 					{
@@ -294,6 +294,33 @@ namespace TDRS.Tests
 			Assert.That(lisa.Traits.HasTrait("recently-complimented"), Is.False);
 
 			_engine.DispatchEvent("compliment", "jose", "lisa");
+
+			Assert.That(lisa.Traits.HasTrait("recently-complimented"), Is.True);
+
+			_engine.Tick();
+			_engine.Tick();
+			_engine.Tick();
+			_engine.Tick();
+
+			Assert.That(lisa.Traits.HasTrait("recently-complimented"), Is.False);
+		}
+
+		/// <summary>
+		/// Test that you can create social event instances and dispatch them.
+		/// </summary>
+		[Test]
+		public void TestCreateAndDispatchSocialEvent()
+		{
+			var jose = _engine.AddAgent("agent", "jose");
+			var lisa = _engine.AddAgent("agent", "lisa");
+			var sara = _engine.AddAgent("agent", "sara");
+
+			Assert.That(lisa.Traits.HasTrait("recently-complimented"), Is.False);
+
+			SocialEventInstance complimentEventInstance =
+				_engine.InstantiateSocialEvent("compliment", "jose", "lisa");
+
+			complimentEventInstance.Dispatch();
 
 			Assert.That(lisa.Traits.HasTrait("recently-complimented"), Is.True);
 

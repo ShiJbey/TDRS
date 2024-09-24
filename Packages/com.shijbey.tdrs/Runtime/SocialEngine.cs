@@ -456,6 +456,21 @@ namespace TDRS
 		}
 
 		/// <summary>
+		/// Create a new SocialEventInstance
+		/// </summary>
+		/// <param name="eventName"></param>
+		/// <param name="agents"></param>
+		/// <returns></returns>
+		public SocialEventInstance InstantiateSocialEvent(string eventName, params string[] agents)
+		{
+			SocialEventType eventType = SocialEventLibrary.GetSocialEvent($"{eventName}/{agents.Length}");
+
+			var instance = new SocialEventInstance(this, eventType, agents);
+
+			return instance;
+		}
+
+		/// <summary>
 		/// Dispatch an event throughout the social network and apply effects
 		/// </summary>
 		/// <param name="socialEvent"></param>
@@ -518,6 +533,20 @@ namespace TDRS
 			}
 
 			OnSocialEvent?.Invoke(this, new OnSocialEventArgs(eventName, ctx.Description, bindings));
+		}
+
+		public void DispatchEvent(SocialEventInstance eventInstance)
+		{
+			eventInstance.Execute();
+
+			OnSocialEvent?.Invoke(
+				this,
+				new OnSocialEventArgs(
+					eventInstance.EventType.Name,
+					eventInstance.Description,
+					eventInstance.Bindings
+				)
+			);
 		}
 
 		/// <summary>

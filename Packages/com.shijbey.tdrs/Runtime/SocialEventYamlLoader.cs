@@ -15,11 +15,11 @@ namespace TDRS
 		/// </summary>
 		/// <param name="yamlString"></param>
 		/// <returns></returns>
-		public SocialEvent LoadSocialEvent(string yamlString)
+		public SocialEventType LoadSocialEvent(string yamlString)
 		{
 			var deserializer = new DeserializerBuilder().Build();
 
-			SocialEvent socialEvent = deserializer
+			SocialEventType socialEvent = deserializer
 				.Deserialize<SerializedSocialEvent>(yamlString)
 				.ToRuntimeInstance();
 
@@ -31,11 +31,11 @@ namespace TDRS
 		/// </summary>
 		/// <param name="yamlString"></param>
 		/// <returns></returns>
-		public List<SocialEvent> LoadSocialEvents(string yamlString)
+		public List<SocialEventType> LoadSocialEvents(string yamlString)
 		{
 			var deserializer = new DeserializerBuilder().Build();
 
-			List<SocialEvent> socialEvent = deserializer
+			List<SocialEventType> socialEvent = deserializer
 				.Deserialize<List<SerializedSocialEvent>>(yamlString)
 				.Select(e => { return e.ToRuntimeInstance(); })
 				.ToList();
