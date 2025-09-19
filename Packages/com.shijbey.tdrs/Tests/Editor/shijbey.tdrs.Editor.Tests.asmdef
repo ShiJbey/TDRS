@@ -4,7 +4,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "com.shijbey.tdrs"
+        "com.shijbey.tdrs",
+        "shijbey.repraxis"
     ],
     "includePlatforms": [
         "Editor"
@@ -14,7 +15,6 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "nunit.framework.dll",
-        "RePraxis.dll",
         "YamlDotNet.dll"
     ],
     "autoReferenced": false,

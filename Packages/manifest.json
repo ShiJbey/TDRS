@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.shijbey.repraxis": "https://github.com/ShiJbey/RePraxis-For-Unity.git?path=/Packages/com.shijbey.repraxis#v1.4.0",
     "com.unity.collab-proxy": "2.6.0",
     "com.unity.feature.2d": "2.0.1",
     "com.unity.ide.visualstudio": "2.0.22",

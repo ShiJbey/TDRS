@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.shijbey.repraxis": {
+      "version": "https://github.com/ShiJbey/RePraxis-For-Unity.git?path=/Packages/com.shijbey.repraxis#v1.4.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "cc1a89fe20dd389d5a9635c5314b10df81c91718"
+    },
     "com.shijbey.tdrs": {
       "version": "file:com.shijbey.tdrs",
       "depth": 0,
